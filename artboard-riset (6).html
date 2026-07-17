@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artboard — Riset Vector Adobe Stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f2f0ea;
+    --paper-line: rgba(20,23,26,0.07);
+    --ink:#14171a;
+    --ink-soft:#565b61;
+    --blue:#2e5eff;
+    --blue-soft: rgba(46,94,255,0.10);
+    --amber:#ffb020;
+    --amber-soft: rgba(255,176,32,0.14);
+    --red:#ff5470;
+    --red-soft: rgba(255,84,112,0.12);
+    --green:#1f9d6b;
+    --green-soft: rgba(31,157,107,0.13);
+    --panel:#ffffff;
+    --border: rgba(20,23,26,0.12);
+    --radius: 10px;
+    --amber-text:#8a5a00;
+    --green-text:#0f6b47;
+    --blue-text:#1c3fb0;
+    --red-text:#b3223f;
+    --topbar-bg: rgba(242,240,234,0.85);
+    --nav-active-bg: var(--ink);
+    --nav-active-text: #ffffff;
+    --nav-active-num: rgba(255,255,255,0.55);
+  }
+  html{color-scheme: light;}
+  html[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#15181c;
+    --paper-line: rgba(255,255,255,0.055);
+    --ink:#eceef0;
+    --ink-soft:#9aa1a8;
+    --blue:#5b82ff;
+    --blue-soft: rgba(91,130,255,0.16);
+    --amber:#ffc247;
+    --amber-soft: rgba(255,194,71,0.16);
+    --red:#ff7188;
+    --red-soft: rgba(255,113,136,0.16);
+    --green:#3ec98d;
+    --green-soft: rgba(62,201,141,0.16);
+    --panel:#1c2025;
+    --border: rgba(255,255,255,0.11);
+    --amber-text:#ffc247;
+    --green-text:#3ec98d;
+    --blue-text:#8ea4ff;
+    --red-text:#ff8a9c;
+    --topbar-bg: rgba(21,24,28,0.85);
+    --nav-active-bg: #f2f4f6;
+    --nav-active-text: #15181c;
+    --nav-active-num: rgba(21,24,28,0.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle, var(--paper-line) 1px, transparent 1px) 0 0/22px 22px,
+      var(--paper);
+    min-height:100vh;
+    transition: background-color .2s ease, color .2s ease;
+  }
+  .topbar, .sidebar, .art-card, .trend-links, .kw-panel, .cal-card, .save-form,
+  .saved-item, .meta-panel, .meta-upload, .meta-key-row, .filter-chip, .nav-btn,
+  .kw-pill, .ext-link, .badge, .chip, .check-item, .btn.ghost, .kw-row input,
+  .meta-field input, .meta-field select, .meta-key-field input, .meta-key-field select,
+  .save-form input, .save-form select, .save-form textarea{
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+
+  /* Top bar */
+  .topbar{
+    grid-column:1/-1;
+    display:flex;align-items:center;gap:12px;
+    padding:14px 22px;
+    border-bottom:1px solid var(--border);
+    background: var(--topbar-bg);
+    backdrop-filter: blur(6px);
+    position:sticky; top:0; z-index:20;
+  }
+  .logo{
+    width:30px;height:30px;flex:none;
+  }
+  .brand-text{display:flex;flex-direction:column;line-height:1.15;}
+  .brand-text b{font-family:'Space Grotesk';font-size:16px;font-weight:700;letter-spacing:-0.01em;}
+  .brand-text span{font-size:11px;color:var(--ink-soft);font-family:'JetBrains Mono';letter-spacing:0.02em;}
+  .coords{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);display:flex;gap:16px;}
+  .coords b{color:var(--ink);}
+
+  .theme-toggle{
+    flex:none; width:32px;height:32px; margin-left:14px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--border); border-radius:8px;
+    background:var(--panel); color:var(--ink); cursor:pointer;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+  }
+  .theme-toggle:hover{border-color:var(--blue); color:var(--blue);}
+  .theme-toggle svg{width:16px;height:16px;}
+  .theme-toggle .icon-moon{display:none;}
+  html[data-theme="dark"] .theme-toggle .icon-sun{display:none;}
+  html[data-theme="dark"] .theme-toggle .icon-moon{display:flex;}
+
+  /* Sidebar */
+  .sidebar{
+    grid-row:2;
+    border-right:1px solid var(--border);
+    padding:18px 12px;
+    display:flex;flex-direction:column;gap:2px;
+    position:sticky; top:59px; align-self:start; height:calc(100vh - 59px);
+  }
+  .nav-btn{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;border-radius:8px;
+    font-family:'Space Grotesk';font-size:13.5px;font-weight:500;
+    color:var(--ink-soft); cursor:pointer; border:none; background:none;
+    text-align:left; width:100%;
+  }
+  .nav-btn .num{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);opacity:0.6;}
+  .nav-btn:hover{background:var(--blue-soft); color:var(--ink);}
+  .nav-btn.active{background:var(--nav-active-bg); color:var(--nav-active-text);}
+  .nav-btn.active .num{color:var(--nav-active-num);}
+  .sidebar-foot{margin-top:auto;font-size:10.5px;color:var(--ink-soft);font-family:'JetBrains Mono';padding:10px 12px;border-top:1px solid var(--border);line-height:1.6;}
+
+  /* Main */
+  main{grid-row:2; padding:26px 30px 60px; max-width:1100px;}
+  .view{display:none;}
+  .view.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  h1.page-title{font-family:'Space Grotesk';font-size:23px;margin:0 0 4px;letter-spacing:-0.01em;}
+  .page-sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px; max-width:640px; line-height:1.55;}
+
+  /* Cards grid (niche explorer) */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(270px,1fr));gap:14px;}
+  .art-card{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .art-card:hover{border-color:var(--blue); box-shadow:0 4px 18px rgba(46,94,255,0.10);}
+  .handle{position:absolute;width:7px;height:7px;background:var(--blue);border-radius:1px;opacity:0;transition:opacity .12s ease;}
+  .art-card:hover .handle{opacity:1;}
+  .h-tl{top:-4px;left:-4px;} .h-tr{top:-4px;right:-4px;} .h-bl{bottom:-4px;left:-4px;} .h-br{bottom:-4px;right:-4px;}
+
+  .card-icon{width:34px;height:34px;margin-bottom:10px;color:var(--ink);}
+  .art-card h3{font-family:'Space Grotesk';font-size:14.5px;margin:0 0 8px;line-height:1.3;}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+  .badge{font-family:'JetBrains Mono';font-size:10px;padding:3px 7px;border-radius:5px;font-weight:500;}
+  .b-hot{background:var(--amber-soft); color:var(--amber-text);}
+  .b-rising{background:var(--green-soft); color:var(--green-text);}
+  .b-stable{background:var(--blue-soft); color:var(--blue-text);}
+  .b-sat-low{background:var(--green-soft); color:var(--green-text);}
+  .b-sat-med{background:var(--amber-soft); color:var(--amber-text);}
+  .b-sat-high{background:var(--red-soft); color:var(--red-text);}
+  .card-note{font-size:12px;color:var(--ink-soft);line-height:1.5;margin-bottom:10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;}
+  .chip{font-size:11px;background:var(--paper);border:1px solid var(--border);padding:3px 8px;border-radius:20px;color:var(--ink-soft);}
+
+  /* trend resource links */
+  .trend-links{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
+  .trend-links h4{font-family:'Space Grotesk';font-size:12.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);margin:0 0 10px;}
+  .trend-links .links-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .ext-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'JetBrains Mono';font-size:11.5px;
+    padding:7px 12px;border-radius:20px;border:1px solid var(--border);
+    background:var(--paper);color:var(--ink);text-decoration:none;
+  }
+  .ext-link:hover{border-color:var(--blue);color:var(--blue);}
+  .ext-link svg{width:10px;height:10px;flex:none;}
+  .card-link{
+    display:inline-flex;align-items:center;gap:5px;
+    font-family:'JetBrains Mono';font-size:11px;
+    color:var(--blue);text-decoration:none;margin-top:10px;
+  }
+  .card-link:hover{text-decoration:underline;}
+  .card-link svg{width:9px;height:9px;flex:none;}
+
+  /* filter bar */
+  .filter-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);}
+  .filter-chip.active{background:var(--nav-active-bg);color:var(--nav-active-text);border-color:var(--nav-active-bg);}
+
+  /* Keyword generator */
+  .kw-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
+  .kw-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .kw-row input{
+    flex:1; min-width:220px;
+    padding:11px 14px;border:1px solid var(--border);border-radius:8px;
+    font-family:'JetBrains Mono';font-size:13px; background:var(--paper);
+  }
+  .kw-row input:focus{outline:2px solid var(--blue); outline-offset:1px;}
+  .btn{
+    font-family:'Space Grotesk';font-weight:600;font-size:13px;
+    padding:11px 18px;border-radius:8px;border:none;
+    background:var(--blue); color:#fff; cursor:pointer;
+  }
+  .btn:hover{background:#1e46e0;}
+  .btn.secondary{background:var(--nav-active-bg); color:var(--nav-active-text);}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+  .kw-results{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px;}
+  .kw-pill{
+    font-family:'JetBrains Mono'; font-size:12px; padding:6px 12px;
+    background:var(--paper); border:1px solid var(--border); border-radius:6px;
+    cursor:pointer; position:relative;
+  }
+  .kw-pill:hover{border-color:var(--blue); color:var(--blue);}
+  .empty-hint{color:var(--ink-soft); font-size:12.5px; margin-top:16px;}
+
+  /* checklist */
+  .checklist{display:flex; flex-direction:column; gap:2px;}
+  .check-group{margin-bottom:20px;}
+  .check-group h4{font-family:'Space Grotesk'; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:0 0 8px;}
+  .check-item{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:9px 10px; border-radius:7px; cursor:pointer;
+  }
+  .check-item:hover{background:var(--panel);}
+  .check-item input{margin-top:3px; accent-color:var(--blue); width:15px; height:15px; flex:none;}
+  .check-item span{font-size:13px; line-height:1.5;}
+  .check-item.checked span{color:var(--ink-soft); text-decoration:line-through;}
+  .progress-wrap{display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+  .progress-track{flex:1; height:7px; background:var(--border); border-radius:10px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--blue); width:0%; transition:width .25s ease;}
+  .progress-label{font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-soft); white-space:nowrap;}
+
+  /* calendar */
+  .cal-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;}
+  .cal-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;}
+  .cal-card .m{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--blue); font-weight:600; letter-spacing:0.05em;}
+  .cal-card h4{font-family:'Space Grotesk'; font-size:14px; margin:4px 0 8px;}
+  .cal-card p{font-size:12px; color:var(--ink-soft); line-height:1.55; margin:0;}
+
+  /* saved notes */
+  .save-form{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:20px;}
+  .save-form .row{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .save-form input, .save-form select, .save-form textarea{
+    font-family:'Inter'; font-size:13px; padding:10px 12px; border:1px solid var(--border);
+    border-radius:7px; background:var(--paper); flex:1; min-width:160px;
+  }
+  .save-form textarea{width:100%; min-height:60px; resize:vertical; font-family:'Inter';}
+  .saved-list{display:flex; flex-direction:column; gap:10px;}
+  .saved-item{background:var(--panel); border:1px solid var(--border); border-radius:9px; padding:14px 16px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
+  .saved-item h4{font-family:'Space Grotesk'; font-size:14px; margin:0 0 4px;}
+  .saved-item p{font-size:12.5px; color:var(--ink-soft); margin:0; line-height:1.5;}
+  .saved-meta{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--ink-soft); margin-top:6px;}
+  .del-btn{background:none; border:none; color:var(--red); cursor:pointer; font-size:16px; line-height:1; padding:4px;}
+  .status-msg{font-family:'JetBrains Mono'; font-size:11.5px; color:var(--ink-soft); margin-top:8px;}
+
+  /* metadata generator */
+  .meta-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
+  .meta-field{display:flex;flex-direction:column;gap:5px;}
+  .meta-field label{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.03em;}
+  .meta-field input, .meta-field select{
+    padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-family:'Inter';font-size:13px;background:var(--paper);
+  }
+  .meta-field input:focus, .meta-field select:focus{outline:2px solid var(--blue);outline-offset:1px;}
+  .meta-output{margin-top:6px;}
+  .meta-out-block{background:var(--paper);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:12px;}
+  .meta-out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .meta-out-head h5{font-family:'Space Grotesk';font-size:12px;text-transform:uppercase;letter-spacing:0.03em;color:var(--ink-soft);margin:0;}
+  .copy-mini{
+    font-family:'JetBrains Mono';font-size:10.5px;padding:4px 10px;border-radius:14px;
+    border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink);
+  }
+  .copy-mini:hover{border-color:var(--blue);color:var(--blue);}
+  .meta-title-text{font-family:'Space Grotesk';font-size:14.5px;line-height:1.4;}
+  .meta-kw-text{font-family:'JetBrains Mono';font-size:12.5px;line-height:1.7;color:var(--ink-soft);word-break:break-word;}
+  .kw-count-badge{font-family:'JetBrains Mono';font-size:10.5px;padding:3px 9px;border-radius:20px;font-weight:500;}
+  .kw-count-badge.ok{background:var(--green-soft);color:var(--green-text);}
+  .kw-count-badge.warn{background:var(--red-soft);color:var(--red-text);}
+  .meta-desc-text{font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
+
+  /* metadata: image upload */
+  .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:9px;padding:16px;margin-bottom:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .meta-upload-info{flex:1;min-width:200px;}
+  .meta-upload-info h5{font-family:'Space Grotesk';font-size:12.5px;text-transform:uppercase;letter-spacing:0.03em;color:var(--ink-soft);margin:0 0 4px;}
+  .meta-upload-info p{font-size:12px;color:var(--ink-soft);margin:0;line-height:1.5;}
+  .meta-upload-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .meta-upload input[type=file]{
+    font-family:'JetBrains Mono';font-size:11.5px;max-width:220px;
+    color:var(--ink-soft);
+  }
+  .meta-upload input[type=file]::file-selector-button,
+  .meta-upload input[type=file]::-webkit-file-upload-button{
+    font-family:'Space Grotesk';font-weight:600;font-size:12px;
+    padding:9px 14px;margin-right:12px;border:none;border-radius:7px;
+    background:var(--blue);color:#fff;cursor:pointer;
+    transition:background-color .15s ease;
+  }
+  .meta-upload input[type=file]::file-selector-button:hover,
+  .meta-upload input[type=file]::-webkit-file-upload-button:hover{
+    background:#1e46e0;
+  }
+  .meta-preview-thumb{
+    width:64px;height:64px;border-radius:8px;border:1px solid var(--border);
+    object-fit:cover;background:#fff;display:none;
+  }
+  .meta-upload-status{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);}
+
+  /* drag & drop */
+  .meta-upload{transition:border-color .15s ease, background .15s ease; cursor:pointer;}
+  .meta-upload.dragover{border-color:var(--blue); background:var(--blue-soft); border-style:solid;}
+  .meta-upload-dropline{width:100%; text-align:center; font-family:'JetBrains Mono'; font-size:10.5px; color:var(--ink-soft); order:99; margin-top:2px;}
+
+  /* API key */
+  .meta-key-row{display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; margin-bottom:16px; padding:14px 16px; background:var(--paper); border:1px solid var(--border); border-radius:9px;}
+  .meta-key-field{flex:1; min-width:220px; display:flex; flex-direction:column; gap:5px;}
+  .meta-key-field label{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.03em;}
+  .meta-key-field input, .meta-key-field select{
+    padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-family:'JetBrains Mono';font-size:12.5px;background:var(--panel);width:100%;
+  }
+  .meta-key-field input:focus, .meta-key-field select:focus{outline:2px solid var(--blue);outline-offset:1px;}
+  .meta-key-field.provider-field{flex:0 0 190px;min-width:170px;}
+  .meta-key-hint{font-size:11px;color:var(--ink-soft);line-height:1.5;flex-basis:100%;margin-top:-4px;}
+  .meta-key-status{font-family:'JetBrains Mono';font-size:10.5px;color:var(--green);white-space:nowrap;}
+
+  /* simplified advanced toggle */
+  .meta-adv-toggle{
+    display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;
+    font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink-soft);padding:6px 0;margin-bottom:10px;
+  }
+  .meta-adv-toggle:hover{color:var(--blue);}
+  .meta-adv-toggle .arrow{transition:transform .15s ease; display:inline-block;}
+  .meta-adv-toggle.open .arrow{transform:rotate(90deg);}
+  .meta-adv-body{display:none; margin-bottom:14px;}
+  .meta-adv-body.open{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .meta-adv-body .meta-field.span3{grid-column:1/-1;}
+  .meta-checkbox-row{
+    display:flex; align-items:center; gap:9px;
+    cursor:pointer; font-size:12.5px; line-height:1.5; color:var(--ink);
+  }
+  .meta-checkbox-row input{
+    margin:0; accent-color:var(--blue); width:15px; height:15px; flex:none; cursor:pointer;
+  }
+  .meta-checkbox-row span{color:var(--ink-soft);}
+  @media (max-width:600px){ .meta-adv-body.open{grid-template-columns:1fr;} }
+
+  @media (max-width: 600px){
+  }
+
+  @media (max-width: 760px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{
+      position:sticky; top:59px; height:auto;
+      flex-direction:row; overflow-x:auto; border-right:none; border-bottom:1px solid var(--border);
+      padding:10px 12px;
+    }
+    .nav-btn{white-space:nowrap;}
+    .sidebar-foot{display:none;}
+    main{padding:20px 16px 50px;}
+    .coords{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <svg class="logo" viewBox="0 0 30 30" fill="none"><rect x="1" y="1" width="28" height="28" rx="4" stroke="#14171a" stroke-width="1.4"/><path d="M9 20 L15 8 L21 20" stroke="#2e5eff" stroke-width="2" stroke-linejoin="round" fill="none"/><circle cx="9" cy="20" r="1.6" fill="#14171a"/><circle cx="21" cy="20" r="1.6" fill="#14171a"/><circle cx="15" cy="8" r="1.6" fill="#14171a"/></svg>
+    <div class="brand-text"><b>Artboard</b><span>RISET VECTOR — ADOBE STOCK</span></div>
+    <div class="coords">
+      <span>X <b id="mx">0</b></span>
+      <span>Y <b id="my">0</b></span>
+      <span>ZOOM <b>100%</b></span>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ganti mode gelap/terang" title="Ganti mode gelap/terang">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5V5M12 19V21.5M4.2 4.2L6 6M18 18L19.8 19.8M2.5 12H5M19 12H21.5M4.2 19.8L6 18M18 6L19.8 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar">
+    <button class="nav-btn active" data-view="explorer"><span class="num">01</span> Eksplorasi Niche</button>
+    <button class="nav-btn" data-view="keyword"><span class="num">02</span> Generator Kata Kunci</button>
+    <button class="nav-btn" data-view="checklist"><span class="num">03</span> Checklist Kualitas</button>
+    <button class="nav-btn" data-view="calendar"><span class="num">04</span> Kalender Musiman</button>
+    <button class="nav-btn" data-view="saved"><span class="num">05</span> Riset Tersimpan</button>
+    <button class="nav-btn" data-view="metadata"><span class="num">06</span> Generator Metadata</button>
+    <div class="sidebar-foot">Data tren berdasarkan riset pasar terkini. Selalu cek panel "Discover" di Adobe Stock sebelum produksi massal.</div>
+  </div>
+
+  <main>
+
+    <!-- 01 EXPLORER -->
+    <section class="view active" id="view-explorer">
+      <h1 class="page-title">Eksplorasi Niche Vector</h1>
+      <p class="page-sub">Sepuluh kategori vector dengan permintaan tertinggi di Adobe Stock saat ini. Prioritaskan niche dengan tren naik dan saturasi rendah — itu titik masuk paling realistis untuk kontributor baru.</p>
+
+      <div class="trend-links">
+        <h4>Sumber Insight Tren Resmi (Adobe Stock Contributor)</h4>
+        <div class="links-row">
+          <a class="ext-link" href="https://contributor.stock.adobe.com/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Contributor Portal — tab "Insights"
+          </a>
+          <a class="ext-link" href="https://stock.adobe.com/search?k=&content_type%3Avector=1" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Blank Search Vector (real-time populer)
+          </a>
+          <a class="ext-link" href="https://stock.adobe.com/collections" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Kurasi Koleksi Adobe Stock
+          </a>
+          <a class="ext-link" href="https://stock.adobe.com/pages/artisthub/get-inspired/creative-trends" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Adobe Creative Trends 2026
+          </a>
+          <a class="ext-link" href="https://stock.adobe.com/pages/artisthub/get-inspired/vector-graphics-illustrations-content-needs" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Call for Content: Vector &amp; Ilustrasi
+          </a>
+          <a class="ext-link" href="https://discord.gg/adobestock" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Discord — channel #call-for-content
+          </a>
+          <a class="ext-link" href="https://www.behance.net/adobestock" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Behance Live Adobe Stock
+          </a>
+          <a class="ext-link" href="https://blog.adobe.com/en/topics/stock.html" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Blog Adobe Stock
+          </a>
+          <a class="ext-link" href="https://www.adobe.com/subscription/adobe-stock-contributors-newsletter.html" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Daftar Newsletter Kontributor
+          </a>
+        </div>
+        <p style="font-size:11.5px;color:var(--ink-soft);margin:12px 0 0;line-height:1.5;">
+          Tab "Insights" di Contributor Portal (perlu login) menampilkan 10 portofolio dengan performa terbaik minggu sebelumnya — cara tercepat melihat gaya visual apa yang sedang benar-benar laku, bukan sekadar prediksi.
+        </p>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-chip active" data-filter="all">Semua</button>
+        <button class="filter-chip" data-filter="rising">🔼 Sedang Naik</button>
+        <button class="filter-chip" data-filter="hot">🔥 Paling Laku</button>
+        <button class="filter-chip" data-filter="lowsat">✅ Saturasi Rendah</button>
+      </div>
+
+      <div class="grid" id="nicheGrid"></div>
+    </section>
+
+    <!-- 02 KEYWORD -->
+    <section class="view" id="view-keyword">
+      <h1 class="page-title">Generator Kata Kunci</h1>
+      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), tool akan menyusun kombinasi judul & tag long-tail yang lazim dicari pembeli di Adobe Stock.</p>
+
+      <div class="kw-panel">
+        <div class="kw-row">
+          <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan, pernikahan..." maxlength="40">
+          <button class="btn" id="kwBtn">Buat Kombinasi</button>
+          <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
+        </div>
+        <div class="kw-results" id="kwResults"></div>
+        <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
+      </div>
+    </section>
+
+    <!-- 03 CHECKLIST -->
+    <section class="view" id="view-checklist">
+      <h1 class="page-title">Checklist Kualitas & Upload</h1>
+      <p class="page-sub">Standar teknis dan editorial yang paling sering menyebabkan file vector ditolak reviewer Adobe Stock. Centang sebelum submit.</p>
+
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+        <span class="progress-label" id="progLabel">0 / 0 selesai</span>
+      </div>
+
+      <div id="checklistWrap"></div>
+    </section>
+
+    <!-- 04 CALENDAR -->
+    <section class="view" id="view-calendar">
+      <h1 class="page-title">Kalender Musiman</h1>
+      <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak.</p>
+      <div class="cal-grid" id="calGrid"></div>
+    </section>
+
+    <!-- 05 SAVED -->
+    <section class="view" id="view-saved">
+      <h1 class="page-title">Riset Tersimpan</h1>
+      <p class="page-sub">Catat ide niche milikmu sendiri lengkap dengan prioritas dan catatan strategi. Tersimpan otomatis di perangkat ini.</p>
+
+      <div class="save-form">
+        <div class="row">
+          <input type="text" id="saveTitle" placeholder="Nama niche / ide, mis. 'Ikon UMKM kuliner gaya doodle'">
+          <select id="savePriority">
+            <option value="Tinggi">Prioritas: Tinggi</option>
+            <option value="Sedang" selected>Prioritas: Sedang</option>
+            <option value="Rendah">Prioritas: Rendah</option>
+          </select>
+        </div>
+        <textarea id="saveNote" placeholder="Catatan: gaya visual, target pembeli, jumlah aset yang direncanakan, dsb."></textarea>
+        <div class="row" style="margin-top:10px; margin-bottom:0;">
+          <button class="btn" id="saveBtn">Simpan Riset</button>
+          <span class="status-msg" id="saveStatus"></span>
+        </div>
+      </div>
+
+      <div class="saved-list" id="savedList"></div>
+    </section>
+
+    <!-- 06 METADATA GENERATOR -->
+    <section class="view" id="view-metadata">
+      <h1 class="page-title">Generator Metadata</h1>
+      <p class="page-sub">Susun judul, deskripsi, dan keyword siap-upload dalam Bahasa Inggris — mengikuti standar pencarian pembeli Adobe Stock. Upload gambar preview aset, lalu klik "Generate dari Gambar".</p>
+
+      <div class="meta-panel">
+        <div class="meta-key-row">
+          <div class="meta-key-field provider-field">
+            <label>Provider AI</label>
+            <select id="mdProvider">
+              <option value="claude">Claude (Anthropic)</option>
+              <option value="openai">ChatGPT (OpenAI)</option>
+              <option value="gemini">Gemini (Google)</option>
+              <option value="groq">Groq</option>
+            </select>
+          </div>
+          <div class="meta-key-field">
+            <label id="mdApiKeyLabel">Anthropic API Key (Opsional)</label>
+            <input type="password" id="mdApiKey" placeholder="sk-ant-...">
+          </div>
+          <button class="btn ghost" id="mdApiKeyToggle" type="button" style="padding:10px 14px;">Lihat</button>
+          <span class="meta-key-status" id="mdApiKeyStatus"></span>
+          <div class="meta-key-hint" id="mdApiKeyHint">Isi API key milikmu sendiri kalau limit default website sudah tercapai. Key disimpan per provider hanya di penyimpananmu sendiri dan dipakai langsung dari browser saat generate dari gambar. Kosongkan untuk pakai limit default.</div>
+        </div>
+
+        <div class="meta-upload" id="mdDropzone">
+          <img class="meta-preview-thumb" id="mdImagePreview" alt="Preview">
+          <div class="meta-upload-info">
+            <h5>Upload Preview Gambar</h5>
+            <p>Seret &amp; lepas file di sini, atau klik untuk pilih file (PNG/JPG/WEBP) — AI akan melihat gambarnya dan langsung membuat judul, deskripsi, serta keyword.</p>
+          </div>
+          <div class="meta-upload-actions">
+            <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif">
+            <button class="btn secondary" id="mdImageBtn">Generate dari Gambar</button>
+          </div>
+          <div class="meta-upload-dropline">tarik file gambar ke area ini untuk mengunggah</div>
+        </div>
+        <div class="meta-upload-status mono" id="mdImageStatus" style="margin:-8px 0 16px;"></div>
+
+        <button type="button" class="meta-adv-toggle" id="mdAdvToggle"><span class="arrow">▸</span> Pengaturan lanjutan (tipe file, jumlah keyword, hindari kata)</button>
+        <div class="meta-adv-body" id="mdAdvBody">
+          <div class="meta-field">
+            <label>Tipe File</label>
+            <select id="mdFileType">
+              <option value="EPS vector">EPS (Vector)</option>
+              <option value="AI vector">AI (Vector)</option>
+              <option value="SVG vector">SVG (Vector)</option>
+              <option value="JPG">JPG (Photo/Raster)</option>
+              <option value="PNG">PNG (Transparan)</option>
+              <option value="PSD template">PSD (Template)</option>
+              <option value="MP4 video">MP4 (Video)</option>
+            </select>
+          </div>
+          <div class="meta-field">
+            <label>Jumlah Keyword Target (25–49)</label>
+            <input type="number" id="mdCount" value="35" min="25" max="49">
+          </div>
+          <div class="meta-field">
+            <label>Maks. Jumlah Huruf Judul</label>
+            <input type="number" id="mdTitleLen" value="200" min="40" max="200">
+          </div>
+          <div class="meta-field">
+            <label>Maks. Jumlah Huruf Deskripsi</label>
+            <input type="number" id="mdDescLen" value="200" min="50" max="500">
+          </div>
+          <div class="meta-field span3">
+            <label>Hindari Kata (pisahkan dengan koma)</label>
+            <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
+          </div>
+          <div class="meta-field span3">
+            <label class="meta-checkbox-row">
+              <input type="checkbox" id="mdNoSpecialChars">
+              <span>Hindari Karakter Spesial (hanya huruf, angka &amp; spasi pada judul, deskripsi, keyword)</span>
+            </label>
+          </div>
+        </div>
+        <div class="meta-output" id="mdOutput" style="display:none;">
+          <div class="meta-out-block">
+            <div class="meta-out-head">
+              <h5>Judul</h5>
+              <button class="copy-mini" data-copy="mdTitleText">Salin</button>
+            </div>
+            <div class="meta-title-text" id="mdTitleText"></div>
+          </div>
+          <div class="meta-out-block">
+            <div class="meta-out-head">
+              <h5>Deskripsi Singkat</h5>
+              <button class="copy-mini" data-copy="mdDescText">Salin</button>
+            </div>
+            <div class="meta-desc-text" id="mdDescText"></div>
+          </div>
+          <div class="meta-out-block">
+            <div class="meta-out-head">
+              <h5>Kategori</h5>
+              <button class="copy-mini" data-copy="mdCatText">Salin</button>
+            </div>
+            <div class="meta-title-text" id="mdCatText" style="font-size:13px;"></div>
+          </div>
+          <div class="meta-out-block">
+            <div class="meta-out-head">
+              <h5>Keyword <span class="kw-count-badge" id="mdKwBadge"></span></h5>
+              <button class="copy-mini" data-copy="mdKwText">Salin Semua</button>
+            </div>
+            <div class="meta-kw-text" id="mdKwText"></div>
+          </div>
+        </div>
+        <div class="empty-hint" id="mdEmpty">Belum ada metadata — upload gambar preview lalu klik "Generate dari Gambar".</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ---------- Dark mode toggle ---------- */
+(function(){
+  const THEME_KEY = 'artboard-theme';
+  const root = document.documentElement;
+  let saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(err){}
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initial = saved || (prefersDark ? 'dark' : 'light');
+  if(initial === 'dark') root.setAttribute('data-theme','dark');
+
+  function toggleTheme(){
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    if(isDark){
+      root.removeAttribute('data-theme');
+      try{ localStorage.setItem(THEME_KEY,'light'); }catch(err){}
+    }else{
+      root.setAttribute('data-theme','dark');
+      try{ localStorage.setItem(THEME_KEY,'dark'); }catch(err){}
+    }
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const btn = document.getElementById('themeToggle');
+    if(btn) btn.addEventListener('click', toggleTheme);
+  });
+})();
+
+/* ---------- Data ---------- */
+const niches = [
+  {
+    id:'ai-abstract', title:'Latar Abstrak Bergaya AI-Gradient', icon:'blob',
+    trend:'hot', trendLabel:'🔥 Paling Laku', sat:'med', satLabel:'Saturasi Sedang',
+    note:'Segmen dengan performa penjualan tertinggi saat ini — jadi elemen dasar untuk header web, slide presentasi, dan materi digital.',
+    tags:['abstract gradient background','fluid shapes','AI aesthetic vector','wallpaper backdrop']
+  },
+  {
+    id:'naive-art', title:'Ilustrasi Naive / "Human Imperfection"', icon:'wobble',
+    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'low', satLabel:'Saturasi Rendah',
+    note:'Mayoritas desainer sengaja menambah garis goyang & bentuk tidak sempurna untuk melawan kesan "terlalu rapi khas AI".',
+    tags:['naive illustration','hand-drawn wobble','childlike doodle','imperfect line art']
+  },
+  {
+    id:'mixed-media', title:'Vector Mixed-Media / Kolase', icon:'collage',
+    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'low', satLabel:'Saturasi Rendah',
+    note:'Menggabungkan tekstur scan, elemen tempel vintage, dan bentuk vector bersih — terasa lebih "manusiawi" dibanding output AI murni.',
+    tags:['collage vector','scanned texture overlay','vintage cut paper','mixed media illustration']
+  },
+  {
+    id:'3d-flat', title:'Ikon Flat Bernuansa 3D', icon:'cube',
+    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'med', satLabel:'Saturasi Sedang',
+    note:'Lebih dari separuh desainer kini menambah bayangan & highlight ala 3D pada set ikon flat untuk kesan lebih hidup.',
+    tags:['3d flat icon set','isometric icon pack','soft shadow illustration','app UI icon bundle']
+  },
+  {
+    id:'maximalist', title:'Ilustrasi Maximalist & Warna Berani', icon:'burst',
+    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'low', satLabel:'Saturasi Rendah',
+    note:'Pencarian gaya maximalist melonjak tajam tahun ini — palet warna kontras tinggi dan komposisi padat jadi favorit brand muda.',
+    tags:['maximalist pattern','bold color illustration','y2k inspired vector','clash color design']
+  },
+  {
+    id:'business-data', title:'Ikon & Ilustrasi Bisnis / Data', icon:'chart',
+    trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
+    note:'Kategori matang dengan jutaan aset — permintaan stabil tapi arah visual bergeser ke gaya kantor yang lebih "otentik", bukan kaku.',
+    tags:['data visualization vector','remote work illustration','analytics dashboard icon','business meeting flat']
+  },
+  {
+    id:'seamless-pattern', title:'Pola Seamless untuk Kemasan', icon:'grid',
+    trend:'stable', trendLabel:'📊 Stabil', sat:'med', satLabel:'Saturasi Sedang',
+    note:'Terdorong kebutuhan desain kemasan & marketing e-commerce yang terus tumbuh, mulai dari kertas kraft sampai label produk.',
+    tags:['seamless pattern packaging','wrapping paper design','botanical repeat pattern','textile print vector']
+  },
+  {
+    id:'mascot', title:'Karakter Maskot & Sticker Pack', icon:'mascot',
+    trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
+    note:'Selalu dibutuhkan untuk branding & media sosial, tapi kompetisinya ramai — perlu gaya karakter yang benar-benar khas.',
+    tags:['mascot character design','sticker pack set','cute animal character','brand mascot vector']
+  },
+  {
+    id:'line-icon', title:'Set Ikon Garis (UI/UX)', icon:'lines',
+    trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Sangat Tinggi',
+    note:'Kategori paling padat di platform — hanya masuk jika punya sudut unik (niche sangat spesifik) atau konsistensi set besar.',
+    tags:['line icon set','outline UI icon','minimal stroke icon','pixel perfect icon pack']
+  },
+  {
+    id:'seasonal', title:'Bundel Vector Musiman / Hari Raya', icon:'star',
+    trend:'stable', trendLabel:'📅 Musiman', sat:'high', satLabel:'Saturasi Tinggi (cepat berputar)',
+    note:'Permintaan memuncak tajam mendekati momen tertentu — upload jauh-jauh hari agar sempat terindeks sebelum musimnya lewat.',
+    tags:['holiday sticker bundle','festive pattern set','seasonal greeting card vector','celebration icon pack']
+  }
+];
+
+const iconPaths = {
+  blob:'<path d="M6 17c-3-4 0-11 8-11s11 6 8 12-9 8-13 4-1-2-3-5z" stroke="currentColor" stroke-width="1.6" fill="none"/>',
+  wobble:'<path d="M5 20c3-9 5-13 9-14s7 4 5 9-8 6-11 4 1-8 3-9" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+  collage:'<rect x="4" y="5" width="12" height="9" stroke="currentColor" stroke-width="1.5" fill="none" transform="rotate(-6 10 9)"/><circle cx="20" cy="17" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+  cube:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M12 3v9m0 0l8-4.5M12 12l-8-4.5M12 12v9" stroke="currentColor" stroke-width="1.2"/>',
+  burst:'<circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="1.6"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.5 4.5l3 3M16.5 16.5l3 3M19.5 4.5l-3 3M7.5 16.5l-3 3"/></g>',
+  chart:'<path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  mascot:'<circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="9.5" cy="9" r="1" fill="currentColor"/><circle cx="14.5" cy="9" r="1" fill="currentColor"/><path d="M9 12.5c1.5 1.3 4.5 1.3 6 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M12 16v4" stroke="currentColor" stroke-width="1.6"/>',
+  lines:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>'
+};
+
+function renderNiches(filter){
+  const grid = document.getElementById('nicheGrid');
+  grid.innerHTML = '';
+  const list = niches.filter(n=>{
+    if(filter==='all') return true;
+    if(filter==='rising') return n.trend==='rising';
+    if(filter==='hot') return n.trend==='hot';
+    if(filter==='lowsat') return n.sat==='low';
+    return true;
+  });
+  list.forEach(n=>{
+    const trendClass = n.trend==='hot' ? 'b-hot' : n.trend==='rising' ? 'b-rising' : 'b-stable';
+    const satClass = n.sat==='low' ? 'b-sat-low' : n.sat==='med' ? 'b-sat-med' : 'b-sat-high';
+    const card = document.createElement('div');
+    card.className = 'art-card';
+    card.innerHTML = `
+      <span class="handle h-tl"></span><span class="handle h-tr"></span><span class="handle h-bl"></span><span class="handle h-br"></span>
+      <svg class="card-icon" viewBox="0 0 24 24">${iconPaths[n.icon]}</svg>
+      <h3>${n.title}</h3>
+      <div class="badges">
+        <span class="badge ${trendClass}">${n.trendLabel}</span>
+        <span class="badge ${satClass}">${n.satLabel}</span>
+      </div>
+      <p class="card-note">${n.note}</p>
+      <div class="chips">${n.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+      <a class="card-link" href="https://stock.adobe.com/search?k=${encodeURIComponent(n.tags[0])}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Lihat aset tren serupa
+      </a>
+    `;
+    grid.appendChild(card);
+  });
+}
+renderNiches('all');
+
+document.getElementById('filterBar').addEventListener('click', e=>{
+  const btn = e.target.closest('.filter-chip');
+  if(!btn) return;
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNiches(btn.dataset.filter);
+});
+
+/* ---------- Nav switching ---------- */
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  });
+});
+
+/* ---------- Cursor coords (playful artboard touch) ---------- */
+document.addEventListener('mousemove', e=>{
+  document.getElementById('mx').textContent = e.clientX;
+  document.getElementById('my').textContent = e.clientY;
+});
+
+/* ---------- Keyword generator ---------- */
+const styles = ['flat design','line art','minimalis','doodle','isometric','gaya 3D','watercolor','geometris','maximalist','hand-drawn','retro','gradient','naive art'];
+const formats = ['icon set','seamless pattern','ilustrasi','vector pack','clipart','badge','sticker set','background','banner template','character set'];
+const uses = ['media sosial','kemasan produk','poster','desain kaos','banner web','cetak','branding','presentasi'];
+
+function generateKeywords(base){
+  const results = new Set();
+  const b = base.trim().toLowerCase();
+  if(!b) return [];
+  // base + style + format
+  for(let i=0;i<8;i++){
+    const s = styles[Math.floor(Math.random()*styles.length)];
+    const f = formats[Math.floor(Math.random()*formats.length)];
+    results.add(`${b} ${f} gaya ${s}`);
+  }
+  // base + format + use
+  for(let i=0;i<8;i++){
+    const f = formats[Math.floor(Math.random()*formats.length)];
+    const u = uses[Math.floor(Math.random()*uses.length)];
+    results.add(`${f} ${b} untuk ${u}`);
+  }
+  // base + style + use
+  for(let i=0;i<8;i++){
+    const s = styles[Math.floor(Math.random()*styles.length)];
+    const u = uses[Math.floor(Math.random()*uses.length)];
+    results.add(`${b} vector ${s} untuk ${u}`);
+  }
+  return Array.from(results).slice(0,20);
+}
+
+function runKwGenerate(){
+  const val = document.getElementById('kwInput').value;
+  const box = document.getElementById('kwResults');
+  const empty = document.getElementById('kwEmpty');
+  const list = generateKeywords(val);
+  box.innerHTML = '';
+  if(list.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  list.forEach(kw=>{
+    const pill = document.createElement('span');
+    pill.className='kw-pill';
+    pill.textContent = kw;
+    pill.title = 'Klik untuk salin';
+    pill.addEventListener('click', ()=>{
+      navigator.clipboard?.writeText(kw).catch(()=>{});
+      pill.style.background = 'var(--blue)'; pill.style.color='#fff'; pill.style.borderColor='var(--blue)';
+      setTimeout(()=>{ pill.style.background=''; pill.style.color=''; pill.style.borderColor=''; }, 500);
+    });
+    box.appendChild(pill);
+  });
+}
+document.getElementById('kwBtn').addEventListener('click', runKwGenerate);
+document.getElementById('kwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') runKwGenerate(); });
+document.getElementById('kwCopyAll').addEventListener('click', ()=>{
+  const pills = Array.from(document.querySelectorAll('.kw-pill')).map(p=>p.textContent);
+  if(pills.length===0) return;
+  navigator.clipboard?.writeText(pills.join(', ')).catch(()=>{});
+  const btn = document.getElementById('kwCopyAll');
+  const original = btn.textContent;
+  btn.textContent = 'Tersalin ✓';
+  setTimeout(()=>{ btn.textContent = original; }, 900);
+});
+
+/* ---------- Checklist ---------- */
+const checklistData = [
+  { group:'Kualitas File', items:[
+    'Semua objek benar-benar vector (bukan raster ditempel jadi .ai/.eps)',
+    'Tidak ada garis sisa, titik anchor liar, atau path yang belum digabung (expand appearance)',
+    'Warna disusun rapi lewat swatch/global color agar mudah diubah pembeli',
+    'File disimpan dalam format .ai/.eps/.svg sesuai ketentuan kategori'
+  ]},
+  { group:'Legalitas & Editorial', items:[
+    'Tidak memuat logo, merek, atau karakter berhak cipta pihak lain',
+    'Tidak meniru gaya khas illustrator/brand tertentu secara identik',
+    'Font yang dipakai berlisensi komersial atau sudah di-convert ke outline',
+    'Untuk elemen bertema budaya/religi, representasi digambarkan secara akurat dan hormat'
+  ]},
+  { group:'Metadata Upload', items:[
+    'Judul deskriptif dan spesifik, bukan generik ("vector 1", "design")',
+    'Jumlah keyword 25–49, urut dari yang paling relevan',
+    'Kategori & jenis konten dipilih dengan benar (ilustrasi vs template vs ikon)',
+    'Set/bundle diberi nama konsisten agar muncul berdekatan di hasil pencarian'
+  ]},
+  { group:'Strategi Portofolio', items:[
+    'Upload dalam bentuk set (5–20 aset serumpun), bukan satuan acak',
+    'Cek tren musiman & upload 2–3 bulan sebelum momen puncaknya',
+    'Pantau performa 30 hari pertama sebelum memperbanyak niche serupa',
+    'Variasikan palet warna & rasio (persegi, lanskap, potret) dalam satu set'
+  ]}
+];
+
+function renderChecklist(){
+  const wrap = document.getElementById('checklistWrap');
+  wrap.innerHTML = '';
+  checklistData.forEach((grp, gi)=>{
+    const g = document.createElement('div');
+    g.className = 'check-group';
+    g.innerHTML = `<h4>${grp.group}</h4>` + grp.items.map((item,ii)=>`
+      <label class="check-item" data-id="${gi}-${ii}">
+        <input type="checkbox">
+        <span>${item}</span>
+      </label>
+    `).join('');
+    wrap.appendChild(g);
+  });
+  wrap.querySelectorAll('.check-item').forEach(el=>{
+    el.querySelector('input').addEventListener('change', e=>{
+      el.classList.toggle('checked', e.target.checked);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress(){
+  const all = document.querySelectorAll('.check-item input');
+  const checked = document.querySelectorAll('.check-item input:checked');
+  const pct = all.length ? Math.round(checked.length/all.length*100) : 0;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progLabel').textContent = `${checked.length} / ${all.length} selesai`;
+}
+renderChecklist();
+
+/* ---------- Calendar ---------- */
+const calendarData = [
+  {m:'JAN', title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
+  {m:'FEB', title:'Imlek & Valentine', note:'Motif shio, angpao, warna merah-emas; elemen hati & romansa minimalis.'},
+  {m:'MAR', title:'Awal Ramadan & Hari Perempuan', note:'Lentera, bulan sabit, pola geometris Islami; ilustrasi pemberdayaan perempuan.'},
+  {m:'APR', title:'Idulfitri & Paskah', note:'Ketupat, motif lebaran, kartu ucapan; telur & kelinci Paskah bergaya pastel.'},
+  {m:'MEI', title:'Hari Buruh & Hari Ibu', note:'Ilustrasi profesi/pekerja, tema keluarga & kasih sayang untuk kartu ucapan.'},
+  {m:'JUN', title:'Hari Ayah & Liburan Sekolah', note:'Tema aktivitas outdoor, family time, packing/travel vector.'},
+  {m:'JUL', title:'Musim Panas Global', note:'Pantai, es krim, pola tropis — pasar Amerika/Eropa mulai cari konten musim panas.'},
+  {m:'AGU', title:'Kemerdekaan & Back to School', note:'Palet merah-putih, ornamen perayaan; alat tulis & ilustrasi ruang kelas.'},
+  {m:'SEP', title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'},
+  {m:'OKT', title:'Halloween & Hari Batik', note:'Labu, hantu lucu, tema spooky-cute; motif batik & budaya nusantara.'},
+  {m:'NOV', title:'Black Friday & Thanksgiving', note:'Banner diskon, tag harga, tema belanja; ilustrasi keluarga & rasa syukur.'},
+  {m:'DES', title:'Natal & Tahun Baru', note:'Ornamen pohon Natal, salju, kembang api; kartu ucapan & pola kado.'}
+];
+const calGrid = document.getElementById('calGrid');
+calendarData.forEach(c=>{
+  const el = document.createElement('div');
+  el.className = 'cal-card';
+  el.innerHTML = `<div class="m">${c.m}</div><h4>${c.title}</h4><p>${c.note}</p>`;
+  calGrid.appendChild(el);
+});
+
+/* ---------- Metadata Generator ---------- */
+function truncateToLength(str, maxLen){
+  if(str.length <= maxLen) return str;
+  const cut = str.slice(0, maxLen);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trim();
+}
+function stripSpecialChars(str){
+  return String(str)
+    .replace(/[^a-zA-Z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* ---------- Metadata from uploaded image (Claude vision) ---------- */
+let mdImageBase64 = null;
+let mdImageMediaType = null;
+
+function handleMdImageFile(file){
+  const statusEl = document.getElementById('mdImageStatus');
+  const previewEl = document.getElementById('mdImagePreview');
+  mdImageBase64 = null;
+  mdImageMediaType = null;
+  if(!file) return;
+
+  if(!file.type || !file.type.startsWith('image/')){
+    statusEl.textContent = 'File harus berupa gambar (PNG/JPG/WEBP/GIF).';
+    return;
+  }
+  if(file.size > 5*1024*1024){
+    statusEl.textContent = 'Ukuran file terlalu besar (maks 5MB).';
+    return;
+  }
+  mdImageMediaType = file.type || 'image/png';
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    mdImageBase64 = reader.result.split(',')[1];
+    previewEl.src = reader.result;
+    previewEl.style.display = 'block';
+    statusEl.textContent = 'Gambar siap — klik "Generate dari Gambar".';
+  };
+  reader.onerror = () => {
+    statusEl.textContent = 'Gagal membaca file gambar.';
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('mdImageInput').addEventListener('change', e=>{
+  handleMdImageFile(e.target.files[0]);
+});
+
+/* drag & drop onto the upload area */
+const mdDropzone = document.getElementById('mdDropzone');
+['dragenter','dragover'].forEach(evt=>{
+  mdDropzone.addEventListener(evt, e=>{
+    e.preventDefault(); e.stopPropagation();
+    mdDropzone.classList.add('dragover');
+  });
+});
+['dragleave','dragend'].forEach(evt=>{
+  mdDropzone.addEventListener(evt, e=>{
+    e.preventDefault(); e.stopPropagation();
+    mdDropzone.classList.remove('dragover');
+  });
+});
+mdDropzone.addEventListener('drop', e=>{
+  e.preventDefault(); e.stopPropagation();
+  mdDropzone.classList.remove('dragover');
+  const file = e.dataTransfer?.files?.[0];
+  if(file) handleMdImageFile(file);
+});
+/* clicking the dropzone (outside the actual controls) opens the file picker */
+mdDropzone.addEventListener('click', e=>{
+  if(e.target.closest('input,button,img')) return;
+  document.getElementById('mdImageInput').click();
+});
+
+/* ---------- Advanced settings toggle ---------- */
+document.getElementById('mdAdvToggle').addEventListener('click', ()=>{
+  document.getElementById('mdAdvToggle').classList.toggle('open');
+  document.getElementById('mdAdvBody').classList.toggle('open');
+});
+
+/* ---------- API key (stored per-user, per-provider, used only for direct calls) ---------- */
+const MD_PROVIDERS = {
+  claude: {
+    label: 'Anthropic (Claude)',
+    keyLabel: 'Anthropic API Key (Opsional)',
+    keyPlaceholder: 'sk-ant-...',
+    hint: 'Isi API key milikmu sendiri kalau limit default website sudah tercapai. Key disimpan per provider hanya di penyimpananmu sendiri dan dipakai langsung dari browser saat generate dari gambar. Kosongkan untuk pakai limit default.',
+    storageKey: 'artboard-api-key-claude'
+  },
+  openai: {
+    label: 'OpenAI (ChatGPT)',
+    keyLabel: 'OpenAI API Key',
+    keyPlaceholder: 'sk-...',
+    hint: 'Pakai API key dari platform.openai.com (model GPT-4o) milikmu sendiri. Key hanya disimpan di penyimpananmu dan dipakai langsung dari browser.',
+    storageKey: 'artboard-api-key-openai'
+  },
+  gemini: {
+    label: 'Google (Gemini)',
+    keyLabel: 'Google AI (Gemini) API Key',
+    keyPlaceholder: 'AIza...',
+    hint: 'Pakai API key dari Google AI Studio (aistudio.google.com) milikmu sendiri. Key hanya disimpan di penyimpananmu dan dipakai langsung dari browser.',
+    storageKey: 'artboard-api-key-gemini'
+  },
+  groq: {
+    label: 'Groq',
+    keyLabel: 'Groq API Key',
+    keyPlaceholder: 'gsk_...',
+    hint: 'Pakai API key dari console.groq.com (model vision Qwen3-VL, inferensi super cepat) milikmu sendiri. Key hanya disimpan di penyimpananmu dan dipakai langsung dari browser.',
+    storageKey: 'artboard-api-key-groq'
+  }
+};
+
+const mdProviderSelect = document.getElementById('mdProvider');
+const mdApiKeyInput = document.getElementById('mdApiKey');
+const mdApiKeyStatus = document.getElementById('mdApiKeyStatus');
+const mdApiKeyLabel = document.getElementById('mdApiKeyLabel');
+const mdApiKeyHint = document.getElementById('mdApiKeyHint');
+let mdApiKeySaveTimer = null;
+
+function currentProviderConfig(){
+  return MD_PROVIDERS[mdProviderSelect.value] || MD_PROVIDERS.claude;
+}
+
+async function loadKeyForCurrentProvider(){
+  const cfg = currentProviderConfig();
+  mdApiKeyLabel.textContent = cfg.keyLabel;
+  mdApiKeyInput.placeholder = cfg.keyPlaceholder;
+  mdApiKeyHint.textContent = cfg.hint;
+  mdApiKeyInput.value = '';
+  mdApiKeyStatus.textContent = '';
+  try{
+    const res = await window.storage.get(cfg.storageKey, false);
+    if(res && res.value){
+      mdApiKeyInput.value = res.value;
+      mdApiKeyStatus.textContent = 'Key tersimpan ✓';
+    }
+  }catch(err){ /* no key saved yet for this provider */ }
+}
+
+mdProviderSelect.addEventListener('change', loadKeyForCurrentProvider);
+loadKeyForCurrentProvider();
+
+mdApiKeyInput.addEventListener('input', ()=>{
+  mdApiKeyStatus.textContent = '';
+  clearTimeout(mdApiKeySaveTimer);
+  mdApiKeySaveTimer = setTimeout(async ()=>{
+    const cfg = currentProviderConfig();
+    const val = mdApiKeyInput.value.trim();
+    try{
+      if(val){
+        await window.storage.set(cfg.storageKey, val, false);
+        mdApiKeyStatus.textContent = 'Key tersimpan ✓';
+      }else{
+        await window.storage.delete(cfg.storageKey, false);
+        mdApiKeyStatus.textContent = '';
+      }
+    }catch(err){ /* saving is best-effort */ }
+  }, 500);
+});
+
+document.getElementById('mdApiKeyToggle').addEventListener('click', ()=>{
+  const btn = document.getElementById('mdApiKeyToggle');
+  const showing = mdApiKeyInput.type === 'text';
+  mdApiKeyInput.type = showing ? 'password' : 'text';
+  btn.textContent = showing ? 'Lihat' : 'Sembunyikan';
+});
+
+/* ---------- Calls the selected AI provider's vision API and returns raw text ---------- */
+async function callVisionProvider(provider, userApiKey, prompt){
+  if(provider === 'openai'){
+    const headers = { "Content-Type": "application/json" };
+    if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: `data:${mdImageMediaType};base64,${mdImageBase64}` } }
+            ]
+          }
+        ]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (OpenAI): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'gemini'){
+    if(!userApiKey) throw new Error('Google AI (Gemini) API key wajib diisi.');
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(userApiKey)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: mdImageMediaType, data: mdImageBase64 } }
+            ]
+          }
+        ]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (Gemini): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.candidates?.[0]?.content?.parts?.map(p=>p.text || '').join('\n') || '';
+  }
+
+  if(provider === 'groq'){
+    if(!userApiKey) throw new Error('Groq API key wajib diisi.');
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userApiKey}`
+      },
+      body: JSON.stringify({
+        model: "qwen/qwen3.6-27b",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: `data:${mdImageMediaType};base64,${mdImageBase64}` } }
+            ]
+          }
+        ]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (Groq): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  // default: Claude (Anthropic)
+  const headers = { "Content-Type": "application/json" };
+  if(userApiKey){
+    headers["x-api-key"] = userApiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    headers["anthropic-dangerous-direct-browser-access"] = "true";
+  }
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: mdImageMediaType, data: mdImageBase64 } },
+            { type: "text", text: prompt }
+          ]
+        }
+      ]
+    })
+  });
+  if(!response.ok){
+    const errBody = await response.json().catch(()=>({}));
+    const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
+  }
+  const data = await response.json();
+  return (data.content || [])
+    .map(item => item.type === 'text' ? item.text : '')
+    .filter(Boolean)
+    .join('\n');
+}
+
+async function generateMetadataFromImage(){
+  const statusEl = document.getElementById('mdImageStatus');
+  const btn = document.getElementById('mdImageBtn');
+  const empty = document.getElementById('mdEmpty');
+  const output = document.getElementById('mdOutput');
+
+  if(!mdImageBase64){
+    statusEl.textContent = 'Pilih file gambar dulu ya.';
+    return;
+  }
+
+  btn.disabled = true;
+  const originalBtnText = btn.textContent;
+  btn.textContent = 'Menganalisis…';
+  statusEl.textContent = 'Menyiapkan permintaan…';
+
+  const targetCount = Math.min(49, Math.max(25, parseInt(document.getElementById('mdCount').value, 10) || 35));
+  const fileType = document.getElementById('mdFileType').value;
+
+  let titleLen = parseInt(document.getElementById('mdTitleLen').value, 10);
+  if(isNaN(titleLen)) titleLen = 200;
+  titleLen = Math.min(200, Math.max(40, titleLen));
+
+  let descLen = parseInt(document.getElementById('mdDescLen').value, 10);
+  if(isNaN(descLen)) descLen = 200;
+  descLen = Math.min(500, Math.max(50, descLen));
+
+  const avoidWords = document.getElementById('mdAvoidWords').value
+    .split(',')
+    .map(w => w.trim().toLowerCase())
+    .filter(Boolean);
+
+  const noSpecialChars = document.getElementById('mdNoSpecialChars').checked;
+
+  const avoidLine = avoidWords.length
+    ? `\nSTRICTLY AVOID using any of these words or their variants anywhere in the title, description, or keywords: ${avoidWords.join(', ')}.`
+    : '';
+
+  const specialCharsLine = noSpecialChars
+    ? `\nSTRICTLY AVOID any special characters anywhere in the title, description, or keywords — use only plain letters, numbers, and single spaces (no commas, hyphens, ampersands, quotes, colons, semicolons, slashes, parentheses, or any punctuation/symbols).`
+    : '';
+
+  const prompt = `You are helping a vector stock illustrator on Adobe Stock write metadata for this asset preview image. The asset will be delivered as a ${fileType} file.
+Look at the image carefully and respond with ONLY a raw JSON object (no markdown fences, no preamble) with exactly this shape:
+{
+  "title": "a descriptive Adobe Stock style title, front-loaded with the main keyword, STRICT MAXIMUM ${titleLen} characters",
+  "description": "a short natural description of what the image shows and its likely use case, STRICT MAXIMUM ${descLen} characters",
+  "category": "one Adobe Stock category, pick the single best fit from: Illustrations, Icons, Patterns & Backgrounds, Templates, Objects, Animals, Technology, Food and Drink, Nature, Business, Holidays",
+  "keywords": ["an array of exactly ${targetCount} distinct, relevant, lowercase English keywords ordered from most to least relevant, no duplicates, no hashtags"]
+}
+Base everything strictly on what is visually present in the image. Never exceed the character limits given above.${avoidLine}${specialCharsLine}`;
+
+  const provider = mdProviderSelect.value;
+  const providerCfg = currentProviderConfig();
+  const userApiKey = mdApiKeyInput.value.trim();
+
+  if(provider !== 'claude' && !userApiKey){
+    statusEl.textContent = `Isi ${providerCfg.keyLabel} dulu untuk pakai ${providerCfg.label}.`;
+    btn.disabled = false;
+    btn.textContent = originalBtnText;
+    return;
+  }
+
+  statusEl.textContent = userApiKey
+    ? `Mengirim gambar ke ${providerCfg.label} (pakai API key kamu)…`
+    : `Mengirim gambar ke ${providerCfg.label} untuk dianalisis…`;
+
+  try{
+    const rawText = await callVisionProvider(provider, userApiKey, prompt);
+    const cleaned = rawText.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
+    if(avoidWords.length){
+      keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
+    }
+
+    let titleOut = parsed.title || '';
+    let descOut = parsed.description || '';
+    let catOut = parsed.category || '';
+
+    if(noSpecialChars){
+      titleOut = stripSpecialChars(titleOut);
+      descOut = stripSpecialChars(descOut);
+      catOut = stripSpecialChars(catOut);
+      keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
+    }
+
+    keywords = Array.from(new Set(keywords)).slice(0, targetCount);
+
+    document.getElementById('mdTitleText').textContent = truncateToLength(titleOut, titleLen);
+    document.getElementById('mdDescText').textContent = truncateToLength(descOut, descLen);
+    document.getElementById('mdCatText').textContent = catOut;
+    document.getElementById('mdKwText').textContent = keywords.join(', ');
+
+    const badge = document.getElementById('mdKwBadge');
+    badge.textContent = `${keywords.length} keyword`;
+    badge.className = 'kw-count-badge ' + (keywords.length >= 25 && keywords.length <= 49 ? 'ok' : 'warn');
+
+    empty.style.display = 'none';
+    output.style.display = 'block';
+    statusEl.textContent = 'Metadata berhasil dibuat dari gambar ✓';
+  }catch(err){
+    statusEl.textContent = 'Gagal menganalisis gambar: ' + (err?.message || 'coba lagi.');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalBtnText;
+  }
+}
+
+document.getElementById('mdImageBtn').addEventListener('click', generateMetadataFromImage);
+
+document.getElementById('mdOutput').addEventListener('click', e=>{
+  const btn = e.target.closest('.copy-mini');
+  if(!btn) return;
+  const targetEl = document.getElementById(btn.dataset.copy);
+  const text = targetEl.textContent;
+  navigator.clipboard?.writeText(text).catch(()=>{});
+  const original = btn.textContent;
+  btn.textContent = 'Tersalin ✓';
+  setTimeout(()=>{ btn.textContent = original; }, 900);
+});
+
+/* ---------- Saved research (persistent storage) ---------- */
+const STORAGE_KEY = 'artboard-saved-niches';
+
+async function loadSaved(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    return res ? JSON.parse(res.value) : [];
+  }catch(err){
+    return [];
+  }
+}
+async function persistSaved(list){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(list), false);
+    return true;
+  }catch(err){
+    return false;
+  }
+}
+
+async function renderSaved(){
+  const listEl = document.getElementById('savedList');
+  listEl.innerHTML = '<div class="status-msg">Memuat riset tersimpan…</div>';
+  const items = await loadSaved();
+  listEl.innerHTML = '';
+  if(items.length===0){
+    listEl.innerHTML = '<div class="empty-hint">Belum ada riset tersimpan. Tambahkan ide niche di atas.</div>';
+    return;
+  }
+  items.slice().reverse().forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'saved-item';
+    const prioColor = item.priority==='Tinggi' ? 'var(--red)' : item.priority==='Sedang' ? 'var(--amber)' : 'var(--ink-soft)';
+    el.innerHTML = `
+      <div>
+        <h4>${escapeHtml(item.title)}</h4>
+        <p>${escapeHtml(item.note||'')}</p>
+        <div class="saved-meta" style="color:${prioColor}">PRIORITAS ${item.priority.toUpperCase()} · ${item.date}</div>
+      </div>
+      <button class="del-btn" data-id="${item.id}" title="Hapus">✕</button>
+    `;
+    listEl.appendChild(el);
+  });
+  listEl.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const items2 = await loadSaved();
+      const filtered = items2.filter(i=>String(i.id) !== btn.dataset.id);
+      await persistSaved(filtered);
+      renderSaved();
+    });
+  });
+}
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
+  const title = document.getElementById('saveTitle').value.trim();
+  const note = document.getElementById('saveNote').value.trim();
+  const priority = document.getElementById('savePriority').value;
+  const statusEl = document.getElementById('saveStatus');
+  if(!title){
+    statusEl.textContent = 'Isi nama niche dulu ya.';
+    return;
+  }
+  statusEl.textContent = 'Menyimpan…';
+  const items = await loadSaved();
+  items.push({
+    id: Date.now(),
+    title, note, priority,
+    date: new Date().toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})
+  });
+  const ok = await persistSaved(items);
+  statusEl.textContent = ok ? 'Tersimpan ✓' : 'Gagal menyimpan, coba lagi.';
+  document.getElementById('saveTitle').value='';
+  document.getElementById('saveNote').value='';
+  renderSaved();
+  setTimeout(()=>{ statusEl.textContent=''; }, 2000);
+});
+
+renderSaved();
+</script>
+</body>
+</html>
