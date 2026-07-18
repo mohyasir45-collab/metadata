@@ -1265,7 +1265,8 @@ async function callVisionProvider(provider, userApiKey, prompt){
       },
       body: JSON.stringify({
         model: "qwen/qwen3.6-27b",
-        max_tokens: 600,
+        max_tokens: 1500,
+        reasoning_format: "hidden",
         messages: [
           {
             role: "user",
@@ -1391,7 +1392,19 @@ Base everything strictly on what is visually present in the image. Never exceed 
 
   try{
     const rawText = await callVisionProvider(provider, userApiKey, prompt);
-    const cleaned = rawText.replace(/```json|```/g, '').trim();
+    // Some models (notably reasoning models like Qwen served via Groq)
+    // prepend a <think>...</think> reasoning block before the actual
+    // answer, and some wrap the JSON in markdown fences or add stray text
+    // around it. Strip all of that defensively before parsing.
+    let cleaned = rawText
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')
+      .replace(/```json|```/g, '')
+      .trim();
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+    }
     const parsed = JSON.parse(cleaned);
 
     let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
