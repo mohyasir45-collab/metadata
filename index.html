@@ -1450,7 +1450,7 @@ document.getElementById('mdOutput').addEventListener('click', e=>{
   const btn = e.target.closest('.copy-mini');
   if(!btn) return;
   const card = btn.closest('.meta-result-card');
-  const targetEl = card?.querySelector(`[data-field="${btn.dataset.field}"]`);
+  const targetEl = card?.querySelector(`[data-field="${btn.dataset.field}"]:not(.copy-mini)`);
   if(!targetEl) return;
   navigator.clipboard?.writeText(targetEl.textContent).catch(()=>{});
   const original = btn.textContent;
