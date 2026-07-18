@@ -337,6 +337,8 @@
   .meta-result-status.ok{color:var(--green-text);}
   .meta-result-status.error{color:var(--red-text);}
   .meta-result-card .meta-out-block{background:var(--panel);}
+  .retry-btn{flex:none;white-space:nowrap;}
+  .retry-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
   /* drag & drop */
   .meta-upload{transition:border-color .15s ease, background .15s ease; cursor:pointer;}
@@ -607,7 +609,10 @@
         </div>
         <div class="meta-output-toolbar" id="mdOutputToolbar" style="display:none;">
           <span class="meta-output-summary" id="mdOutputSummary"></span>
-          <button class="copy-mini" id="mdExportCsvBtn" type="button">Export CSV (semua hasil)</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="copy-mini" id="mdRetryFailedBtn" type="button" style="display:none;">↻ Coba Lagi Semua yang Gagal</button>
+            <button class="copy-mini" id="mdExportCsvBtn" type="button">Export CSV (semua hasil)</button>
+          </div>
         </div>
         <div class="meta-output" id="mdOutput"></div>
         <div class="empty-hint" id="mdEmpty">Belum ada metadata — upload satu atau beberapa gambar preview lalu klik "Generate Semua".</div>
@@ -890,6 +895,7 @@ function stripSpecialChars(str){
    category/keywords instead of overwriting a single result. */
 let mdImages = [];
 let mdImageSeq = 0;
+let mdBatchBusy = false;
 const MD_MAX_IMAGES = 20;
 
 /* Resize + compress the image client-side before it ever reaches the API.
@@ -1013,6 +1019,7 @@ document.getElementById('mdImageInput').addEventListener('change', e=>{
 document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
   const btn = e.target.closest('.meta-thumb-remove');
   if(!btn) return;
+  if(mdBatchBusy) return;
   const id = Number(btn.dataset.removeId);
   mdImages = mdImages.filter(i => i.id !== id);
   renderMdThumbs();
@@ -1020,6 +1027,7 @@ document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
 });
 
 document.getElementById('mdClearBtn').addEventListener('click', ()=>{
+  if(mdBatchBusy) return;
   mdImages = [];
   renderMdThumbs();
   document.getElementById('mdImageStatus').textContent = '';
@@ -1325,6 +1333,9 @@ function renderMdResultCard(img){
   const statusClass = img.status === 'done' ? 'ok' : img.status === 'error' ? 'error' : '';
 
   if(img.status !== 'done'){
+    const retryBtn = img.status === 'error'
+      ? `<button class="btn ghost retry-btn" data-retry-id="${img.id}" type="button" ${mdBatchBusy ? 'disabled' : ''}>↻ Coba Lagi</button>`
+      : '';
     return `
       <div class="meta-result-card ${img.status==='error'?'error':''}" data-result-id="${img.id}">
         <div class="meta-result-head">
@@ -1333,6 +1344,7 @@ function renderMdResultCard(img){
             <div class="meta-result-name">${escapeHtml(img.name)}</div>
             <div class="meta-result-status ${statusClass}">${statusLabel}</div>
           </div>
+          ${retryBtn}
         </div>
       </div>`;
   }
@@ -1384,6 +1396,7 @@ function renderMdResults(){
   const output = document.getElementById('mdOutput');
   const toolbar = document.getElementById('mdOutputToolbar');
   const summary = document.getElementById('mdOutputSummary');
+  const retryFailedBtn = document.getElementById('mdRetryFailedBtn');
 
   if(mdImages.length === 0){
     output.innerHTML = '';
@@ -1397,11 +1410,19 @@ function renderMdResults(){
   const done = mdImages.filter(i=>i.status==='done').length;
   const errored = mdImages.filter(i=>i.status==='error').length;
   summary.textContent = `${done}/${mdImages.length} gambar selesai${errored ? ` · ${errored} gagal` : ''}`;
+  retryFailedBtn.style.display = errored > 0 ? 'inline-flex' : 'none';
+  retryFailedBtn.disabled = mdBatchBusy;
   output.innerHTML = mdImages.map(renderMdResultCard).join('');
   renderMdThumbs();
 }
 
 document.getElementById('mdOutput').addEventListener('click', e=>{
+  const retryBtn = e.target.closest('.retry-btn');
+  if(retryBtn){
+    if(mdBatchBusy) return;
+    retryMdImages([Number(retryBtn.dataset.retryId)]);
+    return;
+  }
   const btn = e.target.closest('.copy-mini');
   if(!btn) return;
   const card = btn.closest('.meta-result-card');
@@ -1411,6 +1432,12 @@ document.getElementById('mdOutput').addEventListener('click', e=>{
   const original = btn.textContent;
   btn.textContent = 'Tersalin ✓';
   setTimeout(()=>{ btn.textContent = original; }, 900);
+});
+
+document.getElementById('mdRetryFailedBtn').addEventListener('click', ()=>{
+  if(mdBatchBusy) return;
+  const failedIds = mdImages.filter(i=>i.status==='error').map(i=>i.id);
+  if(failedIds.length) retryMdImages(failedIds);
 });
 
 function csvEscape(val){
@@ -1441,18 +1468,8 @@ document.getElementById('mdExportCsvBtn').addEventListener('click', ()=>{
   URL.revokeObjectURL(url);
 });
 
-async function generateMetadataFromImage(){
+function buildMdSettings(){
   const statusEl = document.getElementById('mdImageStatus');
-  const btn = document.getElementById('mdImageBtn');
-
-  if(mdImages.length === 0){
-    statusEl.textContent = 'Pilih file gambar dulu ya.';
-    return;
-  }
-
-  btn.disabled = true;
-  const originalBtnText = btn.textContent;
-
   const targetCount = Math.min(49, Math.max(25, parseInt(document.getElementById('mdCount').value, 10) || 35));
   const fileType = document.getElementById('mdFileType').value;
 
@@ -1495,96 +1512,142 @@ Base everything strictly on what is visually present in the image. Never exceed 
 
   if(provider !== 'claude' && !userApiKey){
     statusEl.textContent = `Isi ${providerCfg.keyLabel} dulu untuk pakai ${providerCfg.label}.`;
-    btn.disabled = false;
-    return;
+    return { ok: false };
   }
 
   if(userApiKey && providerCfg.keyPrefix && !userApiKey.startsWith(providerCfg.keyPrefix)){
     statusEl.textContent = `Key yang diisi kelihatannya bukan key ${providerCfg.label} (harusnya diawali "${providerCfg.keyPrefix}"). Cek lagi atau ganti provider yang sesuai dengan key ini.`;
-    btn.disabled = false;
+    return { ok: false };
+  }
+
+  return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, providerCfg, userApiKey };
+}
+
+/* Runs the vision API for a single image and mutates its status/result/error
+   in place. Shared by the initial batch run and by retry (single or bulk). */
+async function processOneMdImage(img, settings){
+  const { prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, userApiKey } = settings;
+  try{
+    const rawText = await callVisionProvider(provider, userApiKey, prompt, img.base64, img.mediaType);
+    // Some models (notably reasoning models like Qwen served via Groq)
+    // prepend a <think>...</think> reasoning block before the actual
+    // answer, and some wrap the JSON in markdown fences or add stray text
+    // around it. Strip all of that defensively before parsing.
+    let cleaned = rawText
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')
+      .replace(/```json|```/g, '')
+      .trim();
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+    }
+    const parsed = JSON.parse(cleaned);
+
+    let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
+    if(avoidWords.length){
+      keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
+    }
+
+    let titleOut = parsed.title || '';
+    let descOut = parsed.description || '';
+    let catOut = parsed.category || '';
+
+    if(noSpecialChars){
+      titleOut = stripSpecialChars(titleOut);
+      descOut = stripSpecialChars(descOut);
+      catOut = stripSpecialChars(catOut);
+      keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
+    }
+
+    keywords = Array.from(new Set(keywords)).slice(0, targetCount);
+
+    img.result = {
+      title: truncateToLength(titleOut, titleLen),
+      description: truncateToLength(descOut, descLen),
+      category: catOut,
+      keywords
+    };
+    img.status = 'done';
+    img.error = null;
+    return true;
+  }catch(err){
+    img.status = 'error';
+    img.error = err?.message || 'coba lagi.';
+    return false;
+  }
+}
+
+/* Shared runner: processes a fixed list of images sequentially, with a
+   small pause between requests, updating UI as it goes. Used both for the
+   initial "Generate Semua" batch and for retrying failed images. */
+async function runMdImageBatch(list){
+  const statusEl = document.getElementById('mdImageStatus');
+  const btn = document.getElementById('mdImageBtn');
+
+  const settings = buildMdSettings();
+  if(!settings.ok){
     return;
   }
 
-  // Reset only images that aren't already done, so re-running after adding
-  // more files doesn't re-analyze (and re-bill) ones already completed.
-  const pending = mdImages.filter(i => i.status !== 'done');
-  pending.forEach(i => { i.status = 'pending'; i.error = null; });
+  mdBatchBusy = true;
+  btn.disabled = true;
   renderMdResults();
 
   let successCount = 0;
   let errorCount = 0;
 
-  for(let idx = 0; idx < pending.length; idx++){
-    const img = pending[idx];
+  for(let idx = 0; idx < list.length; idx++){
+    const img = list[idx];
     img.status = 'processing';
     renderMdResults();
-    statusEl.textContent = userApiKey
-      ? `(${idx+1}/${pending.length}) Mengirim "${img.name}" ke ${providerCfg.label} (pakai API key kamu)…`
-      : `(${idx+1}/${pending.length}) Mengirim "${img.name}" ke ${providerCfg.label} untuk dianalisis…`;
+    statusEl.textContent = settings.userApiKey
+      ? `(${idx+1}/${list.length}) Mengirim "${img.name}" ke ${settings.providerCfg.label} (pakai API key kamu)…`
+      : `(${idx+1}/${list.length}) Mengirim "${img.name}" ke ${settings.providerCfg.label} untuk dianalisis…`;
 
-    try{
-      const rawText = await callVisionProvider(provider, userApiKey, prompt, img.base64, img.mediaType);
-      // Some models (notably reasoning models like Qwen served via Groq)
-      // prepend a <think>...</think> reasoning block before the actual
-      // answer, and some wrap the JSON in markdown fences or add stray text
-      // around it. Strip all of that defensively before parsing.
-      let cleaned = rawText
-        .replace(/<think>[\s\S]*?<\/think>/gi, '')
-        .replace(/```json|```/g, '')
-        .trim();
-      const firstBrace = cleaned.indexOf('{');
-      const lastBrace = cleaned.lastIndexOf('}');
-      if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
-        cleaned = cleaned.slice(firstBrace, lastBrace + 1);
-      }
-      const parsed = JSON.parse(cleaned);
-
-      let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
-      if(avoidWords.length){
-        keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
-      }
-
-      let titleOut = parsed.title || '';
-      let descOut = parsed.description || '';
-      let catOut = parsed.category || '';
-
-      if(noSpecialChars){
-        titleOut = stripSpecialChars(titleOut);
-        descOut = stripSpecialChars(descOut);
-        catOut = stripSpecialChars(catOut);
-        keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
-      }
-
-      keywords = Array.from(new Set(keywords)).slice(0, targetCount);
-
-      img.result = {
-        title: truncateToLength(titleOut, titleLen),
-        description: truncateToLength(descOut, descLen),
-        category: catOut,
-        keywords
-      };
-      img.status = 'done';
-      successCount++;
-    }catch(err){
-      img.status = 'error';
-      img.error = err?.message || 'coba lagi.';
-      errorCount++;
-    }
+    const ok = await processOneMdImage(img, settings);
+    if(ok) successCount++; else errorCount++;
     renderMdResults();
 
     // Small pause between requests so we don't hammer the provider (especially
-    // the shared default key) with a burst of near-simultaneous calls.
-    if(idx < pending.length - 1){
+    // the shared default key or a rate-limited key) with a burst of
+    // near-simultaneous calls.
+    if(idx < list.length - 1){
       await new Promise(res => setTimeout(res, 350));
     }
   }
 
   statusEl.textContent = errorCount === 0
     ? `Selesai — ${successCount} gambar berhasil dianalisis ✓`
-    : `Selesai — ${successCount} berhasil, ${errorCount} gagal.`;
+    : `Selesai — ${successCount} berhasil, ${errorCount} gagal. Klik "Coba Lagi" pada gambar yang gagal.`;
 
+  mdBatchBusy = false;
   btn.disabled = false;
-  btn.textContent = originalBtnText;
+  renderMdResults();
+}
+
+function generateMetadataFromImage(){
+  const statusEl = document.getElementById('mdImageStatus');
+  if(mdImages.length === 0){
+    statusEl.textContent = 'Pilih file gambar dulu ya.';
+    return;
+  }
+  // Only (re-)analyze images that aren't already done, so re-running after
+  // adding more files doesn't re-analyze (and re-bill) completed ones.
+  const pending = mdImages.filter(i => i.status !== 'done');
+  if(pending.length === 0){
+    statusEl.textContent = 'Semua gambar sudah selesai dianalisis.';
+    return;
+  }
+  pending.forEach(i => { i.status = 'pending'; i.error = null; });
+  runMdImageBatch(pending);
+}
+
+function retryMdImages(ids){
+  const targets = mdImages.filter(i => ids.includes(i.id));
+  if(targets.length === 0) return;
+  targets.forEach(i => { i.status = 'pending'; i.error = null; });
+  runMdImageBatch(targets);
 }
 
 document.getElementById('mdImageBtn').addEventListener('click', generateMetadataFromImage);
