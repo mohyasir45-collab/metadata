@@ -1200,16 +1200,10 @@ mdApiKeyInput.addEventListener('input', ()=>{
     const cfg = currentProviderConfig();
     const keys = parseApiKeys(mdApiKeyInput.value);
     if(keys.length){
-      const invalid = cfg.keyPrefix ? keys.filter(k => !k.startsWith(cfg.keyPrefix)) : [];
-      if(invalid.length){
-        mdApiKeyStatus.innerHTML = `<span style="color:var(--amber-text)">⚠ ${invalid.length} key kelihatannya bukan format ${cfg.label} (harusnya diawali "${cfg.keyPrefix}")</span>`;
-      }
       const ok = await pStorageSet(cfg.storageKey, JSON.stringify(keys));
-      if(!invalid.length){
-        mdApiKeyStatus.textContent = ok
-          ? (keys.length > 1 ? `${keys.length} key tersimpan ✓` : 'Key tersimpan ✓')
-          : 'Gagal menyimpan key.';
-      }
+      mdApiKeyStatus.textContent = ok
+        ? (keys.length > 1 ? `${keys.length} key tersimpan ✓` : 'Key tersimpan ✓')
+        : 'Gagal menyimpan key.';
     }else{
       await pStorageDelete(cfg.storageKey);
       mdApiKeyStatus.textContent = '';
