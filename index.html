@@ -72,7 +72,7 @@
   .topbar, .sidebar, .art-card, .trend-links, .kw-panel, .cal-card, .save-form,
   .saved-item, .meta-panel, .meta-upload, .meta-key-row, .filter-chip, .nav-btn,
   .kw-pill, .ext-link, .badge, .chip, .btn.ghost, .kw-row input,
-  .meta-field input, .meta-field select, .meta-key-field input, .meta-key-field select,
+  .meta-field input, .meta-field select, .meta-key-field input, .meta-key-field select, .meta-key-field textarea,
   .save-form input, .save-form select, .save-form textarea{
     transition: background-color .2s ease, border-color .2s ease, color .2s ease;
   }
@@ -355,6 +355,13 @@
   }
   .meta-key-field input:focus, .meta-key-field select:focus{outline:2px solid var(--blue);outline-offset:1px;}
   .meta-key-field.provider-field{flex:0 0 190px;min-width:170px;}
+  .meta-key-field textarea{
+    padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);
+    resize:vertical;min-height:38px;line-height:1.5;
+  }
+  .meta-key-field textarea:focus{outline:2px solid var(--blue);outline-offset:1px;}
+  .meta-key-field textarea.masked{-webkit-text-security:disc;text-security:disc;}
   .meta-key-hint{font-size:11px;color:var(--ink-soft);line-height:1.5;flex-basis:100%;margin-top:-4px;}
   .meta-key-status{font-family:'JetBrains Mono';font-size:10.5px;color:var(--green);white-space:nowrap;}
 
@@ -548,11 +555,11 @@
           </div>
           <div class="meta-key-field">
             <label id="mdApiKeyLabel">Anthropic API Key (Opsional)</label>
-            <input type="password" id="mdApiKey" placeholder="sk-ant-...">
+            <textarea id="mdApiKey" class="masked" rows="2" placeholder="sk-ant-..."></textarea>
           </div>
           <button class="btn ghost" id="mdApiKeyToggle" type="button" style="padding:10px 14px;">Lihat</button>
           <span class="meta-key-status" id="mdApiKeyStatus"></span>
-          <div class="meta-key-hint" id="mdApiKeyHint">Isi API key milikmu sendiri kalau limit default website sudah tercapai. Key disimpan per provider hanya di penyimpananmu sendiri dan dipakai langsung dari browser saat generate dari gambar. Kosongkan untuk pakai limit default.</div>
+          <div class="meta-key-hint" id="mdApiKeyHint">Isi API key milikmu sendiri kalau limit default website sudah tercapai. Bisa isi lebih dari satu key (satu per baris atau pisahkan dengan koma) — setiap gambar akan dikirim bergiliran (round-robin) ke key yang berbeda, dan kalau satu key kena rate limit, otomatis dicoba lagi pakai key berikutnya. Key disimpan per provider hanya di penyimpananmu sendiri dan dipakai langsung dari browser saat generate dari gambar. Kosongkan untuk pakai limit default.</div>
         </div>
 
         <div class="meta-upload" id="mdDropzone">
@@ -1154,6 +1161,15 @@ function currentProviderConfig(){
   return MD_PROVIDERS[mdProviderSelect.value] || MD_PROVIDERS.claude;
 }
 
+/* Splits the textarea content into a clean list of individual keys —
+   accepts one key per line and/or comma-separated, ignores blank lines. */
+function parseApiKeys(raw){
+  return String(raw || '')
+    .split(/[\n,]+/)
+    .map(k => k.trim())
+    .filter(Boolean);
+}
+
 async function loadKeyForCurrentProvider(){
   const cfg = currentProviderConfig();
   mdApiKeyLabel.textContent = cfg.keyLabel;
@@ -1163,8 +1179,13 @@ async function loadKeyForCurrentProvider(){
   mdApiKeyStatus.textContent = '';
   const saved = await pStorageGet(cfg.storageKey);
   if(saved){
-    mdApiKeyInput.value = saved;
-    mdApiKeyStatus.textContent = 'Key tersimpan ✓';
+    let keys = [];
+    try{ keys = JSON.parse(saved); if(!Array.isArray(keys)) keys = [String(saved)]; }
+    catch(err){ keys = [String(saved)]; } // migrate from the old single-string format
+    if(keys.length){
+      mdApiKeyInput.value = keys.join('\n');
+      mdApiKeyStatus.textContent = keys.length > 1 ? `${keys.length} key tersimpan ✓` : 'Key tersimpan ✓';
+    }
   }
 }
 
@@ -1176,14 +1197,17 @@ mdApiKeyInput.addEventListener('input', ()=>{
   clearTimeout(mdApiKeySaveTimer);
   mdApiKeySaveTimer = setTimeout(async ()=>{
     const cfg = currentProviderConfig();
-    const val = mdApiKeyInput.value.trim();
-    if(val){
-      if(cfg.keyPrefix && !val.startsWith(cfg.keyPrefix)){
-        mdApiKeyStatus.innerHTML = `<span style="color:var(--amber-text)">⚠ Bukan format key ${cfg.label} (harusnya diawali "${cfg.keyPrefix}")</span>`;
+    const keys = parseApiKeys(mdApiKeyInput.value);
+    if(keys.length){
+      const invalid = cfg.keyPrefix ? keys.filter(k => !k.startsWith(cfg.keyPrefix)) : [];
+      if(invalid.length){
+        mdApiKeyStatus.innerHTML = `<span style="color:var(--amber-text)">⚠ ${invalid.length} key kelihatannya bukan format ${cfg.label} (harusnya diawali "${cfg.keyPrefix}")</span>`;
       }
-      const ok = await pStorageSet(cfg.storageKey, val);
-      if(!cfg.keyPrefix || val.startsWith(cfg.keyPrefix)){
-        mdApiKeyStatus.textContent = ok ? 'Key tersimpan ✓' : 'Gagal menyimpan key.';
+      const ok = await pStorageSet(cfg.storageKey, JSON.stringify(keys));
+      if(!invalid.length){
+        mdApiKeyStatus.textContent = ok
+          ? (keys.length > 1 ? `${keys.length} key tersimpan ✓` : 'Key tersimpan ✓')
+          : 'Gagal menyimpan key.';
       }
     }else{
       await pStorageDelete(cfg.storageKey);
@@ -1194,8 +1218,8 @@ mdApiKeyInput.addEventListener('input', ()=>{
 
 document.getElementById('mdApiKeyToggle').addEventListener('click', ()=>{
   const btn = document.getElementById('mdApiKeyToggle');
-  const showing = mdApiKeyInput.type === 'text';
-  mdApiKeyInput.type = showing ? 'password' : 'text';
+  const showing = !mdApiKeyInput.classList.contains('masked');
+  mdApiKeyInput.classList.toggle('masked', showing);
   btn.textContent = showing ? 'Lihat' : 'Sembunyikan';
 });
 
@@ -1508,79 +1532,104 @@ Base everything strictly on what is visually present in the image. Never exceed 
 
   const provider = mdProviderSelect.value;
   const providerCfg = currentProviderConfig();
-  const userApiKey = mdApiKeyInput.value.trim();
+  const apiKeys = parseApiKeys(mdApiKeyInput.value);
 
-  if(provider !== 'claude' && !userApiKey){
+  if(provider !== 'claude' && apiKeys.length === 0){
     statusEl.textContent = `Isi ${providerCfg.keyLabel} dulu untuk pakai ${providerCfg.label}.`;
     return { ok: false };
   }
 
-  if(userApiKey && providerCfg.keyPrefix && !userApiKey.startsWith(providerCfg.keyPrefix)){
-    statusEl.textContent = `Key yang diisi kelihatannya bukan key ${providerCfg.label} (harusnya diawali "${providerCfg.keyPrefix}"). Cek lagi atau ganti provider yang sesuai dengan key ini.`;
-    return { ok: false };
+  if(apiKeys.length && providerCfg.keyPrefix){
+    const invalid = apiKeys.filter(k => !k.startsWith(providerCfg.keyPrefix));
+    if(invalid.length === apiKeys.length){
+      statusEl.textContent = `Key yang diisi kelihatannya bukan key ${providerCfg.label} (harusnya diawali "${providerCfg.keyPrefix}"). Cek lagi atau ganti provider yang sesuai dengan key ini.`;
+      return { ok: false };
+    }
   }
 
-  return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, providerCfg, userApiKey };
+  return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, providerCfg, apiKeys };
 }
 
-/* Runs the vision API for a single image and mutates its status/result/error
-   in place. Shared by the initial batch run and by retry (single or bulk). */
-async function processOneMdImage(img, settings){
-  const { prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, userApiKey } = settings;
-  try{
-    const rawText = await callVisionProvider(provider, userApiKey, prompt, img.base64, img.mediaType);
-    // Some models (notably reasoning models like Qwen served via Groq)
-    // prepend a <think>...</think> reasoning block before the actual
-    // answer, and some wrap the JSON in markdown fences or add stray text
-    // around it. Strip all of that defensively before parsing.
-    let cleaned = rawText
-      .replace(/<think>[\s\S]*?<\/think>/gi, '')
-      .replace(/```json|```/g, '')
-      .trim();
-    const firstBrace = cleaned.indexOf('{');
-    const lastBrace = cleaned.lastIndexOf('}');
-    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
-      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+/* Runs the vision API for a single image, rotating through the available
+   API keys. If a key comes back rate-limited, it automatically falls back
+   to the next key in the list (up to once per key) before giving up —
+   this is what lets several keys share the load and dodge per-key TPM
+   limits instead of every image queuing behind the same key. Mutates the
+   image's status/result/error in place. */
+async function processOneMdImage(img, settings, keyStartIndex){
+  const { prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, apiKeys } = settings;
+  const keys = apiKeys.length ? apiKeys : [''];
+  let lastErr = null;
+  let usedIdx = keyStartIndex % keys.length;
+
+  for(let attempt = 0; attempt < keys.length; attempt++){
+    usedIdx = (keyStartIndex + attempt) % keys.length;
+    const key = keys[usedIdx];
+    try{
+      const rawText = await callVisionProvider(provider, key, prompt, img.base64, img.mediaType);
+      // Some models (notably reasoning models like Qwen served via Groq)
+      // prepend a <think>...</think> reasoning block before the actual
+      // answer, and some wrap the JSON in markdown fences or add stray text
+      // around it. Strip all of that defensively before parsing.
+      let cleaned = rawText
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/```json|```/g, '')
+        .trim();
+      const firstBrace = cleaned.indexOf('{');
+      const lastBrace = cleaned.lastIndexOf('}');
+      if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+        cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+      }
+      const parsed = JSON.parse(cleaned);
+
+      let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
+      if(avoidWords.length){
+        keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
+      }
+
+      let titleOut = parsed.title || '';
+      let descOut = parsed.description || '';
+      let catOut = parsed.category || '';
+
+      if(noSpecialChars){
+        titleOut = stripSpecialChars(titleOut);
+        descOut = stripSpecialChars(descOut);
+        catOut = stripSpecialChars(catOut);
+        keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
+      }
+
+      keywords = Array.from(new Set(keywords)).slice(0, targetCount);
+
+      img.result = {
+        title: truncateToLength(titleOut, titleLen),
+        description: truncateToLength(descOut, descLen),
+        category: catOut,
+        keywords
+      };
+      img.status = 'done';
+      img.error = null;
+      return { ok: true, nextKeyIndex: (usedIdx + 1) % keys.length };
+    }catch(err){
+      lastErr = err;
+      const isRateLimit = /rate limit|429|quota/i.test(err?.message || '');
+      // Only rotate to the next key when it looks like a rate-limit issue —
+      // other errors (bad key, malformed response) would just fail again
+      // the same way on a different key, so don't burn through the list.
+      if(!isRateLimit || keys.length === 1) break;
     }
-    const parsed = JSON.parse(cleaned);
-
-    let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
-    if(avoidWords.length){
-      keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
-    }
-
-    let titleOut = parsed.title || '';
-    let descOut = parsed.description || '';
-    let catOut = parsed.category || '';
-
-    if(noSpecialChars){
-      titleOut = stripSpecialChars(titleOut);
-      descOut = stripSpecialChars(descOut);
-      catOut = stripSpecialChars(catOut);
-      keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
-    }
-
-    keywords = Array.from(new Set(keywords)).slice(0, targetCount);
-
-    img.result = {
-      title: truncateToLength(titleOut, titleLen),
-      description: truncateToLength(descOut, descLen),
-      category: catOut,
-      keywords
-    };
-    img.status = 'done';
-    img.error = null;
-    return true;
-  }catch(err){
-    img.status = 'error';
-    img.error = err?.message || 'coba lagi.';
-    return false;
   }
+
+  img.status = 'error';
+  img.error = lastErr?.message || 'coba lagi.';
+  return { ok: false, nextKeyIndex: (usedIdx + 1) % keys.length };
 }
 
 /* Shared runner: processes a fixed list of images sequentially, with a
    small pause between requests, updating UI as it goes. Used both for the
-   initial "Generate Semua" batch and for retrying failed images. */
+   initial "Generate Semua" batch and for retrying failed images. When
+   multiple keys are configured, each image is assigned the next key in
+   round-robin order so the load — and any rate limit — is spread across
+   all of them instead of hammering a single key. */
 async function runMdImageBatch(list){
   const statusEl = document.getElementById('mdImageStatus');
   const btn = document.getElementById('mdImageBtn');
@@ -1596,17 +1645,21 @@ async function runMdImageBatch(list){
 
   let successCount = 0;
   let errorCount = 0;
+  let keyPtr = 0;
+  const keyCount = settings.apiKeys.length || 1;
 
   for(let idx = 0; idx < list.length; idx++){
     const img = list[idx];
     img.status = 'processing';
     renderMdResults();
-    statusEl.textContent = settings.userApiKey
-      ? `(${idx+1}/${list.length}) Mengirim "${img.name}" ke ${settings.providerCfg.label} (pakai API key kamu)…`
-      : `(${idx+1}/${list.length}) Mengirim "${img.name}" ke ${settings.providerCfg.label} untuk dianalisis…`;
+    const keyNote = settings.apiKeys.length > 1
+      ? ` (key #${(keyPtr % keyCount) + 1}/${keyCount})`
+      : settings.apiKeys.length === 1 ? ' (pakai API key kamu)' : '';
+    statusEl.textContent = `(${idx+1}/${list.length}) Mengirim "${img.name}" ke ${settings.providerCfg.label}${keyNote}…`;
 
-    const ok = await processOneMdImage(img, settings);
-    if(ok) successCount++; else errorCount++;
+    const result = await processOneMdImage(img, settings, keyPtr);
+    keyPtr = result.nextKeyIndex;
+    if(result.ok) successCount++; else errorCount++;
     renderMdResults();
 
     // Small pause between requests so we don't hammer the provider (especially
