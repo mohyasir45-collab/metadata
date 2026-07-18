@@ -71,7 +71,7 @@
   }
   .topbar, .sidebar, .art-card, .trend-links, .kw-panel, .cal-card, .save-form,
   .saved-item, .meta-panel, .meta-upload, .meta-key-row, .filter-chip, .nav-btn,
-  .kw-pill, .ext-link, .badge, .chip, .check-item, .btn.ghost, .kw-row input,
+  .kw-pill, .ext-link, .badge, .chip, .btn.ghost, .kw-row input,
   .meta-field input, .meta-field select, .meta-key-field input, .meta-key-field select,
   .save-form input, .save-form select, .save-form textarea{
     transition: background-color .2s ease, border-color .2s ease, color .2s ease;
@@ -221,29 +221,18 @@
   .kw-pill:hover{border-color:var(--blue); color:var(--blue);}
   .empty-hint{color:var(--ink-soft); font-size:12.5px; margin-top:16px;}
 
-  /* checklist */
-  .checklist{display:flex; flex-direction:column; gap:2px;}
-  .check-group{margin-bottom:20px;}
-  .check-group h4{font-family:'Space Grotesk'; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:0 0 8px;}
-  .check-item{
-    display:flex; align-items:flex-start; gap:10px;
-    padding:9px 10px; border-radius:7px; cursor:pointer;
-  }
-  .check-item:hover{background:var(--panel);}
-  .check-item input{margin-top:3px; accent-color:var(--blue); width:15px; height:15px; flex:none;}
-  .check-item span{font-size:13px; line-height:1.5;}
-  .check-item.checked span{color:var(--ink-soft); text-decoration:line-through;}
-  .progress-wrap{display:flex; align-items:center; gap:10px; margin-bottom:22px;}
-  .progress-track{flex:1; height:7px; background:var(--border); border-radius:10px; overflow:hidden;}
-  .progress-fill{height:100%; background:var(--blue); width:0%; transition:width .25s ease;}
-  .progress-label{font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-soft); white-space:nowrap;}
-
   /* calendar */
   .cal-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;}
-  .cal-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;}
+  .cal-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; position:relative;}
   .cal-card .m{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--blue); font-weight:600; letter-spacing:0.05em;}
   .cal-card h4{font-family:'Space Grotesk'; font-size:14px; margin:4px 0 8px;}
   .cal-card p{font-size:12px; color:var(--ink-soft); line-height:1.55; margin:0;}
+  .cal-card.is-current{border-color:var(--blue); box-shadow:0 0 0 1px var(--blue), 0 4px 18px rgba(46,94,255,0.14); background:var(--blue-soft);}
+  .cal-card.is-current .m{display:flex; align-items:center; justify-content:space-between; gap:6px;}
+  .cal-card .now-badge{
+    font-family:'JetBrains Mono'; font-size:9.5px; font-weight:600; letter-spacing:0.04em;
+    background:var(--blue); color:#fff; padding:2px 7px; border-radius:20px;
+  }
 
   /* saved notes */
   .save-form{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:20px;}
@@ -312,6 +301,42 @@
     object-fit:cover;background:#fff;display:none;
   }
   .meta-upload-status{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);}
+
+  /* metadata: multi-image thumbnail grid */
+  .meta-thumbs-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(84px,1fr));gap:10px;margin:-6px 0 16px;}
+  .meta-thumb-item{position:relative;}
+  .meta-thumb-item img{
+    width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;
+    border:1px solid var(--border);background:#fff;display:block;
+  }
+  .meta-thumb-remove{
+    position:absolute;top:-6px;right:-6px;width:19px;height:19px;border-radius:50%;
+    background:var(--ink);color:var(--paper);border:none;cursor:pointer;
+    font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;
+  }
+  .meta-thumb-remove:hover{background:var(--red);}
+  .meta-thumb-status{
+    position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+    font-family:'JetBrains Mono';font-size:9px;padding:1px 6px;border-radius:8px;
+    background:var(--panel);border:1px solid var(--border);color:var(--ink-soft);white-space:nowrap;
+  }
+  .meta-thumb-status.ok{color:var(--green-text);border-color:var(--green);}
+  .meta-thumb-status.error{color:var(--red-text);border-color:var(--red);}
+  .meta-thumb-status.busy{color:var(--blue-text);border-color:var(--blue);}
+
+  /* metadata: per-image result cards */
+  .meta-output-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+  .meta-output-summary{font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink-soft);}
+  .meta-result-card{border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:16px;background:var(--paper);}
+  .meta-result-card.error{border-color:var(--red);}
+  .meta-result-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .meta-result-head img{width:46px;height:46px;object-fit:cover;border-radius:7px;border:1px solid var(--border);background:#fff;flex:none;}
+  .meta-result-headinfo{flex:1;min-width:0;}
+  .meta-result-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .meta-result-status{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
+  .meta-result-status.ok{color:var(--green-text);}
+  .meta-result-status.error{color:var(--red-text);}
+  .meta-result-card .meta-out-block{background:var(--panel);}
 
   /* drag & drop */
   .meta-upload{transition:border-color .15s ease, background .15s ease; cursor:pointer;}
@@ -387,11 +412,10 @@
 
   <div class="sidebar">
     <button class="nav-btn active" data-view="explorer"><span class="num">01</span> Eksplorasi Niche</button>
-    <button class="nav-btn" data-view="keyword"><span class="num">02</span> Generator Kata Kunci</button>
-    <button class="nav-btn" data-view="checklist"><span class="num">03</span> Checklist Kualitas</button>
-    <button class="nav-btn" data-view="calendar"><span class="num">04</span> Kalender Musiman</button>
-    <button class="nav-btn" data-view="saved"><span class="num">05</span> Riset Tersimpan</button>
-    <button class="nav-btn" data-view="metadata"><span class="num">06</span> Generator Metadata</button>
+    <button class="nav-btn" data-view="calendar"><span class="num">02</span> Kalender Musiman</button>
+    <button class="nav-btn" data-view="saved"><span class="num">03</span> Riset Tersimpan</button>
+    <button class="nav-btn" data-view="keyword"><span class="num">04</span> Generator Kata Kunci</button>
+    <button class="nav-btn" data-view="metadata"><span class="num">05</span> Generator Metadata</button>
     <div class="sidebar-foot">Data tren berdasarkan riset pasar terkini. Selalu cek panel "Discover" di Adobe Stock sebelum produksi massal.</div>
   </div>
 
@@ -457,43 +481,14 @@
       <div class="grid" id="nicheGrid"></div>
     </section>
 
-    <!-- 02 KEYWORD -->
-    <section class="view" id="view-keyword">
-      <h1 class="page-title">Generator Kata Kunci</h1>
-      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), tool akan menyusun kombinasi judul & tag long-tail yang lazim dicari pembeli di Adobe Stock.</p>
-
-      <div class="kw-panel">
-        <div class="kw-row">
-          <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan, pernikahan..." maxlength="40">
-          <button class="btn" id="kwBtn">Buat Kombinasi</button>
-          <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
-        </div>
-        <div class="kw-results" id="kwResults"></div>
-        <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
-      </div>
-    </section>
-
-    <!-- 03 CHECKLIST -->
-    <section class="view" id="view-checklist">
-      <h1 class="page-title">Checklist Kualitas & Upload</h1>
-      <p class="page-sub">Standar teknis dan editorial yang paling sering menyebabkan file vector ditolak reviewer Adobe Stock. Centang sebelum submit.</p>
-
-      <div class="progress-wrap">
-        <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
-        <span class="progress-label" id="progLabel">0 / 0 selesai</span>
-      </div>
-
-      <div id="checklistWrap"></div>
-    </section>
-
-    <!-- 04 CALENDAR -->
+    <!-- 02 CALENDAR -->
     <section class="view" id="view-calendar">
       <h1 class="page-title">Kalender Musiman</h1>
       <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak.</p>
       <div class="cal-grid" id="calGrid"></div>
     </section>
 
-    <!-- 05 SAVED -->
+    <!-- 03 SAVED -->
     <section class="view" id="view-saved">
       <h1 class="page-title">Riset Tersimpan</h1>
       <p class="page-sub">Catat ide niche milikmu sendiri lengkap dengan prioritas dan catatan strategi. Tersimpan otomatis di perangkat ini.</p>
@@ -517,7 +512,23 @@
       <div class="saved-list" id="savedList"></div>
     </section>
 
-    <!-- 06 METADATA GENERATOR -->
+    <!-- 04 KEYWORD -->
+    <section class="view" id="view-keyword">
+      <h1 class="page-title">Generator Kata Kunci</h1>
+      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), tool akan menyusun kombinasi judul & tag long-tail yang lazim dicari pembeli di Adobe Stock.</p>
+
+      <div class="kw-panel">
+        <div class="kw-row">
+          <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan, pernikahan..." maxlength="40">
+          <button class="btn" id="kwBtn">Buat Kombinasi</button>
+          <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
+        </div>
+        <div class="kw-results" id="kwResults"></div>
+        <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
+      </div>
+    </section>
+
+    <!-- 05 METADATA GENERATOR -->
     <section class="view" id="view-metadata">
       <h1 class="page-title">Generator Metadata</h1>
       <p class="page-sub">Susun judul, deskripsi, dan keyword siap-upload dalam Bahasa Inggris — mengikuti standar pencarian pembeli Adobe Stock. Upload gambar preview aset, lalu klik "Generate dari Gambar".</p>
@@ -543,17 +554,18 @@
         </div>
 
         <div class="meta-upload" id="mdDropzone">
-          <img class="meta-preview-thumb" id="mdImagePreview" alt="Preview">
           <div class="meta-upload-info">
-            <h5>Upload Preview Gambar</h5>
-            <p>Seret &amp; lepas file di sini, atau klik untuk pilih file (PNG/JPG/WEBP) — AI akan melihat gambarnya dan langsung membuat judul, deskripsi, serta keyword.</p>
+            <h5>Upload Preview Gambar (bisa banyak sekaligus)</h5>
+            <p>Seret &amp; lepas beberapa file sekaligus, atau klik untuk pilih file (PNG/JPG/WEBP) — AI akan menganalisa tiap gambar satu per satu dan membuat judul, deskripsi, kategori, serta keyword terpisah untuk masing-masing.</p>
           </div>
           <div class="meta-upload-actions">
-            <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif">
-            <button class="btn secondary" id="mdImageBtn">Generate dari Gambar</button>
+            <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
+            <button class="btn secondary" id="mdImageBtn">Generate Semua</button>
+            <button class="btn ghost" id="mdClearBtn" type="button">Hapus Semua</button>
           </div>
-          <div class="meta-upload-dropline">tarik file gambar ke area ini untuk mengunggah</div>
+          <div class="meta-upload-dropline">tarik beberapa file gambar ke area ini untuk mengunggah sekaligus</div>
         </div>
+        <div class="meta-thumbs-grid" id="mdThumbsGrid"></div>
         <div class="meta-upload-status mono" id="mdImageStatus" style="margin:-8px 0 16px;"></div>
 
         <button type="button" class="meta-adv-toggle" id="mdAdvToggle"><span class="arrow">▸</span> Pengaturan lanjutan (tipe file, jumlah keyword, hindari kata)</button>
@@ -593,37 +605,12 @@
             </label>
           </div>
         </div>
-        <div class="meta-output" id="mdOutput" style="display:none;">
-          <div class="meta-out-block">
-            <div class="meta-out-head">
-              <h5>Judul</h5>
-              <button class="copy-mini" data-copy="mdTitleText">Salin</button>
-            </div>
-            <div class="meta-title-text" id="mdTitleText"></div>
-          </div>
-          <div class="meta-out-block">
-            <div class="meta-out-head">
-              <h5>Deskripsi Singkat</h5>
-              <button class="copy-mini" data-copy="mdDescText">Salin</button>
-            </div>
-            <div class="meta-desc-text" id="mdDescText"></div>
-          </div>
-          <div class="meta-out-block">
-            <div class="meta-out-head">
-              <h5>Kategori</h5>
-              <button class="copy-mini" data-copy="mdCatText">Salin</button>
-            </div>
-            <div class="meta-title-text" id="mdCatText" style="font-size:13px;"></div>
-          </div>
-          <div class="meta-out-block">
-            <div class="meta-out-head">
-              <h5>Keyword <span class="kw-count-badge" id="mdKwBadge"></span></h5>
-              <button class="copy-mini" data-copy="mdKwText">Salin Semua</button>
-            </div>
-            <div class="meta-kw-text" id="mdKwText"></div>
-          </div>
+        <div class="meta-output-toolbar" id="mdOutputToolbar" style="display:none;">
+          <span class="meta-output-summary" id="mdOutputSummary"></span>
+          <button class="copy-mini" id="mdExportCsvBtn" type="button">Export CSV (semua hasil)</button>
         </div>
-        <div class="empty-hint" id="mdEmpty">Belum ada metadata — upload gambar preview lalu klik "Generate dari Gambar".</div>
+        <div class="meta-output" id="mdOutput"></div>
+        <div class="empty-hint" id="mdEmpty">Belum ada metadata — upload satu atau beberapa gambar preview lalu klik "Generate Semua".</div>
       </div>
     </section>
 
@@ -856,65 +843,6 @@ document.getElementById('kwCopyAll').addEventListener('click', ()=>{
   setTimeout(()=>{ btn.textContent = original; }, 900);
 });
 
-/* ---------- Checklist ---------- */
-const checklistData = [
-  { group:'Kualitas File', items:[
-    'Semua objek benar-benar vector (bukan raster ditempel jadi .ai/.eps)',
-    'Tidak ada garis sisa, titik anchor liar, atau path yang belum digabung (expand appearance)',
-    'Warna disusun rapi lewat swatch/global color agar mudah diubah pembeli',
-    'File disimpan dalam format .ai/.eps/.svg sesuai ketentuan kategori'
-  ]},
-  { group:'Legalitas & Editorial', items:[
-    'Tidak memuat logo, merek, atau karakter berhak cipta pihak lain',
-    'Tidak meniru gaya khas illustrator/brand tertentu secara identik',
-    'Font yang dipakai berlisensi komersial atau sudah di-convert ke outline',
-    'Untuk elemen bertema budaya/religi, representasi digambarkan secara akurat dan hormat'
-  ]},
-  { group:'Metadata Upload', items:[
-    'Judul deskriptif dan spesifik, bukan generik ("vector 1", "design")',
-    'Jumlah keyword 25–49, urut dari yang paling relevan',
-    'Kategori & jenis konten dipilih dengan benar (ilustrasi vs template vs ikon)',
-    'Set/bundle diberi nama konsisten agar muncul berdekatan di hasil pencarian'
-  ]},
-  { group:'Strategi Portofolio', items:[
-    'Upload dalam bentuk set (5–20 aset serumpun), bukan satuan acak',
-    'Cek tren musiman & upload 2–3 bulan sebelum momen puncaknya',
-    'Pantau performa 30 hari pertama sebelum memperbanyak niche serupa',
-    'Variasikan palet warna & rasio (persegi, lanskap, potret) dalam satu set'
-  ]}
-];
-
-function renderChecklist(){
-  const wrap = document.getElementById('checklistWrap');
-  wrap.innerHTML = '';
-  checklistData.forEach((grp, gi)=>{
-    const g = document.createElement('div');
-    g.className = 'check-group';
-    g.innerHTML = `<h4>${grp.group}</h4>` + grp.items.map((item,ii)=>`
-      <label class="check-item" data-id="${gi}-${ii}">
-        <input type="checkbox">
-        <span>${item}</span>
-      </label>
-    `).join('');
-    wrap.appendChild(g);
-  });
-  wrap.querySelectorAll('.check-item').forEach(el=>{
-    el.querySelector('input').addEventListener('change', e=>{
-      el.classList.toggle('checked', e.target.checked);
-      updateProgress();
-    });
-  });
-  updateProgress();
-}
-function updateProgress(){
-  const all = document.querySelectorAll('.check-item input');
-  const checked = document.querySelectorAll('.check-item input:checked');
-  const pct = all.length ? Math.round(checked.length/all.length*100) : 0;
-  document.getElementById('progFill').style.width = pct + '%';
-  document.getElementById('progLabel').textContent = `${checked.length} / ${all.length} selesai`;
-}
-renderChecklist();
-
 /* ---------- Calendar ---------- */
 const calendarData = [
   {m:'JAN', title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
@@ -931,12 +859,15 @@ const calendarData = [
   {m:'DES', title:'Natal & Tahun Baru', note:'Ornamen pohon Natal, salju, kembang api; kartu ucapan & pola kado.'}
 ];
 const calGrid = document.getElementById('calGrid');
-calendarData.forEach(c=>{
+const currentMonthIdx = new Date().getMonth(); // 0 = Jan ... 11 = Des, sejajar dgn urutan calendarData
+calendarData.forEach((c, idx)=>{
   const el = document.createElement('div');
-  el.className = 'cal-card';
-  el.innerHTML = `<div class="m">${c.m}</div><h4>${c.title}</h4><p>${c.note}</p>`;
+  const isCurrent = idx === currentMonthIdx;
+  el.className = 'cal-card' + (isCurrent ? ' is-current' : '');
+  el.innerHTML = `<div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div><h4>${c.title}</h4><p>${c.note}</p>`;
   calGrid.appendChild(el);
 });
+document.querySelector('.cal-card.is-current')?.scrollIntoView({ block:'nearest' });
 
 /* ---------- Metadata Generator ---------- */
 function truncateToLength(str, maxLen){
@@ -953,9 +884,13 @@ function stripSpecialChars(str){
     .trim();
 }
 
-/* ---------- Metadata from uploaded image (Claude vision) ---------- */
-let mdImageBase64 = null;
-let mdImageMediaType = null;
+/* ---------- Metadata from uploaded image(s) (vision API) ---------- */
+/* mdImages holds one entry per uploaded file so several previews can be
+   analyzed in one batch, each producing its own title/description/
+   category/keywords instead of overwriting a single result. */
+let mdImages = [];
+let mdImageSeq = 0;
+const MD_MAX_IMAGES = 20;
 
 /* Resize + compress the image client-side before it ever reaches the API.
    Vision models internally downscale large images anyway, so sending a
@@ -1002,41 +937,92 @@ function resizeImageFile(file, maxDim, quality){
   });
 }
 
-async function handleMdImageFile(file){
+function renderMdThumbs(){
+  const grid = document.getElementById('mdThumbsGrid');
+  grid.innerHTML = mdImages.map(img => {
+    const statusClass = img.status === 'done' ? 'ok' : img.status === 'error' ? 'error' : img.status === 'processing' ? 'busy' : '';
+    const statusText = img.status === 'done' ? 'selesai' : img.status === 'error' ? 'gagal' : img.status === 'processing' ? 'proses…' : 'siap';
+    return `
+      <div class="meta-thumb-item" data-id="${img.id}">
+        <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}" title="${escapeHtml(img.name)}">
+        <button class="meta-thumb-remove" data-remove-id="${img.id}" title="Hapus" type="button">✕</button>
+        <span class="meta-thumb-status ${statusClass}">${statusText}</span>
+      </div>`;
+  }).join('');
+}
+
+function updateMdImageCountStatus(){
   const statusEl = document.getElementById('mdImageStatus');
-  const previewEl = document.getElementById('mdImagePreview');
-  mdImageBase64 = null;
-  mdImageMediaType = null;
-  if(!file) return;
-
-  if(!file.type || !file.type.startsWith('image/')){
-    statusEl.textContent = 'File harus berupa gambar (PNG/JPG/WEBP/GIF).';
-    return;
-  }
-  if(file.size > 5*1024*1024){
-    statusEl.textContent = 'Ukuran file terlalu besar (maks 5MB).';
-    return;
-  }
-
-  statusEl.textContent = 'Memproses gambar (mengecilkan ukuran)…';
-
-  try{
-    const { dataUrl, width, height } = await resizeImageFile(file, MD_IMAGE_MAX_DIM, MD_IMAGE_JPEG_QUALITY);
-    mdImageMediaType = 'image/jpeg';
-    mdImageBase64 = dataUrl.split(',')[1];
-    previewEl.src = dataUrl;
-    previewEl.style.display = 'block';
-    const approxKb = Math.round((mdImageBase64.length * 0.75) / 1024);
-    statusEl.textContent = `Gambar siap (${width}×${height}px, ~${approxKb}KB) — klik "Generate dari Gambar".`;
-  }catch(err){
-    mdImageBase64 = null;
-    mdImageMediaType = null;
-    statusEl.textContent = 'Gagal memproses gambar: ' + (err?.message || 'coba lagi.');
+  if(mdImages.length === 0){
+    statusEl.textContent = '';
+  }else{
+    const totalKb = mdImages.reduce((sum,i)=> sum + Math.round((i.base64.length*0.75)/1024), 0);
+    statusEl.textContent = `${mdImages.length} gambar siap (~${totalKb}KB total) — klik "Generate Semua".`;
   }
 }
 
+async function handleMdImageFiles(fileList){
+  const statusEl = document.getElementById('mdImageStatus');
+  const files = Array.from(fileList || []).filter(f => f && f.type && f.type.startsWith('image/'));
+  if(files.length === 0){
+    statusEl.textContent = 'Pilih file gambar (PNG/JPG/WEBP/GIF).';
+    return;
+  }
+  if(mdImages.length >= MD_MAX_IMAGES){
+    statusEl.textContent = `Maksimal ${MD_MAX_IMAGES} gambar per batch.`;
+    return;
+  }
+
+  const room = MD_MAX_IMAGES - mdImages.length;
+  const toProcess = files.slice(0, room);
+  if(files.length > toProcess.length){
+    statusEl.textContent = `Hanya ${toProcess.length} gambar diproses (batas ${MD_MAX_IMAGES} per batch).`;
+  }
+
+  for(const file of toProcess){
+    if(file.size > 5*1024*1024){
+      statusEl.textContent = `${file.name}: ukuran terlalu besar (maks 5MB), dilewati.`;
+      continue;
+    }
+    statusEl.textContent = `Memproses ${file.name}…`;
+    try{
+      const { dataUrl, width, height } = await resizeImageFile(file, MD_IMAGE_MAX_DIM, MD_IMAGE_JPEG_QUALITY);
+      const base64 = dataUrl.split(',')[1];
+      mdImages.push({
+        id: ++mdImageSeq,
+        name: file.name,
+        mediaType: 'image/jpeg',
+        base64, dataUrl, width, height,
+        status: 'pending',
+        result: null,
+        error: null
+      });
+      renderMdThumbs();
+    }catch(err){
+      statusEl.textContent = `Gagal memproses ${file.name}: ` + (err?.message || 'coba lagi.');
+    }
+  }
+  updateMdImageCountStatus();
+}
+
 document.getElementById('mdImageInput').addEventListener('change', e=>{
-  handleMdImageFile(e.target.files[0]);
+  handleMdImageFiles(e.target.files);
+  e.target.value = '';
+});
+
+document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
+  const btn = e.target.closest('.meta-thumb-remove');
+  if(!btn) return;
+  const id = Number(btn.dataset.removeId);
+  mdImages = mdImages.filter(i => i.id !== id);
+  renderMdThumbs();
+  updateMdImageCountStatus();
+});
+
+document.getElementById('mdClearBtn').addEventListener('click', ()=>{
+  mdImages = [];
+  renderMdThumbs();
+  document.getElementById('mdImageStatus').textContent = '';
 });
 
 /* drag & drop onto the upload area */
@@ -1056,8 +1042,8 @@ const mdDropzone = document.getElementById('mdDropzone');
 mdDropzone.addEventListener('drop', e=>{
   e.preventDefault(); e.stopPropagation();
   mdDropzone.classList.remove('dragover');
-  const file = e.dataTransfer?.files?.[0];
-  if(file) handleMdImageFile(file);
+  const files = e.dataTransfer?.files;
+  if(files && files.length) handleMdImageFiles(files);
 });
 /* clicking the dropzone (outside the actual controls) opens the file picker */
 mdDropzone.addEventListener('click', e=>{
@@ -1206,7 +1192,7 @@ document.getElementById('mdApiKeyToggle').addEventListener('click', ()=>{
 });
 
 /* ---------- Calls the selected AI provider's vision API and returns raw text ---------- */
-async function callVisionProvider(provider, userApiKey, prompt){
+async function callVisionProvider(provider, userApiKey, prompt, imageBase64, imageMediaType){
   if(provider === 'openai'){
     const headers = { "Content-Type": "application/json" };
     if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
@@ -1221,7 +1207,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
             role: "user",
             content: [
               { type: "text", text: prompt },
-              { type: "image_url", image_url: { url: `data:${mdImageMediaType};base64,${mdImageBase64}` } }
+              { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
             ]
           }
         ]
@@ -1247,7 +1233,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
             role: "user",
             parts: [
               { text: prompt },
-              { inline_data: { mime_type: mdImageMediaType, data: mdImageBase64 } }
+              { inline_data: { mime_type: imageMediaType, data: imageBase64 } }
             ]
           }
         ],
@@ -1280,7 +1266,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
             role: "user",
             content: [
               { type: "text", text: prompt },
-              { type: "image_url", image_url: { url: `data:${mdImageMediaType};base64,${mdImageBase64}` } }
+              { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
             ]
           }
         ]
@@ -1312,7 +1298,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
         {
           role: "user",
           content: [
-            { type: "image", source: { type: "base64", media_type: mdImageMediaType, data: mdImageBase64 } },
+            { type: "image", source: { type: "base64", media_type: imageMediaType, data: imageBase64 } },
             { type: "text", text: prompt }
           ]
         }
@@ -1331,21 +1317,141 @@ async function callVisionProvider(provider, userApiKey, prompt){
     .join('\n');
 }
 
+function renderMdResultCard(img){
+  const statusLabel = img.status === 'processing' ? 'Menganalisis…'
+    : img.status === 'error' ? 'Gagal: ' + escapeHtml(img.error || '')
+    : img.status === 'done' ? 'Selesai ✓'
+    : 'Menunggu…';
+  const statusClass = img.status === 'done' ? 'ok' : img.status === 'error' ? 'error' : '';
+
+  if(img.status !== 'done'){
+    return `
+      <div class="meta-result-card ${img.status==='error'?'error':''}" data-result-id="${img.id}">
+        <div class="meta-result-head">
+          <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}">
+          <div class="meta-result-headinfo">
+            <div class="meta-result-name">${escapeHtml(img.name)}</div>
+            <div class="meta-result-status ${statusClass}">${statusLabel}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const r = img.result;
+  const kwBadgeClass = (r.keywords.length >= 25 && r.keywords.length <= 49) ? 'ok' : 'warn';
+  return `
+    <div class="meta-result-card" data-result-id="${img.id}">
+      <div class="meta-result-head">
+        <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}">
+        <div class="meta-result-headinfo">
+          <div class="meta-result-name">${escapeHtml(img.name)}</div>
+          <div class="meta-result-status ok">${statusLabel}</div>
+        </div>
+      </div>
+      <div class="meta-out-block">
+        <div class="meta-out-head">
+          <h5>Judul</h5>
+          <button class="copy-mini" data-field="title">Salin</button>
+        </div>
+        <div class="meta-title-text" data-field="title">${escapeHtml(r.title)}</div>
+      </div>
+      <div class="meta-out-block">
+        <div class="meta-out-head">
+          <h5>Deskripsi Singkat</h5>
+          <button class="copy-mini" data-field="description">Salin</button>
+        </div>
+        <div class="meta-desc-text" data-field="description">${escapeHtml(r.description)}</div>
+      </div>
+      <div class="meta-out-block">
+        <div class="meta-out-head">
+          <h5>Kategori</h5>
+          <button class="copy-mini" data-field="category">Salin</button>
+        </div>
+        <div class="meta-title-text" style="font-size:13px;" data-field="category">${escapeHtml(r.category)}</div>
+      </div>
+      <div class="meta-out-block">
+        <div class="meta-out-head">
+          <h5>Keyword <span class="kw-count-badge ${kwBadgeClass}">${r.keywords.length} keyword</span></h5>
+          <button class="copy-mini" data-field="keywords">Salin Semua</button>
+        </div>
+        <div class="meta-kw-text" data-field="keywords">${escapeHtml(r.keywords.join(', '))}</div>
+      </div>
+    </div>`;
+}
+
+function renderMdResults(){
+  const empty = document.getElementById('mdEmpty');
+  const output = document.getElementById('mdOutput');
+  const toolbar = document.getElementById('mdOutputToolbar');
+  const summary = document.getElementById('mdOutputSummary');
+
+  if(mdImages.length === 0){
+    output.innerHTML = '';
+    toolbar.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  toolbar.style.display = 'flex';
+  const done = mdImages.filter(i=>i.status==='done').length;
+  const errored = mdImages.filter(i=>i.status==='error').length;
+  summary.textContent = `${done}/${mdImages.length} gambar selesai${errored ? ` · ${errored} gagal` : ''}`;
+  output.innerHTML = mdImages.map(renderMdResultCard).join('');
+  renderMdThumbs();
+}
+
+document.getElementById('mdOutput').addEventListener('click', e=>{
+  const btn = e.target.closest('.copy-mini');
+  if(!btn) return;
+  const card = btn.closest('.meta-result-card');
+  const targetEl = card?.querySelector(`[data-field="${btn.dataset.field}"]`);
+  if(!targetEl) return;
+  navigator.clipboard?.writeText(targetEl.textContent).catch(()=>{});
+  const original = btn.textContent;
+  btn.textContent = 'Tersalin ✓';
+  setTimeout(()=>{ btn.textContent = original; }, 900);
+});
+
+function csvEscape(val){
+  const str = String(val ?? '');
+  return `"${str.replace(/"/g, '""')}"`;
+}
+
+document.getElementById('mdExportCsvBtn').addEventListener('click', ()=>{
+  const done = mdImages.filter(i => i.status === 'done' && i.result);
+  if(done.length === 0) return;
+  const header = ['Filename','Title','Description','Category','Keywords'];
+  const rows = done.map(img => [
+    img.name,
+    img.result.title,
+    img.result.description,
+    img.result.category,
+    img.result.keywords.join('; ')
+  ].map(csvEscape).join(','));
+  const csv = [header.join(','), ...rows].join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'artboard-metadata.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
 async function generateMetadataFromImage(){
   const statusEl = document.getElementById('mdImageStatus');
   const btn = document.getElementById('mdImageBtn');
-  const empty = document.getElementById('mdEmpty');
-  const output = document.getElementById('mdOutput');
 
-  if(!mdImageBase64){
+  if(mdImages.length === 0){
     statusEl.textContent = 'Pilih file gambar dulu ya.';
     return;
   }
 
   btn.disabled = true;
   const originalBtnText = btn.textContent;
-  btn.textContent = 'Menganalisis…';
-  statusEl.textContent = 'Menyiapkan permintaan…';
 
   const targetCount = Math.min(49, Math.max(25, parseInt(document.getElementById('mdCount').value, 10) || 35));
   const fileType = document.getElementById('mdFileType').value;
@@ -1390,88 +1496,98 @@ Base everything strictly on what is visually present in the image. Never exceed 
   if(provider !== 'claude' && !userApiKey){
     statusEl.textContent = `Isi ${providerCfg.keyLabel} dulu untuk pakai ${providerCfg.label}.`;
     btn.disabled = false;
-    btn.textContent = originalBtnText;
     return;
   }
 
   if(userApiKey && providerCfg.keyPrefix && !userApiKey.startsWith(providerCfg.keyPrefix)){
     statusEl.textContent = `Key yang diisi kelihatannya bukan key ${providerCfg.label} (harusnya diawali "${providerCfg.keyPrefix}"). Cek lagi atau ganti provider yang sesuai dengan key ini.`;
     btn.disabled = false;
-    btn.textContent = originalBtnText;
     return;
   }
 
-  statusEl.textContent = userApiKey
-    ? `Mengirim gambar ke ${providerCfg.label} (pakai API key kamu)…`
-    : `Mengirim gambar ke ${providerCfg.label} untuk dianalisis…`;
+  // Reset only images that aren't already done, so re-running after adding
+  // more files doesn't re-analyze (and re-bill) ones already completed.
+  const pending = mdImages.filter(i => i.status !== 'done');
+  pending.forEach(i => { i.status = 'pending'; i.error = null; });
+  renderMdResults();
 
-  try{
-    const rawText = await callVisionProvider(provider, userApiKey, prompt);
-    // Some models (notably reasoning models like Qwen served via Groq)
-    // prepend a <think>...</think> reasoning block before the actual
-    // answer, and some wrap the JSON in markdown fences or add stray text
-    // around it. Strip all of that defensively before parsing.
-    let cleaned = rawText
-      .replace(/<think>[\s\S]*?<\/think>/gi, '')
-      .replace(/```json|```/g, '')
-      .trim();
-    const firstBrace = cleaned.indexOf('{');
-    const lastBrace = cleaned.lastIndexOf('}');
-    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
-      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  let successCount = 0;
+  let errorCount = 0;
+
+  for(let idx = 0; idx < pending.length; idx++){
+    const img = pending[idx];
+    img.status = 'processing';
+    renderMdResults();
+    statusEl.textContent = userApiKey
+      ? `(${idx+1}/${pending.length}) Mengirim "${img.name}" ke ${providerCfg.label} (pakai API key kamu)…`
+      : `(${idx+1}/${pending.length}) Mengirim "${img.name}" ke ${providerCfg.label} untuk dianalisis…`;
+
+    try{
+      const rawText = await callVisionProvider(provider, userApiKey, prompt, img.base64, img.mediaType);
+      // Some models (notably reasoning models like Qwen served via Groq)
+      // prepend a <think>...</think> reasoning block before the actual
+      // answer, and some wrap the JSON in markdown fences or add stray text
+      // around it. Strip all of that defensively before parsing.
+      let cleaned = rawText
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/```json|```/g, '')
+        .trim();
+      const firstBrace = cleaned.indexOf('{');
+      const lastBrace = cleaned.lastIndexOf('}');
+      if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+        cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+      }
+      const parsed = JSON.parse(cleaned);
+
+      let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
+      if(avoidWords.length){
+        keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
+      }
+
+      let titleOut = parsed.title || '';
+      let descOut = parsed.description || '';
+      let catOut = parsed.category || '';
+
+      if(noSpecialChars){
+        titleOut = stripSpecialChars(titleOut);
+        descOut = stripSpecialChars(descOut);
+        catOut = stripSpecialChars(catOut);
+        keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
+      }
+
+      keywords = Array.from(new Set(keywords)).slice(0, targetCount);
+
+      img.result = {
+        title: truncateToLength(titleOut, titleLen),
+        description: truncateToLength(descOut, descLen),
+        category: catOut,
+        keywords
+      };
+      img.status = 'done';
+      successCount++;
+    }catch(err){
+      img.status = 'error';
+      img.error = err?.message || 'coba lagi.';
+      errorCount++;
     }
-    const parsed = JSON.parse(cleaned);
+    renderMdResults();
 
-    let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
-    if(avoidWords.length){
-      keywords = keywords.filter(k => !avoidWords.some(w => k.toLowerCase().includes(w)));
+    // Small pause between requests so we don't hammer the provider (especially
+    // the shared default key) with a burst of near-simultaneous calls.
+    if(idx < pending.length - 1){
+      await new Promise(res => setTimeout(res, 350));
     }
-
-    let titleOut = parsed.title || '';
-    let descOut = parsed.description || '';
-    let catOut = parsed.category || '';
-
-    if(noSpecialChars){
-      titleOut = stripSpecialChars(titleOut);
-      descOut = stripSpecialChars(descOut);
-      catOut = stripSpecialChars(catOut);
-      keywords = keywords.map(k => stripSpecialChars(k)).filter(Boolean);
-    }
-
-    keywords = Array.from(new Set(keywords)).slice(0, targetCount);
-
-    document.getElementById('mdTitleText').textContent = truncateToLength(titleOut, titleLen);
-    document.getElementById('mdDescText').textContent = truncateToLength(descOut, descLen);
-    document.getElementById('mdCatText').textContent = catOut;
-    document.getElementById('mdKwText').textContent = keywords.join(', ');
-
-    const badge = document.getElementById('mdKwBadge');
-    badge.textContent = `${keywords.length} keyword`;
-    badge.className = 'kw-count-badge ' + (keywords.length >= 25 && keywords.length <= 49 ? 'ok' : 'warn');
-
-    empty.style.display = 'none';
-    output.style.display = 'block';
-    statusEl.textContent = 'Metadata berhasil dibuat dari gambar ✓';
-  }catch(err){
-    statusEl.textContent = 'Gagal menganalisis gambar: ' + (err?.message || 'coba lagi.');
-  }finally{
-    btn.disabled = false;
-    btn.textContent = originalBtnText;
   }
+
+  statusEl.textContent = errorCount === 0
+    ? `Selesai — ${successCount} gambar berhasil dianalisis ✓`
+    : `Selesai — ${successCount} berhasil, ${errorCount} gagal.`;
+
+  btn.disabled = false;
+  btn.textContent = originalBtnText;
 }
 
 document.getElementById('mdImageBtn').addEventListener('click', generateMetadataFromImage);
-
-document.getElementById('mdOutput').addEventListener('click', e=>{
-  const btn = e.target.closest('.copy-mini');
-  if(!btn) return;
-  const targetEl = document.getElementById(btn.dataset.copy);
-  const text = targetEl.textContent;
-  navigator.clipboard?.writeText(text).catch(()=>{});
-  const original = btn.textContent;
-  btn.textContent = 'Tersalin ✓';
-  setTimeout(()=>{ btn.textContent = original; }, 900);
-});
 
 /* ---------- Saved research (persistent storage) ---------- */
 const STORAGE_KEY = 'artboard-saved-niches';
