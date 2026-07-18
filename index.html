@@ -1338,7 +1338,7 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
             ]
           }
         ],
-        generationConfig: { maxOutputTokens: 600 }
+        generationConfig: { maxOutputTokens: 3072 }
       })
     });
     if(!response.ok){
@@ -1624,6 +1624,40 @@ Base everything strictly on what is visually present in the image. Never exceed 
    this is what lets several keys share the load and dodge per-key TPM
    limits instead of every image queuing behind the same key. Mutates the
    image's status/result/error in place. */
+/* Best-effort repair for a JSON string that got cut off mid-way (typically
+   because the model ran out of its output token budget before finishing).
+   Closes a dangling open string, drops a trailing comma, and balances any
+   unclosed { and [ brackets so JSON.parse has a chance to succeed on what
+   content did make it through, instead of failing outright. */
+function repairTruncatedJson(str){
+  let s = str;
+  let inString = false;
+  let escaped = false;
+  for(const ch of s){
+    if(escaped){ escaped = false; continue; }
+    if(ch === '\\'){ escaped = true; continue; }
+    if(ch === '"'){ inString = !inString; }
+  }
+  if(inString) s += '"';
+  s = s.replace(/,\s*$/, '');
+  let braceDepth = 0, bracketDepth = 0;
+  inString = false; escaped = false;
+  for(const ch of s){
+    if(escaped){ escaped = false; continue; }
+    if(ch === '\\'){ escaped = true; continue; }
+    if(ch === '"'){ inString = !inString; continue; }
+    if(inString) continue;
+    if(ch === '{') braceDepth++;
+    else if(ch === '}') braceDepth--;
+    else if(ch === '[') bracketDepth++;
+    else if(ch === ']') bracketDepth--;
+  }
+  let suffix = '';
+  for(let i=0;i<bracketDepth;i++) suffix += ']';
+  for(let i=0;i<braceDepth;i++) suffix += '}';
+  return s + suffix;
+}
+
 async function processOneMdImage(img, settings, keyStartIndex){
   const { prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, apiKeys } = settings;
   const keys = apiKeys.length ? apiKeys : [''];
@@ -1648,7 +1682,20 @@ async function processOneMdImage(img, settings, keyStartIndex){
       if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
         cleaned = cleaned.slice(firstBrace, lastBrace + 1);
       }
-      const parsed = JSON.parse(cleaned);
+      let parsed;
+      try{
+        parsed = JSON.parse(cleaned);
+      }catch(parseErr){
+        // The response was likely cut off before the model finished writing
+        // (ran out of its token budget mid-string/mid-object). Try a best-
+        // effort repair — close any dangling string, drop a trailing comma,
+        // and balance any unclosed brackets — before giving up entirely.
+        try{
+          parsed = JSON.parse(repairTruncatedJson(cleaned));
+        }catch(repairErr){
+          throw new Error(`Respons AI terpotong/tidak lengkap (kemungkinan kehabisan token). Coba lagi, atau kurangi jumlah keyword di pengaturan lanjutan. (${parseErr.message})`);
+        }
+      }
 
       let keywords = Array.isArray(parsed.keywords) ? parsed.keywords.map(k=>String(k).trim()).filter(Boolean) : [];
       if(avoidWords.length){
