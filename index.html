@@ -956,7 +956,52 @@ function stripSpecialChars(str){
 let mdImageBase64 = null;
 let mdImageMediaType = null;
 
-function handleMdImageFile(file){
+/* Resize + compress the image client-side before it ever reaches the API.
+   Vision models internally downscale large images anyway, so sending a
+   huge original just burns tokens and makes the request slower/likelier
+   to fail. Capping the longest side at MAX_DIM and re-encoding as JPEG
+   typically cuts payload size by 70-90% with no visible loss for metadata
+   generation purposes. */
+const MD_IMAGE_MAX_DIM = 1280;
+const MD_IMAGE_JPEG_QUALITY = 0.85;
+
+function resizeImageFile(file, maxDim, quality){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if(width > maxDim || height > maxDim){
+        if(width >= height){
+          height = Math.round(height * (maxDim / width));
+          width = maxDim;
+        }else{
+          width = Math.round(width * (maxDim / height));
+          height = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      // Flatten onto white first so transparent PNGs don't turn black
+      // once re-encoded as JPEG (which has no alpha channel).
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      resolve({ dataUrl, width, height });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('Gagal memuat gambar untuk diproses.'));
+    };
+    img.src = objectUrl;
+  });
+}
+
+async function handleMdImageFile(file){
   const statusEl = document.getElementById('mdImageStatus');
   const previewEl = document.getElementById('mdImagePreview');
   mdImageBase64 = null;
@@ -971,19 +1016,22 @@ function handleMdImageFile(file){
     statusEl.textContent = 'Ukuran file terlalu besar (maks 5MB).';
     return;
   }
-  mdImageMediaType = file.type || 'image/png';
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    mdImageBase64 = reader.result.split(',')[1];
-    previewEl.src = reader.result;
+  statusEl.textContent = 'Memproses gambar (mengecilkan ukuran)…';
+
+  try{
+    const { dataUrl, width, height } = await resizeImageFile(file, MD_IMAGE_MAX_DIM, MD_IMAGE_JPEG_QUALITY);
+    mdImageMediaType = 'image/jpeg';
+    mdImageBase64 = dataUrl.split(',')[1];
+    previewEl.src = dataUrl;
     previewEl.style.display = 'block';
-    statusEl.textContent = 'Gambar siap — klik "Generate dari Gambar".';
-  };
-  reader.onerror = () => {
-    statusEl.textContent = 'Gagal membaca file gambar.';
-  };
-  reader.readAsDataURL(file);
+    const approxKb = Math.round((mdImageBase64.length * 0.75) / 1024);
+    statusEl.textContent = `Gambar siap (${width}×${height}px, ~${approxKb}KB) — klik "Generate dari Gambar".`;
+  }catch(err){
+    mdImageBase64 = null;
+    mdImageMediaType = null;
+    statusEl.textContent = 'Gagal memproses gambar: ' + (err?.message || 'coba lagi.');
+  }
 }
 
 document.getElementById('mdImageInput').addEventListener('change', e=>{
@@ -1119,7 +1167,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
       headers,
       body: JSON.stringify({
         model: "gpt-4o",
-        max_tokens: 1000,
+        max_tokens: 600,
         messages: [
           {
             role: "user",
@@ -1154,7 +1202,8 @@ async function callVisionProvider(provider, userApiKey, prompt){
               { inline_data: { mime_type: mdImageMediaType, data: mdImageBase64 } }
             ]
           }
-        ]
+        ],
+        generationConfig: { maxOutputTokens: 600 }
       })
     });
     if(!response.ok){
@@ -1176,7 +1225,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
       },
       body: JSON.stringify({
         model: "qwen/qwen3.6-27b",
-        max_tokens: 1000,
+        max_tokens: 600,
         messages: [
           {
             role: "user",
@@ -1209,7 +1258,7 @@ async function callVisionProvider(provider, userApiKey, prompt){
     headers,
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 1000,
+      max_tokens: 600,
       messages: [
         {
           role: "user",
