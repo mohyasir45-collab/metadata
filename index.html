@@ -1077,6 +1077,7 @@ const MD_PROVIDERS = {
     label: 'Anthropic (Claude)',
     keyLabel: 'Anthropic API Key (Opsional)',
     keyPlaceholder: 'sk-ant-...',
+    keyPrefix: 'sk-ant-',
     hint: 'Isi API key milikmu sendiri kalau limit default website sudah tercapai. Key disimpan per provider hanya di penyimpananmu sendiri dan dipakai langsung dari browser saat generate dari gambar. Kosongkan untuk pakai limit default.',
     storageKey: 'artboard-api-key-claude'
   },
@@ -1084,6 +1085,7 @@ const MD_PROVIDERS = {
     label: 'OpenAI (ChatGPT)',
     keyLabel: 'OpenAI API Key',
     keyPlaceholder: 'sk-...',
+    keyPrefix: 'sk-',
     hint: 'Pakai API key dari platform.openai.com (model GPT-4o) milikmu sendiri. Key hanya disimpan di penyimpananmu dan dipakai langsung dari browser.',
     storageKey: 'artboard-api-key-openai'
   },
@@ -1091,6 +1093,7 @@ const MD_PROVIDERS = {
     label: 'Google (Gemini)',
     keyLabel: 'Google AI (Gemini) API Key',
     keyPlaceholder: 'AIza...',
+    keyPrefix: 'AIza',
     hint: 'Pakai API key dari Google AI Studio (aistudio.google.com) milikmu sendiri. Key hanya disimpan di penyimpananmu dan dipakai langsung dari browser.',
     storageKey: 'artboard-api-key-gemini'
   },
@@ -1098,6 +1101,7 @@ const MD_PROVIDERS = {
     label: 'Groq',
     keyLabel: 'Groq API Key',
     keyPlaceholder: 'gsk_...',
+    keyPrefix: 'gsk_',
     hint: 'Pakai API key dari console.groq.com (model vision Qwen3-VL, inferensi super cepat) milikmu sendiri. Key hanya disimpan di penyimpananmu dan dipakai langsung dari browser.',
     storageKey: 'artboard-api-key-groq'
   }
@@ -1179,12 +1183,16 @@ mdApiKeyInput.addEventListener('input', ()=>{
   mdApiKeySaveTimer = setTimeout(async ()=>{
     const cfg = currentProviderConfig();
     const val = mdApiKeyInput.value.trim();
-    let ok;
     if(val){
-      ok = await pStorageSet(cfg.storageKey, val);
-      mdApiKeyStatus.textContent = ok ? 'Key tersimpan ✓' : 'Gagal menyimpan key.';
+      if(cfg.keyPrefix && !val.startsWith(cfg.keyPrefix)){
+        mdApiKeyStatus.innerHTML = `<span style="color:var(--amber-text)">⚠ Bukan format key ${cfg.label} (harusnya diawali "${cfg.keyPrefix}")</span>`;
+      }
+      const ok = await pStorageSet(cfg.storageKey, val);
+      if(!cfg.keyPrefix || val.startsWith(cfg.keyPrefix)){
+        mdApiKeyStatus.textContent = ok ? 'Key tersimpan ✓' : 'Gagal menyimpan key.';
+      }
     }else{
-      ok = await pStorageDelete(cfg.storageKey);
+      await pStorageDelete(cfg.storageKey);
       mdApiKeyStatus.textContent = '';
     }
   }, 500);
@@ -1381,6 +1389,13 @@ Base everything strictly on what is visually present in the image. Never exceed 
 
   if(provider !== 'claude' && !userApiKey){
     statusEl.textContent = `Isi ${providerCfg.keyLabel} dulu untuk pakai ${providerCfg.label}.`;
+    btn.disabled = false;
+    btn.textContent = originalBtnText;
+    return;
+  }
+
+  if(userApiKey && providerCfg.keyPrefix && !userApiKey.startsWith(providerCfg.keyPrefix)){
+    statusEl.textContent = `Key yang diisi kelihatannya bukan key ${providerCfg.label} (harusnya diawali "${providerCfg.keyPrefix}"). Cek lagi atau ganti provider yang sesuai dengan key ini.`;
     btn.disabled = false;
     btn.textContent = originalBtnText;
     return;
