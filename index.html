@@ -575,11 +575,11 @@
             <input type="number" id="mdCount" value="35" min="25" max="49">
           </div>
           <div class="meta-field">
-            <label>Maks. Jumlah Huruf Judul</label>
+            <label>Maks. Jumlah Karakter Judul</label>
             <input type="number" id="mdTitleLen" value="200" min="40" max="200">
           </div>
           <div class="meta-field">
-            <label>Maks. Jumlah Huruf Deskripsi</label>
+            <label>Maks. Jumlah Karakter Deskripsi</label>
             <input type="number" id="mdDescLen" value="200" min="50" max="500">
           </div>
           <div class="meta-field span3">
@@ -589,7 +589,7 @@
           <div class="meta-field span3">
             <label class="meta-checkbox-row">
               <input type="checkbox" id="mdNoSpecialChars">
-              <span>Hindari Karakter Spesial (hanya huruf, angka &amp; spasi pada judul, deskripsi, keyword)</span>
+              <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
             </label>
           </div>
         </div>
@@ -947,8 +947,9 @@ function truncateToLength(str, maxLen){
 }
 function stripSpecialChars(str){
   return String(str)
-    .replace(/[^a-zA-Z0-9\s]/g, ' ')
+    .replace(/[^a-zA-Z0-9\s,.]/g, ' ')
     .replace(/\s+/g, ' ')
+    .replace(/\s+([,.])/g, '$1')
     .trim();
 }
 
@@ -1109,6 +1110,48 @@ const mdApiKeyLabel = document.getElementById('mdApiKeyLabel');
 const mdApiKeyHint = document.getElementById('mdApiKeyHint');
 let mdApiKeySaveTimer = null;
 
+/* Persistent storage that works both inside a Claude.ai artifact
+   (window.storage) and when this file is opened standalone in a browser
+   (falls back to localStorage). Without this fallback, saving would fail
+   silently outside the Claude.ai artifact environment. */
+const hasArtifactStorage = () => typeof window.storage !== 'undefined' && window.storage;
+
+async function pStorageGet(key){
+  if(hasArtifactStorage()){
+    try{
+      const res = await window.storage.get(key, false);
+      return res ? res.value : null;
+    }catch(err){ /* fall through to localStorage */ }
+  }
+  try{
+    return window.localStorage.getItem(key);
+  }catch(err){ return null; }
+}
+async function pStorageSet(key, value){
+  if(hasArtifactStorage()){
+    try{
+      await window.storage.set(key, value, false);
+      return true;
+    }catch(err){ /* fall through to localStorage */ }
+  }
+  try{
+    window.localStorage.setItem(key, value);
+    return true;
+  }catch(err){ return false; }
+}
+async function pStorageDelete(key){
+  if(hasArtifactStorage()){
+    try{
+      await window.storage.delete(key, false);
+      return true;
+    }catch(err){ /* fall through to localStorage */ }
+  }
+  try{
+    window.localStorage.removeItem(key);
+    return true;
+  }catch(err){ return false; }
+}
+
 function currentProviderConfig(){
   return MD_PROVIDERS[mdProviderSelect.value] || MD_PROVIDERS.claude;
 }
@@ -1120,13 +1163,11 @@ async function loadKeyForCurrentProvider(){
   mdApiKeyHint.textContent = cfg.hint;
   mdApiKeyInput.value = '';
   mdApiKeyStatus.textContent = '';
-  try{
-    const res = await window.storage.get(cfg.storageKey, false);
-    if(res && res.value){
-      mdApiKeyInput.value = res.value;
-      mdApiKeyStatus.textContent = 'Key tersimpan ✓';
-    }
-  }catch(err){ /* no key saved yet for this provider */ }
+  const saved = await pStorageGet(cfg.storageKey);
+  if(saved){
+    mdApiKeyInput.value = saved;
+    mdApiKeyStatus.textContent = 'Key tersimpan ✓';
+  }
 }
 
 mdProviderSelect.addEventListener('change', loadKeyForCurrentProvider);
@@ -1138,15 +1179,14 @@ mdApiKeyInput.addEventListener('input', ()=>{
   mdApiKeySaveTimer = setTimeout(async ()=>{
     const cfg = currentProviderConfig();
     const val = mdApiKeyInput.value.trim();
-    try{
-      if(val){
-        await window.storage.set(cfg.storageKey, val, false);
-        mdApiKeyStatus.textContent = 'Key tersimpan ✓';
-      }else{
-        await window.storage.delete(cfg.storageKey, false);
-        mdApiKeyStatus.textContent = '';
-      }
-    }catch(err){ /* saving is best-effort */ }
+    let ok;
+    if(val){
+      ok = await pStorageSet(cfg.storageKey, val);
+      mdApiKeyStatus.textContent = ok ? 'Key tersimpan ✓' : 'Gagal menyimpan key.';
+    }else{
+      ok = await pStorageDelete(cfg.storageKey);
+      mdApiKeyStatus.textContent = '';
+    }
   }, 500);
 });
 
@@ -1321,7 +1361,7 @@ async function generateMetadataFromImage(){
     : '';
 
   const specialCharsLine = noSpecialChars
-    ? `\nSTRICTLY AVOID any special characters anywhere in the title, description, or keywords — use only plain letters, numbers, and single spaces (no commas, hyphens, ampersands, quotes, colons, semicolons, slashes, parentheses, or any punctuation/symbols).`
+    ? `\nSTRICTLY AVOID any special characters anywhere in the title, description, or keywords — use only plain letters, numbers, single spaces, commas, and periods (no hyphens, ampersands, quotes, colons, semicolons, slashes, parentheses, or any other punctuation/symbols).`
     : '';
 
   const prompt = `You are helping a vector stock illustrator on Adobe Stock write metadata for this asset preview image. The asset will be delivered as a ${fileType} file.
@@ -1409,20 +1449,15 @@ document.getElementById('mdOutput').addEventListener('click', e=>{
 const STORAGE_KEY = 'artboard-saved-niches';
 
 async function loadSaved(){
+  const raw = await pStorageGet(STORAGE_KEY);
   try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    return res ? JSON.parse(res.value) : [];
+    return raw ? JSON.parse(raw) : [];
   }catch(err){
     return [];
   }
 }
 async function persistSaved(list){
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(list), false);
-    return true;
-  }catch(err){
-    return false;
-  }
+  return await pStorageSet(STORAGE_KEY, JSON.stringify(list));
 }
 
 async function renderSaved(){
