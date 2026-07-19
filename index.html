@@ -337,6 +337,13 @@
   .meta-result-status{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
   .meta-result-status.ok{color:var(--green-text);}
   .meta-result-status.error{color:var(--red-text);}
+  .meta-result-subrow{display:flex;align-items:center;gap:8px;margin-top:2px;flex-wrap:wrap;}
+  .meta-result-subrow .meta-result-status{margin-top:0;}
+  .meta-cat-chip{
+    font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);
+    background:var(--paper);border:1px solid var(--border);
+    padding:1px 8px;border-radius:20px;line-height:1.6;
+  }
   .meta-result-card .meta-out-block{background:var(--panel);}
   .retry-btn{flex:none;white-space:nowrap;}
   .retry-btn:disabled{opacity:0.5;cursor:not-allowed;}
@@ -380,6 +387,14 @@
   .auto-pill.on{border-color:var(--green);color:var(--green-text);}
   .auto-pill.on .n{color:var(--green-text);opacity:0.8;}
   .auto-pill.off{opacity:0.55;}
+  .auto-pill.active{
+    border-color:var(--blue); color:var(--blue-text); background:var(--blue-soft);
+    animation: auto-pill-blink 1s ease-in-out infinite;
+  }
+  @keyframes auto-pill-blink{
+    0%, 100%{ opacity:1; }
+    50%{ opacity:0.45; }
+  }
   .meta-key-field textarea:disabled{opacity:0.7;cursor:not-allowed;background:var(--paper);}
   .meta-key-status div{line-height:1.6;}
   .meta-key-hint{font-size:11px;color:var(--ink-soft);line-height:1.5;grid-column:1/-1;margin-top:-4px;}
@@ -574,7 +589,7 @@
           <div class="meta-key-field provider-field">
             <label>Provider AI</label>
             <select id="mdProvider">
-              <option value="auto">⚡ Otomatis (urutan di bawah)</option>
+              <option value="auto">⚡ Otomatis</option>
               <option value="gemini">1. Gemini (Google)</option>
               <option value="groq">2. Groq</option>
               <option value="claude">3. Claude (Anthropic)</option>
@@ -1253,9 +1268,9 @@ async function loadKeyForCurrentProvider(){
       const label = MD_PROVIDERS[id].label.replace(/\s*\(.*\)/, '');
       const on = keys.length > 0 || id === 'claude';
       const count = id === 'claude' ? (keys.length || '∞') : keys.length;
-      return `<span class="auto-pill ${on ? 'on' : 'off'}"><span class="n">${i+1}</span> ${label} · ${count}</span>`;
+      return `<span class="auto-pill ${on ? 'on' : 'off'}" data-provider="${id}"><span class="n">${i+1}</span> ${label} · ${count}</span>`;
     }));
-    autoSummary.innerHTML = pills.join('');
+      autoSummary.innerHTML = pills.join('');
     return;
   }
 
@@ -1275,6 +1290,16 @@ async function loadKeyForCurrentProvider(){
 
 mdProviderSelect.addEventListener('change', loadKeyForCurrentProvider);
 loadKeyForCurrentProvider();
+
+/* Highlights (with a blinking dot) whichever provider pill is currently
+   being called in "Otomatis" mode, so the person can see at a glance
+   which API is active right now. Pass null to clear it once the batch
+   finishes or when not in Auto mode. */
+function setActiveAutoPill(providerId){
+  document.querySelectorAll('#mdAutoSummary .auto-pill').forEach(el=>{
+    el.classList.toggle('active', !!providerId && el.dataset.provider === providerId);
+  });
+}
 
 mdApiKeyInput.addEventListener('input', ()=>{
   const activeCfg = currentProviderConfig();
@@ -1470,7 +1495,10 @@ function renderMdResultCard(img, index){
         <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}">
         <div class="meta-result-headinfo">
           <div class="meta-result-name">${escapeHtml(img.name)}</div>
-          <div class="meta-result-status ok">${statusLabel}</div>
+          <div class="meta-result-subrow">
+            <span class="meta-result-status ok">${statusLabel}</span>
+            <span class="meta-cat-chip" data-field="category" title="Kategori">${escapeHtml(r.category)}</span>
+          </div>
         </div>
         <button class="btn ghost regen-btn" data-regen-id="${img.id}" type="button" ${mdBatchBusy ? 'disabled' : ''}>↻ Generate Ulang</button>
       </div>
@@ -1487,13 +1515,6 @@ function renderMdResultCard(img, index){
           <button class="copy-mini" data-field="description">Salin</button>
         </div>
         <div class="meta-desc-text" data-field="description">${escapeHtml(r.description)}</div>
-      </div>
-      <div class="meta-out-block">
-        <div class="meta-out-head">
-          <h5>Kategori</h5>
-          <button class="copy-mini" data-field="category">Salin</button>
-        </div>
-        <div class="meta-title-text" style="font-size:13px;" data-field="category">${escapeHtml(r.category)}</div>
       </div>
       <div class="meta-out-block">
         <div class="meta-out-head">
@@ -1806,10 +1827,12 @@ async function runMdImageBatch(list){
     const upcoming = settings.keyEntries[keyPtr % keyCount];
     const providerLabel = isAuto ? (MD_PROVIDERS[upcoming.provider]?.label || upcoming.provider) : settings.providerCfg.label;
     statusEl.textContent = `(${idx+1}/${list.length}) Mengirim "${img.name}" via ${providerLabel}…`;
+    if(isAuto) setActiveAutoPill(upcoming.provider);
 
     const result = await processOneMdImage(img, settings, keyPtr, (activeProvider) => {
       const activeLabel = MD_PROVIDERS[activeProvider]?.label || activeProvider;
       statusEl.textContent = `(${idx+1}/${list.length}) Mengirim "${img.name}" via ${activeLabel}…`;
+      if(isAuto) setActiveAutoPill(activeProvider);
     });
     keyPtr = result.nextKeyIndex;
     if(result.ok) successCount++; else errorCount++;
@@ -1823,6 +1846,7 @@ async function runMdImageBatch(list){
     }
   }
 
+  if(isAuto) setActiveAutoPill(null);
   statusEl.textContent = errorCount === 0
     ? `Selesai — ${successCount} gambar berhasil dianalisis ✓`
     : `Selesai — ${successCount} berhasil, ${errorCount} gagal. Klik "Coba Lagi" pada gambar yang gagal.`;
