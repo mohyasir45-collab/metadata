@@ -1675,7 +1675,7 @@ Base everything strictly on what is visually present in the image. Never exceed 
    missing or invalid), since the next entry is typically a different
    provider that won't fail the same way. Mutates the image's
    status/result/error in place. */
-async function processOneMdImage(img, settings, keyStartIndex){
+async function processOneMdImage(img, settings, keyStartIndex, onAttempt){
   const { prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, providerCfg } = settings;
   const keys = settings.keyEntries.length ? settings.keyEntries : [{ provider: settings.provider, key: '' }];
   const isAuto = !!providerCfg.isAuto;
@@ -1687,6 +1687,7 @@ async function processOneMdImage(img, settings, keyStartIndex){
     usedIdx = (keyStartIndex + attempt) % keys.length;
     const { provider, key } = keys[usedIdx];
     lastProvider = provider;
+    if(onAttempt) onAttempt(provider);
     try{
       const rawText = await callVisionProvider(provider, key, prompt, img.base64, img.mediaType);
       // Some models (notably reasoning models like Qwen served via Groq)
@@ -1784,12 +1785,12 @@ async function runMdImageBatch(list){
     renderMdResults();
     const upcoming = settings.keyEntries[keyPtr % keyCount];
     const providerLabel = isAuto ? (MD_PROVIDERS[upcoming.provider]?.label || upcoming.provider) : settings.providerCfg.label;
-    const keyNote = keyCount > 1
-      ? (isAuto ? ` (urutan ${keyPtr % keyCount + 1}/${keyCount})` : ` (key #${(keyPtr % keyCount) + 1}/${keyCount})`)
-      : (settings.keyEntries[0]?.key ? ' (pakai API key kamu)' : '');
-    statusEl.textContent = `(${idx+1}/${list.length}) Mengirim "${img.name}" ke ${providerLabel}${keyNote}…`;
+    statusEl.textContent = `(${idx+1}/${list.length}) Mengirim "${img.name}" via ${providerLabel}…`;
 
-    const result = await processOneMdImage(img, settings, keyPtr);
+    const result = await processOneMdImage(img, settings, keyPtr, (activeProvider) => {
+      const activeLabel = MD_PROVIDERS[activeProvider]?.label || activeProvider;
+      statusEl.textContent = `(${idx+1}/${list.length}) Mengirim "${img.name}" via ${activeLabel}…`;
+    });
     keyPtr = result.nextKeyIndex;
     if(result.ok) successCount++; else errorCount++;
     renderMdResults();
