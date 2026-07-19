@@ -275,6 +275,10 @@
   .kw-count-badge.ok{background:var(--green-soft);color:var(--green-text);}
   .kw-count-badge.warn{background:var(--red-soft);color:var(--red-text);}
   .meta-desc-text{font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
+  .meta-created-with{
+    font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);
+    text-align:right;padding-top:2px;opacity:0.75;
+  }
 
   /* metadata: image upload */
   .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:9px;padding:16px;margin-bottom:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
@@ -1485,6 +1489,7 @@ function renderMdResultCard(img){
         </div>
         <div class="meta-kw-text" data-field="keywords">${escapeHtml(r.keywords.join(', '))}</div>
       </div>
+      <div class="meta-created-with">Dibuat dengan ${escapeHtml(MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || '—')}</div>
     </div>`;
 }
 
@@ -1558,13 +1563,14 @@ function csvEscape(val){
 document.getElementById('mdExportCsvBtn').addEventListener('click', ()=>{
   const done = mdImages.filter(i => i.status === 'done' && i.result);
   if(done.length === 0) return;
-  const header = ['Filename','Title','Description','Category','Keywords'];
+  const header = ['Filename','Title','Description','Category','Keywords','Created With'];
   const rows = done.map(img => [
     img.name,
     img.result.title,
     img.result.description,
     img.result.category,
-    img.result.keywords.join('; ')
+    img.result.keywords.join('; '),
+    MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || ''
   ].map(csvEscape).join(','));
   const csv = [header.join(','), ...rows].join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
