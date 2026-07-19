@@ -275,32 +275,20 @@
   .kw-count-badge.ok{background:var(--green-soft);color:var(--green-text);}
   .kw-count-badge.warn{background:var(--red-soft);color:var(--red-text);}
   .meta-desc-text{font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
+  .meta-result-foot{display:flex;justify-content:flex-end;margin-top:2px;}
   .meta-created-with{
-    font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);
-    text-align:right;padding-top:2px;opacity:0.75;
+    font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);
+    background:var(--panel);border:1px solid var(--border);
+    padding:4px 10px;border-radius:20px;
   }
 
   /* metadata: image upload */
-  .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:9px;padding:16px;margin-bottom:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:9px;padding:18px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;}
   .meta-upload-info{flex:1;min-width:200px;}
   .meta-upload-info h5{font-family:'Space Grotesk';font-size:12.5px;text-transform:uppercase;letter-spacing:0.03em;color:var(--ink-soft);margin:0 0 4px;}
   .meta-upload-info p{font-size:12px;color:var(--ink-soft);margin:0;line-height:1.5;}
-  .meta-upload-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .meta-upload input[type=file]{
-    font-family:'JetBrains Mono';font-size:11.5px;max-width:220px;
-    color:var(--ink-soft);
-  }
-  .meta-upload input[type=file]::file-selector-button,
-  .meta-upload input[type=file]::-webkit-file-upload-button{
-    font-family:'Space Grotesk';font-weight:600;font-size:12px;
-    padding:9px 14px;margin-right:12px;border:none;border-radius:7px;
-    background:var(--blue);color:#fff;cursor:pointer;
-    transition:background-color .15s ease;
-  }
-  .meta-upload input[type=file]::file-selector-button:hover,
-  .meta-upload input[type=file]::-webkit-file-upload-button:hover{
-    background:#1e46e0;
-  }
+  .meta-choose-btn{flex:none;cursor:pointer;display:inline-flex;align-items:center;}
+  .meta-upload-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
   .meta-preview-thumb{
     width:64px;height:64px;border-radius:8px;border:1px solid var(--border);
     object-fit:cover;background:#fff;display:none;
@@ -332,9 +320,17 @@
   /* metadata: per-image result cards */
   .meta-output-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
   .meta-output-summary{font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink-soft);}
-  .meta-result-card{border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:16px;background:var(--paper);}
+  .meta-result-card{border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:16px;background:var(--paper);transition:border-color .15s ease;}
+  .meta-result-card:hover{border-color:var(--blue);}
   .meta-result-card.error{border-color:var(--red);}
+  .meta-result-card.error:hover{border-color:var(--red);}
   .meta-result-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .meta-batch-num{
+    flex:none;width:22px;height:22px;border-radius:50%;
+    background:var(--panel);border:1px solid var(--border);color:var(--ink-soft);
+    font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;
+    display:flex;align-items:center;justify-content:center;
+  }
   .meta-result-head img{width:46px;height:46px;object-fit:cover;border-radius:7px;border:1px solid var(--border);background:#fff;flex:none;}
   .meta-result-headinfo{flex:1;min-width:0;}
   .meta-result-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -348,7 +344,6 @@
   /* drag & drop */
   .meta-upload{transition:border-color .15s ease, background .15s ease; cursor:pointer;}
   .meta-upload.dragover{border-color:var(--blue); background:var(--blue-soft); border-style:solid;}
-  .meta-upload-dropline{width:100%; text-align:center; font-family:'JetBrains Mono'; font-size:10.5px; color:var(--ink-soft); order:99; margin-top:2px;}
 
   /* API key */
   .meta-key-row{
@@ -390,16 +385,23 @@
   .meta-key-hint{font-size:11px;color:var(--ink-soft);line-height:1.5;grid-column:1/-1;margin-top:-4px;}
   .meta-key-status{font-family:'JetBrains Mono';font-size:10.5px;color:var(--green);white-space:nowrap;align-self:center;}
 
-  /* simplified advanced toggle */
+  /* simplified advanced settings card */
+  .meta-adv{border:1px solid var(--border);border-radius:9px;background:var(--paper);margin-bottom:18px;overflow:hidden;}
   .meta-adv-toggle{
-    display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;
-    font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink-soft);padding:6px 0;margin-bottom:10px;
+    width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:none;border:none;cursor:pointer;padding:14px 16px;text-align:left;
   }
-  .meta-adv-toggle:hover{color:var(--blue);}
-  .meta-adv-toggle .arrow{transition:transform .15s ease; display:inline-block;}
+  .meta-adv-toggle:hover{background:var(--blue-soft);}
+  .meta-adv-toggle-title{display:flex;flex-direction:column;gap:2px;}
+  .meta-adv-toggle-title>span:first-child{font-family:'Space Grotesk';font-size:13px;font-weight:600;color:var(--ink);}
+  .meta-adv-toggle-sub{font-family:'Inter';font-size:11.5px;color:var(--ink-soft);}
+  .meta-adv-toggle .arrow{flex:none;color:var(--ink-soft);transition:transform .15s ease; display:inline-block;}
   .meta-adv-toggle.open .arrow{transform:rotate(90deg);}
-  .meta-adv-body{display:none; margin-bottom:14px;}
-  .meta-adv-body.open{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .meta-adv-body{display:none;}
+  .meta-adv-body.open{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;
+    padding:16px;border-top:1px solid var(--border);
+  }
   .meta-adv-body .meta-field.span3{grid-column:1/-1;}
   .meta-checkbox-row{
     display:flex; align-items:center; gap:9px;
@@ -575,8 +577,8 @@
               <option value="auto">⚡ Otomatis (urutan di bawah)</option>
               <option value="gemini">1. Gemini (Google)</option>
               <option value="groq">2. Groq</option>
-              <option value="openai">3. ChatGPT (OpenAI)</option>
-              <option value="claude">4. Claude (Anthropic)</option>
+              <option value="claude">3. Claude (Anthropic)</option>
+              <option value="openai">4. ChatGPT (OpenAI)</option>
             </select>
           </div>
           <div class="meta-key-field" id="mdKeyFieldGroup">
@@ -593,54 +595,62 @@
 
         <div class="meta-upload" id="mdDropzone">
           <div class="meta-upload-info">
-            <h5>Upload Preview Gambar (bisa banyak sekaligus)</h5>
-            <p>Seret beberapa file sekaligus (PNG/JPG/WEBP) — tiap gambar dibuatkan metadata terpisah.</p>
+            <h5>Upload Preview Gambar</h5>
+            <p>Klik atau seret file ke sini (bisa banyak sekaligus) — PNG/JPG/WEBP, tiap gambar dibuatkan metadata terpisah.</p>
           </div>
-          <div class="meta-upload-actions">
-            <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
-            <button class="btn secondary" id="mdImageBtn">Generate Semua</button>
-            <button class="btn ghost" id="mdClearBtn" type="button">Hapus Semua</button>
-          </div>
-          <div class="meta-upload-dropline">lepas file di sini</div>
+          <label class="btn meta-choose-btn" for="mdImageInput">Pilih File</label>
+          <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+        </div>
+        <div class="meta-upload-toolbar">
+          <button class="btn secondary" id="mdImageBtn">Generate Semua</button>
+          <button class="btn ghost" id="mdClearBtn" type="button">Hapus Semua</button>
         </div>
         <div class="meta-thumbs-grid" id="mdThumbsGrid"></div>
         <div class="meta-upload-status mono" id="mdImageStatus" style="margin:-8px 0 16px;"></div>
 
-        <button type="button" class="meta-adv-toggle" id="mdAdvToggle"><span class="arrow">▸</span> Pengaturan lanjutan (tipe file, jumlah keyword, hindari kata)</button>
-        <div class="meta-adv-body" id="mdAdvBody">
-          <div class="meta-field">
-            <label>Tipe File</label>
-            <select id="mdFileType">
-              <option value="EPS vector">EPS (Vector)</option>
-              <option value="AI vector">AI (Vector)</option>
-              <option value="SVG vector">SVG (Vector)</option>
-              <option value="JPG">JPG (Photo/Raster)</option>
-              <option value="PNG">PNG (Transparan)</option>
-              <option value="PSD template">PSD (Template)</option>
-              <option value="MP4 video">MP4 (Video)</option>
-            </select>
-          </div>
-          <div class="meta-field">
-            <label>Jumlah Keyword Target (25–49)</label>
-            <input type="number" id="mdCount" value="35" min="25" max="49">
-          </div>
-          <div class="meta-field">
-            <label>Maks. Jumlah Karakter Judul</label>
-            <input type="number" id="mdTitleLen" value="200" min="40" max="200">
-          </div>
-          <div class="meta-field">
-            <label>Maks. Jumlah Karakter Deskripsi</label>
-            <input type="number" id="mdDescLen" value="200" min="50" max="500">
-          </div>
-          <div class="meta-field span3">
-            <label>Hindari Kata (pisahkan dengan koma)</label>
-            <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
-          </div>
-          <div class="meta-field span3">
-            <label class="meta-checkbox-row">
-              <input type="checkbox" id="mdNoSpecialChars">
-              <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
-            </label>
+        <div class="meta-adv">
+          <button type="button" class="meta-adv-toggle" id="mdAdvToggle">
+            <span class="meta-adv-toggle-title">
+              <span>Pengaturan Lanjutan</span>
+              <span class="meta-adv-toggle-sub">Tipe file, jumlah keyword, batas karakter, hindari kata</span>
+            </span>
+            <span class="arrow">▸</span>
+          </button>
+          <div class="meta-adv-body" id="mdAdvBody">
+            <div class="meta-field">
+              <label>Tipe File</label>
+              <select id="mdFileType">
+                <option value="EPS vector">EPS (Vector)</option>
+                <option value="AI vector">AI (Vector)</option>
+                <option value="SVG vector">SVG (Vector)</option>
+                <option value="JPG">JPG (Photo/Raster)</option>
+                <option value="PNG">PNG (Transparan)</option>
+                <option value="PSD template">PSD (Template)</option>
+                <option value="MP4 video">MP4 (Video)</option>
+              </select>
+            </div>
+            <div class="meta-field">
+              <label>Jumlah Keyword Target (25–49)</label>
+              <input type="number" id="mdCount" value="35" min="25" max="49">
+            </div>
+            <div class="meta-field">
+              <label>Maks. Jumlah Karakter Judul</label>
+              <input type="number" id="mdTitleLen" value="200" min="40" max="200">
+            </div>
+            <div class="meta-field">
+              <label>Maks. Jumlah Karakter Deskripsi</label>
+              <input type="number" id="mdDescLen" value="200" min="50" max="500">
+            </div>
+            <div class="meta-field span3">
+              <label>Hindari Kata (pisahkan dengan koma)</label>
+              <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
+            </div>
+            <div class="meta-field span3">
+              <label class="meta-checkbox-row">
+                <input type="checkbox" id="mdNoSpecialChars">
+                <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
+              </label>
+            </div>
           </div>
         </div>
         <div class="meta-output-toolbar" id="mdOutputToolbar" style="display:none;">
@@ -1092,7 +1102,7 @@ mdDropzone.addEventListener('drop', e=>{
 });
 /* clicking the dropzone (outside the actual controls) opens the file picker */
 mdDropzone.addEventListener('click', e=>{
-  if(e.target.closest('input,button,img')) return;
+  if(e.target.closest('input,button,img,label')) return;
   document.getElementById('mdImageInput').click();
 });
 
@@ -1144,7 +1154,7 @@ const MD_PROVIDERS = {
 };
 
 /* Urutan fallback lintas provider untuk mode "Otomatis". */
-const MD_AUTO_ORDER = ['gemini', 'groq', 'openai', 'claude'];
+const MD_AUTO_ORDER = ['gemini', 'groq', 'claude', 'openai'];
 
 const mdProviderSelect = document.getElementById('mdProvider');
 const mdApiKeyInput = document.getElementById('mdApiKey');
@@ -1425,12 +1435,13 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
     .join('\n');
 }
 
-function renderMdResultCard(img){
+function renderMdResultCard(img, index){
   const statusLabel = img.status === 'processing' ? 'Menganalisis…'
     : img.status === 'error' ? 'Gagal: ' + escapeHtml(img.error || '')
     : img.status === 'done' ? 'Selesai ✓'
     : 'Menunggu…';
   const statusClass = img.status === 'done' ? 'ok' : img.status === 'error' ? 'error' : '';
+  const batchNum = `<span class="meta-batch-num">${index + 1}</span>`;
 
   if(img.status !== 'done'){
     const retryBtn = img.status === 'error'
@@ -1439,6 +1450,7 @@ function renderMdResultCard(img){
     return `
       <div class="meta-result-card ${img.status==='error'?'error':''}" data-result-id="${img.id}">
         <div class="meta-result-head">
+          ${batchNum}
           <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}">
           <div class="meta-result-headinfo">
             <div class="meta-result-name">${escapeHtml(img.name)}</div>
@@ -1454,6 +1466,7 @@ function renderMdResultCard(img){
   return `
     <div class="meta-result-card" data-result-id="${img.id}">
       <div class="meta-result-head">
+        ${batchNum}
         <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}">
         <div class="meta-result-headinfo">
           <div class="meta-result-name">${escapeHtml(img.name)}</div>
@@ -1489,7 +1502,9 @@ function renderMdResultCard(img){
         </div>
         <div class="meta-kw-text" data-field="keywords">${escapeHtml(r.keywords.join(', '))}</div>
       </div>
-      <div class="meta-created-with">Dibuat dengan ${escapeHtml(MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || '—')}</div>
+      <div class="meta-result-foot">
+        <span class="meta-created-with">Dibuat dengan ${escapeHtml(MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || '—')}</span>
+      </div>
     </div>`;
 }
 
@@ -1516,7 +1531,7 @@ function renderMdResults(){
   retryFailedBtn.style.display = errored > 0 ? 'inline-flex' : 'none';
   retryFailedBtn.disabled = mdBatchBusy;
   regenerateAllBtn.disabled = mdBatchBusy;
-  output.innerHTML = mdImages.map(renderMdResultCard).join('');
+  output.innerHTML = mdImages.map((img, i) => renderMdResultCard(img, i)).join('');
   renderMdThumbs();
 }
 
@@ -1563,14 +1578,13 @@ function csvEscape(val){
 document.getElementById('mdExportCsvBtn').addEventListener('click', ()=>{
   const done = mdImages.filter(i => i.status === 'done' && i.result);
   if(done.length === 0) return;
-  const header = ['Filename','Title','Description','Category','Keywords','Created With'];
+  const header = ['Filename','Title','Description','Category','Keywords'];
   const rows = done.map(img => [
     img.name,
     img.result.title,
     img.result.description,
     img.result.category,
-    img.result.keywords.join('; '),
-    MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || ''
+    img.result.keywords.join('; ')
   ].map(csvEscape).join(','));
   const csv = [header.join(','), ...rows].join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1626,7 +1640,7 @@ Base everything strictly on what is visually present in the image. Never exceed 
   const providerCfg = currentProviderConfig();
 
   /* Auto mode: build one flat fallback sequence across every provider,
-     in MD_AUTO_ORDER (Gemini → Groq → OpenAI → Claude). Each provider
+     in MD_AUTO_ORDER (Gemini → Groq → Claude → OpenAI). Each provider
      contributes all of its own saved keys (still round-robin'd within
      itself); Claude always contributes at least one entry — with an
      empty key, which falls back to the shared default limit — so the
