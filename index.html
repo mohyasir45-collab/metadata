@@ -642,6 +642,7 @@
         <div class="meta-output-toolbar" id="mdOutputToolbar" style="display:none;">
           <span class="meta-output-summary" id="mdOutputSummary"></span>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="copy-mini" id="mdRegenerateAllBtn" type="button">↻ Generate Ulang Semua</button>
             <button class="copy-mini" id="mdRetryFailedBtn" type="button" style="display:none;">↻ Coba Lagi Semua yang Gagal</button>
             <button class="copy-mini" id="mdExportCsvBtn" type="button">Export CSV (semua hasil)</button>
           </div>
@@ -1454,6 +1455,7 @@ function renderMdResultCard(img){
           <div class="meta-result-name">${escapeHtml(img.name)}</div>
           <div class="meta-result-status ok">${statusLabel}</div>
         </div>
+        <button class="btn ghost regen-btn" data-regen-id="${img.id}" type="button" ${mdBatchBusy ? 'disabled' : ''}>↻ Generate Ulang</button>
       </div>
       <div class="meta-out-block">
         <div class="meta-out-head">
@@ -1492,6 +1494,7 @@ function renderMdResults(){
   const toolbar = document.getElementById('mdOutputToolbar');
   const summary = document.getElementById('mdOutputSummary');
   const retryFailedBtn = document.getElementById('mdRetryFailedBtn');
+  const regenerateAllBtn = document.getElementById('mdRegenerateAllBtn');
 
   if(mdImages.length === 0){
     output.innerHTML = '';
@@ -1507,6 +1510,7 @@ function renderMdResults(){
   summary.textContent = `${done}/${mdImages.length} gambar selesai${errored ? ` · ${errored} gagal` : ''}`;
   retryFailedBtn.style.display = errored > 0 ? 'inline-flex' : 'none';
   retryFailedBtn.disabled = mdBatchBusy;
+  regenerateAllBtn.disabled = mdBatchBusy;
   output.innerHTML = mdImages.map(renderMdResultCard).join('');
   renderMdThumbs();
 }
@@ -1516,6 +1520,12 @@ document.getElementById('mdOutput').addEventListener('click', e=>{
   if(retryBtn){
     if(mdBatchBusy) return;
     retryMdImages([Number(retryBtn.dataset.retryId)]);
+    return;
+  }
+  const regenBtn = e.target.closest('.regen-btn');
+  if(regenBtn){
+    if(mdBatchBusy) return;
+    retryMdImages([Number(regenBtn.dataset.regenId)]);
     return;
   }
   const btn = e.target.closest('.copy-mini');
@@ -1533,6 +1543,11 @@ document.getElementById('mdRetryFailedBtn').addEventListener('click', ()=>{
   if(mdBatchBusy) return;
   const failedIds = mdImages.filter(i=>i.status==='error').map(i=>i.id);
   if(failedIds.length) retryMdImages(failedIds);
+});
+
+document.getElementById('mdRegenerateAllBtn').addEventListener('click', ()=>{
+  if(mdBatchBusy || mdImages.length === 0) return;
+  retryMdImages(mdImages.map(i=>i.id));
 });
 
 function csvEscape(val){
