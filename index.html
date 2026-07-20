@@ -258,14 +258,24 @@
   .filter-chip.active{background:var(--nav-active-bg);color:var(--nav-active-text);border-color:var(--nav-active-bg);}
 
   /* Keyword generator */
-  .kw-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
-  .kw-lang-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-  .kw-asset-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-  .kw-asset-label{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px;}
-  .kw-count-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-  .kw-count-input{width:64px;padding:7px 10px;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
+  .kw-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;}
+  /* Satu toolbar ringkas: semua grup kontrol berjejer, dipisah garis vertikal
+     tipis alih-alih 4 baris penuh dengan border bawah masing-masing — sama
+     persis fiturnya, cuma jauh lebih padat & mudah dipindai matanya. */
+  .kw-controls{
+    display:flex; align-items:center; flex-wrap:wrap;
+    gap:8px 18px;
+    margin-bottom:8px; padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .kw-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-right:18px;border-right:1px solid var(--border);}
+  .kw-group:last-child{padding-right:0;border-right:none;}
+  .kw-group-wide{flex:1 1 100%;padding-right:0;border-right:none;}
+  .kw-asset-label{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px;}
+  .kw-controls .filter-chip{padding:5px 10px;font-size:10.5px;}
+  .kw-count-input{width:56px;padding:6px 9px;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
   .kw-count-input:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
-  .kw-count-hint{font-size:11px;color:var(--ink-soft);}
+  .kw-count-hint{font-size:11px;color:var(--ink-soft);display:block;margin-bottom:14px;}
   .kw-random-hint{font-size:11px;color:var(--blue-text);margin-top:10px;display:none;}
   .kw-random-hint.show{display:block;}
   .kw-row{display:flex;gap:10px;flex-wrap:wrap;}
@@ -309,6 +319,24 @@
     font-family:'JetBrains Mono'; font-size:9.5px; font-weight:600; letter-spacing:0.04em;
     background:var(--blue); color:#fff; padding:2px 7px; border-radius:20px;
   }
+  .cal-card .cal-more{margin-top:10px; padding-top:9px; border-top:1px dashed var(--border);}
+  .cal-card .cal-more summary{
+    cursor:pointer; list-style:none; user-select:none;
+    display:flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono'; font-size:10.5px; font-weight:500;
+    letter-spacing:0.03em; color:var(--ink-soft);
+  }
+  .cal-card .cal-more summary::-webkit-details-marker{display:none;}
+  .cal-card .cal-more summary::before{
+    content:'▸'; font-size:9px; color:var(--blue); flex:none;
+    transition:transform .15s ease;
+  }
+  .cal-card .cal-more[open] summary::before{transform:rotate(90deg);}
+  .cal-card .cal-more summary:hover{color:var(--blue-text);}
+  .cal-card .cal-more .extra-item{margin-top:9px;}
+  .cal-card .cal-more .extra-item + .extra-item{margin-top:10px; padding-top:9px; border-top:1px solid var(--paper-line);}
+  .cal-card .cal-more .extra-item h5{font-family:'Space Grotesk'; font-size:12.5px; font-weight:600; margin:0 0 3px;}
+  .cal-card .cal-more .extra-item p{font-size:11.5px; color:var(--ink-soft); line-height:1.5; margin:0;}
 
   /* saved notes */
   .save-form{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:20px;}
@@ -662,31 +690,33 @@
       <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, mode kata (Filter = istilah yang laku di Adobe Stock, Unfilter = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
 
       <div class="kw-panel">
-        <div class="kw-lang-row" id="kwLangRow">
-          <span class="kw-asset-label">Bahasa</span>
-          <button type="button" class="filter-chip active" data-lang="id">🇮🇩 Indonesia</button>
-          <button type="button" class="filter-chip" data-lang="en">🇬🇧 English</button>
+        <div class="kw-controls" id="kwControls">
+          <div class="kw-group" id="kwLangRow">
+            <span class="kw-asset-label">Bahasa</span>
+            <button type="button" class="filter-chip active" data-lang="id">🇮🇩 ID</button>
+            <button type="button" class="filter-chip" data-lang="en">🇬🇧 EN</button>
+          </div>
+          <div class="kw-group" id="kwModeRow">
+            <span class="kw-asset-label">Mode</span>
+            <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter</button>
+            <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter</button>
+          </div>
+          <div class="kw-group" id="kwCountRow">
+            <span class="kw-asset-label">Jumlah Kata</span>
+            <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
+            <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
+          </div>
+          <div class="kw-group kw-group-wide" id="kwAssetRow">
+            <span class="kw-asset-label">Jenis Aset</span>
+            <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
+            <button type="button" class="filter-chip" data-asset="icon">Icon</button>
+            <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
+            <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
+            <button type="button" class="filter-chip" data-asset="template">Template</button>
+            <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
+          </div>
         </div>
-        <div class="kw-asset-row" id="kwAssetRow">
-          <span class="kw-asset-label">Jenis Aset</span>
-          <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
-          <button type="button" class="filter-chip" data-asset="icon">Icon</button>
-          <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
-          <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
-          <button type="button" class="filter-chip" data-asset="template">Template</button>
-          <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
-        </div>
-        <div class="kw-asset-row" id="kwModeRow">
-          <span class="kw-asset-label">Mode Kata</span>
-          <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter (Laku di Adobe Stock)</button>
-          <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter (Umum &amp; Kaya Kata)</button>
-        </div>
-        <div class="kw-count-row" id="kwCountRow">
-          <span class="kw-asset-label">Jumlah Kata</span>
-          <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
-          <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
-          <span class="kw-count-hint" id="kwCountHint">kata per kombinasi — Auto = panjang alami, atau tentukan sendiri (min 1 kata)</span>
-        </div>
+        <span class="kw-count-hint" id="kwCountHint">Auto = panjang alami mengikuti mode kata, atau tentukan sendiri jumlah kata per kombinasi (min 1).</span>
         <div class="kw-row">
           <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
           <button class="btn" id="kwBtn">🎲 Buat Kombinasi</button>
@@ -1076,13 +1106,48 @@ const socialPlatforms = [
   },
   {
     id:'viber', name:'Viber',
-    icon:'<path d="M5 6.6A2.6 2.6 0 0 1 7.6 4h8.8A2.6 2.6 0 0 1 19 6.6v6.1a2.6 2.6 0 0 1-2.6 2.6H10.2l-3.7 3.5v-3.5h-.9A2.6 2.6 0 0 1 3 12.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/><path d="M9.5 8.4c0 2.75 1.85 4.6 4.6 4.6" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><circle cx="9.5" cy="8.4" r="0.95" fill="currentColor"/>',
+    icon:'<path d="M5 6.6A2.6 2.6 0 0 1 7.6 4h8.8A2.6 2.6 0 0 1 19 6.6v6.1a2.6 2.6 0 0 1-2.6 2.6H10.2l-3.7 3.5v-3.5h-.9A2.6 2.6 0 0 1 3 12.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/><path d="M8.7 8.7c1.3-1.3 2.5-1.3 3.3-.3l.4.5c.3.4.2.9-.2 1.2l-.6.5c-.2.2-.3.5-.1.7.4.6 1 1.2 1.6 1.6.2.2.5.1.7-.1l.5-.6c.3-.4.8-.5 1.2-.2l.5.4c1 .8 1 2-.3 3.3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
     formats:['Sticker Pack','Banner Channel']
   },
   {
     id:'spotify', name:'Spotify',
     icon:'<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M7.3 10c3.1-.9 6.5-.6 9.3 1" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M7.7 13c2.5-.7 5.2-.5 7.5.85" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M8.1 15.8c1.9-.5 3.9-.35 5.6.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/>',
     formats:['Cover Playlist','Canvas Video']
+  },
+  {
+    id:'xiaohongshu', name:'Xiaohongshu (RedNote)',
+    icon:'<rect x="3" y="3" width="18" height="18" rx="5.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M9.3 7v9.3l2.7-2.35L14.7 16.3V7z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/>',
+    formats:['Cover Post','Note Template']
+  },
+  {
+    id:'kwai', name:'Kwai',
+    icon:'<rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 8l4 3.3L8 15M16 8l-4 3.3 4 3.7" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.3 15.6c1 .75 3.7.75 4.7 0" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/>',
+    formats:['Cover Video','Banner Profil']
+  },
+  {
+    id:'douyin', name:'Douyin',
+    icon:'<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12.6 6.8v7.1a2.5 2.5 0 1 1-1.9-2.4" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.6 6.8c.3 1.7 1.6 2.9 3.3 3.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/>',
+    formats:['Cover Video','Banner Profil']
+  },
+  {
+    id:'behance', name:'Behance',
+    icon:'<rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M7 9.5h3c1.5 0 1.5 2 0 2H7zM7 11.5h3.2c1.7 0 1.7 2.3 0 2.3H7z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><path d="M14.2 12.4c0-1.5 1-2.6 2.4-2.6s2.3 1 2.3 2.5v.3h-4.6c0 1.2.8 1.9 1.9 1.9.75 0 1.3-.3 1.6-.8M15 9.2h3" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+    formats:['Cover Proyek','Module Portfolio']
+  },
+  {
+    id:'dribbble', name:'Dribbble',
+    icon:'<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4.5 10.2c3.8.9 8 .8 11.6-.4M5.6 16.4c2-3.1 4.8-5.3 8.7-6.3M9.3 3.9c2.6 3 4.1 6.9 4.4 11.7" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
+    formats:['Shot Cover','Team Banner']
+  },
+  {
+    id:'medium', name:'Medium',
+    icon:'<rect x="3" y="3" width="18" height="18" rx="5.5" stroke="currentColor" stroke-width="1.6" fill="none"/><ellipse cx="8.6" cy="12" rx="2.4" ry="3.6" stroke="currentColor" stroke-width="1.2" fill="none"/><ellipse cx="14.2" cy="12" rx="1.4" ry="3.6" stroke="currentColor" stroke-width="1.2" fill="none"/><ellipse cx="17.6" cy="12" rx="0.6" ry="3.6" stroke="currentColor" stroke-width="1.2" fill="none"/>',
+    formats:['Cover Artikel','Header Publikasi']
+  },
+  {
+    id:'quora', name:'Quora',
+    icon:'<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="12" cy="11.3" r="3.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M14.2 13.6l3.1 3.1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>',
+    formats:['Banner Space','Post Gambar']
   }
 ];
 
@@ -1558,28 +1623,77 @@ document.getElementById('kwCopyAll').addEventListener('click', ()=>{
   setTimeout(()=>{ btn.textContent = original; }, 900);
 });
 
-/* ---------- Calendar ---------- */
+/* ---------- Calendar ----------
+   monthIdx = 0 (Jan) ... 11 (Des). Sengaja dipisah jadi 2 momen per bulan
+   (bukan digabung dalam satu catatan) supaya tiap peluang niche lebih
+   mudah dibaca & dieksekusi terpisah. */
 const calendarData = [
-  {m:'JAN', title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
-  {m:'FEB', title:'Imlek & Valentine', note:'Motif shio, angpao, warna merah-emas; elemen hati & romansa minimalis.'},
-  {m:'MAR', title:'Awal Ramadan & Hari Perempuan', note:'Lentera, bulan sabit, pola geometris Islami; ilustrasi pemberdayaan perempuan.'},
-  {m:'APR', title:'Idulfitri & Paskah', note:'Ketupat, motif lebaran, kartu ucapan; telur & kelinci Paskah bergaya pastel.'},
-  {m:'MEI', title:'Hari Buruh & Hari Ibu', note:'Ilustrasi profesi/pekerja, tema keluarga & kasih sayang untuk kartu ucapan.'},
-  {m:'JUN', title:'Hari Ayah & Liburan Sekolah', note:'Tema aktivitas outdoor, family time, packing/travel vector.'},
-  {m:'JUL', title:'Musim Panas Global', note:'Pantai, es krim, pola tropis — pasar Amerika/Eropa mulai cari konten musim panas.'},
-  {m:'AGU', title:'Kemerdekaan & Back to School', note:'Palet merah-putih, ornamen perayaan; alat tulis & ilustrasi ruang kelas.'},
-  {m:'SEP', title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'},
-  {m:'OKT', title:'Halloween & Hari Batik', note:'Labu, hantu lucu, tema spooky-cute; motif batik & budaya nusantara.'},
-  {m:'NOV', title:'Black Friday & Thanksgiving', note:'Banner diskon, tag harga, tema belanja; ilustrasi keluarga & rasa syukur.'},
-  {m:'DES', title:'Natal & Tahun Baru', note:'Ornamen pohon Natal, salju, kembang api; kartu ucapan & pola kado.'}
+  {m:'JAN', monthIdx:0, events:[
+    {title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
+    {title:'Musim Dingin Belahan Utara', note:'Pola salju, sweater, minuman hangat; permintaan tinggi di pasar Amerika/Eropa.'}
+  ]},
+  {m:'FEB', monthIdx:1, events:[
+    {title:'Imlek', note:'Motif shio, angpao, lentera merah-emas, karakter keberuntungan gaya flat.'},
+    {title:'Hari Valentine', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis.'}
+  ]},
+  {m:'MAR', monthIdx:2, events:[
+    {title:'Awal Ramadan', note:'Lentera, bulan sabit, pola geometris Islami, kaligrafi dekoratif.'},
+    {title:'Hari Perempuan Internasional', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas.'}
+  ]},
+  {m:'APR', monthIdx:3, events:[
+    {title:'Idulfitri', note:'Ketupat, motif lebaran, kartu ucapan bertema silaturahmi & maaf-memaafkan.'},
+    {title:'Paskah & Hari Bumi', note:'Telur & kelinci Paskah gaya pastel; ikon daur ulang, bumi, tema ramah lingkungan.'}
+  ]},
+  {m:'MEI', monthIdx:4, events:[
+    {title:'Hari Buruh & Hari Ibu', note:'Ilustrasi profesi/pekerja, tema keluarga & kasih sayang untuk kartu ucapan.'},
+    {title:'Musim Wisuda (Barat)', note:'Toga, topi wisuda, ikon pencapaian akademik — mulai dicari sejak awal Mei.'}
+  ]},
+  {m:'JUN', monthIdx:5, events:[
+    {title:'Hari Ayah & Liburan Sekolah', note:'Tema aktivitas outdoor, family time, packing/travel vector.'},
+    {title:'Pride Month', note:'Pola pelangi, ikon keberagaman & inklusi, palet warna cerah berlapis.'}
+  ]},
+  {m:'JUL', monthIdx:6, events:[
+    {title:'Musim Panas Global', note:'Pantai, es krim, pola tropis — pasar Amerika/Eropa mulai cari konten musim panas.'},
+    {title:'Idul Adha', note:'Motif hewan kurban gaya sederhana, ornamen islami, kartu ucapan Idul Adha.'}
+  ]},
+  {m:'AGU', monthIdx:7, events:[
+    {title:'Kemerdekaan RI', note:'Palet merah-putih, ornamen perayaan 17 Agustus, ikon lomba & kemeriahan.'},
+    {title:'Back to School', note:'Alat tulis, ilustrasi ruang kelas, tas sekolah — puncak pencarian pasar Amerika/Eropa.'}
+  ]},
+  {m:'SEP', monthIdx:8, events:[
+    {title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'},
+    {title:'Maulid Nabi', note:'Ornamen islami lembut, kaligrafi, palet hijau-emas untuk kartu ucapan.'}
+  ]},
+  {m:'OKT', monthIdx:9, events:[
+    {title:'Halloween', note:'Labu, hantu lucu, tema spooky-cute, pola kelelawar & laba-laba playful.'},
+    {title:'Hari Batik & Bulan Kesadaran Kanker Payudara', note:'Motif batik & budaya nusantara; pita pink, ikon kesadaran kesehatan.'}
+  ]},
+  {m:'NOV', monthIdx:10, events:[
+    {title:'Black Friday & Cyber Monday', note:'Banner diskon, tag harga, badge promo, tema belanja online.'},
+    {title:'Thanksgiving & Singles Day (11.11)', note:'Ilustrasi keluarga & rasa syukur; badge flash sale & ikon e-commerce.'}
+  ]},
+  {m:'DES', monthIdx:11, events:[
+    {title:'Natal', note:'Ornamen pohon Natal, salju, kembang api, kartu ucapan & pola kado.'},
+    {title:'Malam Tahun Baru & Boxing Day', note:'Confetti, jam menuju tengah malam, badge diskon akhir tahun.'}
+  ]}
 ];
 const calGrid = document.getElementById('calGrid');
-const currentMonthIdx = new Date().getMonth(); // 0 = Jan ... 11 = Des, sejajar dgn urutan calendarData
-calendarData.forEach((c, idx)=>{
+const currentMonthIdx = new Date().getMonth(); // 0 = Jan ... 11 = Des
+calendarData.forEach((c)=>{
   const el = document.createElement('div');
-  const isCurrent = idx === currentMonthIdx;
+  const isCurrent = c.monthIdx === currentMonthIdx;
   el.className = 'cal-card' + (isCurrent ? ' is-current' : '');
-  el.innerHTML = `<div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div><h4>${c.title}</h4><p>${c.note}</p>`;
+  const [main, ...extra] = c.events;
+  let html = `<div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div>`;
+  html += `<h4>${main.title}</h4><p>${main.note}</p>`;
+  if(extra.length){
+    html += `<details class="cal-more"><summary>+${extra.length} info tambahan</summary>`;
+    extra.forEach(ev=>{
+      html += `<div class="extra-item"><h5>${ev.title}</h5><p>${ev.note}</p></div>`;
+    });
+    html += `</details>`;
+  }
+  el.innerHTML = html;
   calGrid.appendChild(el);
 });
 document.querySelector('.cal-card.is-current')?.scrollIntoView({ block:'nearest' });
