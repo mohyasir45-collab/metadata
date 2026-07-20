@@ -14,6 +14,7 @@
     --ink-soft:#565b61;
     --blue:#2e5eff;
     --blue-soft: rgba(46,94,255,0.10);
+    --blue-2:#7c6cff;
     --amber:#ffb020;
     --amber-soft: rgba(255,176,32,0.14);
     --red:#ff5470;
@@ -22,15 +23,20 @@
     --green-soft: rgba(31,157,107,0.13);
     --panel:#ffffff;
     --border: rgba(20,23,26,0.12);
-    --radius: 10px;
+    --radius: 12px;
     --amber-text:#8a5a00;
     --green-text:#0f6b47;
     --blue-text:#1c3fb0;
     --red-text:#b3223f;
-    --topbar-bg: rgba(242,240,234,0.85);
+    --topbar-bg: rgba(242,240,234,0.72);
     --nav-active-bg: var(--ink);
     --nav-active-text: #ffffff;
     --nav-active-num: rgba(255,255,255,0.55);
+    --accent-grad: linear-gradient(135deg, var(--blue) 0%, var(--blue-2) 100%);
+    --shadow-sm: 0 1px 2px rgba(20,23,26,0.05), 0 1px 1px rgba(20,23,26,0.03);
+    --shadow-md: 0 6px 20px rgba(20,23,26,0.08), 0 2px 6px rgba(20,23,26,0.05);
+    --shadow-lg: 0 16px 40px rgba(20,23,26,0.14), 0 4px 10px rgba(20,23,26,0.07);
+    --focus-ring: 0 0 0 4px var(--blue-soft);
   }
   html{color-scheme: light;}
   html[data-theme="dark"]{
@@ -41,6 +47,7 @@
     --ink-soft:#9aa1a8;
     --blue:#5b82ff;
     --blue-soft: rgba(91,130,255,0.16);
+    --blue-2:#9b8cff;
     --amber:#ffc247;
     --amber-soft: rgba(255,194,71,0.16);
     --red:#ff7188;
@@ -53,13 +60,23 @@
     --green-text:#3ec98d;
     --blue-text:#8ea4ff;
     --red-text:#ff8a9c;
-    --topbar-bg: rgba(21,24,28,0.85);
+    --topbar-bg: rgba(21,24,28,0.72);
     --nav-active-bg: #f2f4f6;
     --nav-active-text: #15181c;
     --nav-active-num: rgba(21,24,28,0.55);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.38), 0 2px 6px rgba(0,0,0,0.25);
+    --shadow-lg: 0 20px 48px rgba(0,0,0,0.5), 0 6px 14px rgba(0,0,0,0.3);
+    --focus-ring: 0 0 0 4px var(--blue-soft);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  ::selection{background:var(--blue-soft); color:var(--ink);}
+  ::-webkit-scrollbar{width:11px;height:11px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;border:3px solid var(--paper);background-clip:padding-box;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--ink-soft);background-clip:padding-box;}
+  *{scrollbar-width:thin; scrollbar-color:var(--border) transparent;}
   body{
     font-family:'Inter',sans-serif;
     color:var(--ink);
@@ -71,13 +88,19 @@
   }
   .topbar, .sidebar, .art-card, .trend-links, .kw-panel, .cal-card, .save-form,
   .saved-item, .meta-panel, .meta-upload, .meta-key-row, .filter-chip, .nav-btn,
-  .kw-pill, .ext-link, .badge, .chip, .btn.ghost, .kw-row input,
+  .kw-pill, .ext-link, .badge, .chip, .btn, .btn.ghost, .kw-row input,
   .meta-field input, .meta-field select, .meta-key-field input, .meta-key-field select, .meta-key-field textarea,
   .save-form input, .save-form select, .save-form textarea{
-    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .18s ease, transform .15s ease;
   }
   .mono{font-family:'JetBrains Mono',monospace;}
   .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh;}
+
+  /* elevated surfaces: soft resting shadow, lifts a touch on hover */
+  .art-card, .trend-links, .kw-panel, .cal-card, .save-form, .saved-item,
+  .meta-panel, .meta-upload, .meta-adv, .meta-result-card{
+    box-shadow: var(--shadow-sm);
+  }
 
   /* Top bar */
   .topbar{
@@ -86,14 +109,18 @@
     padding:14px 22px;
     border-bottom:1px solid var(--border);
     background: var(--topbar-bg);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
     position:sticky; top:0; z-index:20;
   }
   .logo{
     width:30px;height:30px;flex:none;
   }
   .brand-text{display:flex;flex-direction:column;line-height:1.15;}
-  .brand-text b{font-family:'Space Grotesk';font-size:16px;font-weight:700;letter-spacing:-0.01em;}
+  .brand-text b{
+    font-family:'Space Grotesk';font-size:16px;font-weight:700;letter-spacing:-0.01em;
+    background:var(--accent-grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
   .brand-text span{font-size:11px;color:var(--ink-soft);font-family:'JetBrains Mono';letter-spacing:0.02em;}
   .coords{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);display:flex;gap:16px;}
   .coords b{color:var(--ink);}
@@ -101,11 +128,11 @@
   .theme-toggle{
     flex:none; width:32px;height:32px; margin-left:14px;
     display:flex; align-items:center; justify-content:center;
-    border:1px solid var(--border); border-radius:8px;
+    border:1px solid var(--border); border-radius:9px;
     background:var(--panel); color:var(--ink); cursor:pointer;
-    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
   }
-  .theme-toggle:hover{border-color:var(--blue); color:var(--blue);}
+  .theme-toggle:hover{border-color:var(--blue); color:var(--blue); transform:translateY(-1px) rotate(-8deg);}
   .theme-toggle svg{width:16px;height:16px;}
   .theme-toggle .icon-moon{display:none;}
   html[data-theme="dark"] .theme-toggle .icon-sun{display:none;}
@@ -121,14 +148,16 @@
   }
   .nav-btn{
     display:flex;align-items:center;gap:10px;
-    padding:10px 12px;border-radius:8px;
+    padding:10px 12px;border-radius:9px;
     font-family:'Space Grotesk';font-size:13.5px;font-weight:500;
     color:var(--ink-soft); cursor:pointer; border:none; background:none;
     text-align:left; width:100%;
+    transition: background-color .15s ease, color .15s ease, transform .15s ease;
   }
   .nav-btn .num{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);opacity:0.6;}
-  .nav-btn:hover{background:var(--blue-soft); color:var(--ink);}
-  .nav-btn.active{background:var(--nav-active-bg); color:var(--nav-active-text);}
+  .nav-btn:hover{background:var(--blue-soft); color:var(--ink); transform:translateX(2px);}
+  .nav-btn.active{background:var(--nav-active-bg); color:var(--nav-active-text); box-shadow:var(--shadow-sm);}
+  .nav-btn.active:hover{transform:none;}
   .nav-btn.active .num{color:var(--nav-active-num);}
   .sidebar-foot{margin-top:auto;font-size:10.5px;color:var(--ink-soft);font-family:'JetBrains Mono';padding:10px 12px;border-top:1px solid var(--border);line-height:1.6;}
 
@@ -149,10 +178,10 @@
     border:1px solid var(--border);
     border-radius:var(--radius);
     padding:16px;
-    transition: box-shadow .15s ease, border-color .15s ease;
+    transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
     display:flex; flex-direction:column; height:100%;
   }
-  .art-card:hover{border-color:var(--blue); box-shadow:0 4px 18px rgba(46,94,255,0.10);}
+  .art-card:hover{border-color:var(--blue); box-shadow:var(--shadow-md); transform:translateY(-2px);}
   .handle{position:absolute;width:7px;height:7px;background:var(--blue);border-radius:1px;opacity:0;transition:opacity .12s ease;}
   .art-card:hover .handle{opacity:1;}
   .h-tl{top:-4px;left:-4px;} .h-tr{top:-4px;right:-4px;} .h-bl{bottom:-4px;left:-4px;} .h-br{bottom:-4px;right:-4px;}
@@ -181,7 +210,7 @@
     padding:7px 12px;border-radius:20px;border:1px solid var(--border);
     background:var(--paper);color:var(--ink);text-decoration:none;
   }
-  .ext-link:hover{border-color:var(--blue);color:var(--blue);}
+  .ext-link:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);}
   .ext-link svg{width:10px;height:10px;flex:none;}
   .card-link{
     display:inline-flex;align-items:center;gap:5px;
@@ -193,26 +222,41 @@
 
   /* filter bar */
   .filter-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
-  .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);}
+  .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);transition:border-color .15s ease, color .15s ease, transform .15s ease;}
+  .filter-chip:hover{border-color:var(--blue); color:var(--blue-text); transform:translateY(-1px);}
   .filter-chip.active{background:var(--nav-active-bg);color:var(--nav-active-text);border-color:var(--nav-active-bg);}
 
   /* Keyword generator */
   .kw-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
+  .kw-lang-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .kw-asset-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .kw-asset-label{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px;}
+  .kw-count-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .kw-count-input{width:64px;padding:7px 10px;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
+  .kw-count-input:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
+  .kw-count-hint{font-size:11px;color:var(--ink-soft);}
+  .kw-random-hint{font-size:11px;color:var(--blue-text);margin-top:10px;display:none;}
+  .kw-random-hint.show{display:block;}
   .kw-row{display:flex;gap:10px;flex-wrap:wrap;}
   .kw-row input{
     flex:1; min-width:220px;
     padding:11px 14px;border:1px solid var(--border);border-radius:8px;
     font-family:'JetBrains Mono';font-size:13px; background:var(--paper);
   }
-  .kw-row input:focus{outline:2px solid var(--blue); outline-offset:1px;}
+  .kw-row input:focus{outline:none; border-color:var(--blue); box-shadow:var(--focus-ring);}
   .btn{
     font-family:'Space Grotesk';font-weight:600;font-size:13px;
-    padding:11px 18px;border-radius:8px;border:none;
-    background:var(--blue); color:#fff; cursor:pointer;
+    padding:11px 18px;border-radius:10px;border:none;
+    background:var(--accent-grad); color:#fff; cursor:pointer;
+    box-shadow:var(--shadow-sm);
   }
-  .btn:hover{background:#1e46e0;}
-  .btn.secondary{background:var(--nav-active-bg); color:var(--nav-active-text);}
-  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--ink);}
+  .btn:hover{filter:brightness(1.08); transform:translateY(-1px); box-shadow:var(--shadow-md);}
+  .btn:active{transform:translateY(0); filter:brightness(0.96); box-shadow:var(--shadow-sm);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed; transform:none; filter:none; box-shadow:none;}
+  .btn.secondary{background:var(--nav-active-bg); color:var(--nav-active-text); box-shadow:var(--shadow-sm);}
+  .btn.secondary:hover{filter:none; background:var(--nav-active-bg); opacity:0.9;}
+  .btn.ghost{background:var(--panel);border:1px solid var(--border);color:var(--ink); box-shadow:none;}
+  .btn.ghost:hover{border-color:var(--blue); color:var(--blue-text); background:var(--blue-soft); transform:translateY(-1px); filter:none; box-shadow:var(--shadow-sm);}
   .kw-results{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px;}
   .kw-pill{
     font-family:'JetBrains Mono'; font-size:12px; padding:6px 12px;
@@ -240,11 +284,13 @@
   .save-form .row{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
   .save-form input, .save-form select, .save-form textarea{
     font-family:'Inter'; font-size:13px; padding:10px 12px; border:1px solid var(--border);
-    border-radius:7px; background:var(--paper); flex:1; min-width:160px;
+    border-radius:8px; background:var(--paper); flex:1; min-width:160px;
   }
+  .save-form input:focus, .save-form select:focus, .save-form textarea:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
   .save-form textarea{width:100%; min-height:60px; resize:vertical; font-family:'Inter';}
   .saved-list{display:flex; flex-direction:column; gap:10px;}
-  .saved-item{background:var(--panel); border:1px solid var(--border); border-radius:9px; padding:14px 16px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
+  .saved-item{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start; transition:box-shadow .18s ease, transform .18s ease;}
+  .saved-item:hover{box-shadow:var(--shadow-md); transform:translateY(-1px);}
   .saved-item h4{font-family:'Space Grotesk'; font-size:14px; margin:0 0 4px;}
   .saved-item p{font-size:12.5px; color:var(--ink-soft); margin:0; line-height:1.5;}
   .saved-meta{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--ink-soft); margin-top:6px;}
@@ -259,7 +305,7 @@
     padding:10px 12px;border:1px solid var(--border);border-radius:8px;
     font-family:'Inter';font-size:13px;background:var(--paper);
   }
-  .meta-field input:focus, .meta-field select:focus{outline:2px solid var(--blue);outline-offset:1px;}
+  .meta-field input:focus, .meta-field select:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
   .meta-output{margin-top:6px;}
   .meta-out-block{background:var(--paper);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:12px;}
   .meta-out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
@@ -270,7 +316,15 @@
   }
   .copy-mini:hover{border-color:var(--blue);color:var(--blue);}
   .meta-title-text{font-family:'Space Grotesk';font-size:14.5px;line-height:1.4;}
-  .meta-kw-text{font-family:'JetBrains Mono';font-size:12.5px;line-height:1.7;color:var(--ink-soft);word-break:break-word;}
+  .meta-kw-text{display:flex;flex-wrap:wrap;gap:6px;word-break:break-word;}
+  .meta-kw-pill{
+    font-family:'JetBrains Mono';font-size:11.5px;
+    background:var(--panel);border:1px solid var(--border);border-radius:6px;
+    padding:4px 9px;cursor:pointer;color:var(--ink-soft);line-height:1.4;
+    transition:background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .meta-kw-pill:hover{border-color:var(--blue);color:var(--blue);}
+  .meta-kw-pill.copied{background:var(--blue);color:#fff;border-color:var(--blue);}
   .kw-count-badge{font-family:'JetBrains Mono';font-size:10.5px;padding:3px 9px;border-radius:20px;font-weight:500;}
   .kw-count-badge.ok{background:var(--green-soft);color:var(--green-text);}
   .kw-count-badge.warn{background:var(--red-soft);color:var(--red-text);}
@@ -283,7 +337,7 @@
   }
 
   /* metadata: image upload */
-  .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:9px;padding:18px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;}
+  .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;}
   .meta-upload-info{flex:1;min-width:200px;}
   .meta-upload-info h5{font-family:'Space Grotesk';font-size:12.5px;text-transform:uppercase;letter-spacing:0.03em;color:var(--ink-soft);margin:0 0 4px;}
   .meta-upload-info p{font-size:12px;color:var(--ink-soft);margin:0;line-height:1.5;}
@@ -320,10 +374,10 @@
   /* metadata: per-image result cards */
   .meta-output-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
   .meta-output-summary{font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink-soft);}
-  .meta-result-card{border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:16px;background:var(--paper);transition:border-color .15s ease;}
-  .meta-result-card:hover{border-color:var(--blue);}
+  .meta-result-card{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;background:var(--paper);transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;}
+  .meta-result-card:hover{border-color:var(--blue); box-shadow:var(--shadow-md); transform:translateY(-1px);}
   .meta-result-card.error{border-color:var(--red);}
-  .meta-result-card.error:hover{border-color:var(--red);}
+  .meta-result-card.error:hover{border-color:var(--red); box-shadow:var(--shadow-md); transform:translateY(-1px);}
   .meta-result-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
   .meta-batch-num{
     flex:none;width:22px;height:22px;border-radius:50%;
@@ -358,7 +412,7 @@
     grid-template-columns: 1fr 1.4fr auto;
     align-items:end; gap:16px;
     margin-bottom:16px; padding:14px 16px;
-    background:var(--paper); border:1px solid var(--border); border-radius:9px;
+    background:var(--paper); border:1px solid var(--border); border-radius:11px;
   }
   .meta-key-actions{display:flex; align-items:center; gap:10px;}
   .meta-key-field{min-width:0; display:flex; flex-direction:column; gap:5px;}
@@ -367,14 +421,14 @@
     padding:10px 12px;border:1px solid var(--border);border-radius:8px;
     font-family:'JetBrains Mono';font-size:12.5px;background:var(--panel);width:100%;height:42px;
   }
-  .meta-key-field input:focus, .meta-key-field select:focus{outline:2px solid var(--blue);outline-offset:1px;}
+  .meta-key-field input:focus, .meta-key-field select:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
   .meta-key-field.provider-field{min-width:0;}
   .meta-key-field textarea{
     padding:10px 12px;border:1px solid var(--border);border-radius:8px;
     font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);
     resize:vertical;height:42px;min-height:42px;line-height:1.4;width:100%;
   }
-  .meta-key-field textarea:focus{outline:2px solid var(--blue);outline-offset:1px;}
+  .meta-key-field textarea:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
   .meta-key-field textarea.masked{-webkit-text-security:disc;text-security:disc;}
   .auto-summary{display:flex;gap:6px;flex-wrap:wrap;align-items:center;grid-column:1/-1;}
   .auto-pill{
@@ -401,17 +455,22 @@
   .meta-key-status{font-family:'JetBrains Mono';font-size:10.5px;color:var(--green);white-space:nowrap;align-self:center;}
 
   /* simplified advanced settings card */
-  .meta-adv{border:1px solid var(--border);border-radius:9px;background:var(--paper);margin-bottom:18px;overflow:hidden;}
+  .meta-adv{border:1px solid var(--border);border-radius:12px;background:var(--paper);margin-bottom:18px;overflow:hidden;}
   .meta-adv-toggle{
     width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
     background:none;border:none;cursor:pointer;padding:14px 16px;text-align:left;
   }
   .meta-adv-toggle:hover{background:var(--blue-soft);}
-  .meta-adv-toggle-title{display:flex;flex-direction:column;gap:2px;}
+  .meta-adv-toggle-title{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
   .meta-adv-toggle-title>span:first-child{font-family:'Space Grotesk';font-size:13px;font-weight:600;color:var(--ink);}
   .meta-adv-toggle-sub{font-family:'Inter';font-size:11.5px;color:var(--ink-soft);}
   .meta-adv-toggle .arrow{flex:none;color:var(--ink-soft);transition:transform .15s ease; display:inline-block;}
   .meta-adv-toggle.open .arrow{transform:rotate(90deg);}
+  .meta-adv-saved{
+    flex:none;font-family:'JetBrains Mono';font-size:10.5px;color:var(--green-text);
+    opacity:0;transition:opacity .3s ease;
+  }
+  .meta-adv-saved:not(:empty){opacity:1;}
   .meta-adv-body{display:none;}
   .meta-adv-body.open{
     display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;
@@ -566,16 +625,37 @@
     <!-- 04 KEYWORD -->
     <section class="view" id="view-keyword">
       <h1 class="page-title">Generator Kata Kunci</h1>
-      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), tool akan menyusun kombinasi judul & tag long-tail yang lazim dicari pembeli di Adobe Stock.</p>
+      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, atur jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul & tag long-tail yang lazim dicari pembeli di Adobe Stock. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
 
       <div class="kw-panel">
+        <div class="kw-lang-row" id="kwLangRow">
+          <span class="kw-asset-label">Bahasa</span>
+          <button type="button" class="filter-chip active" data-lang="id">🇮🇩 Indonesia</button>
+          <button type="button" class="filter-chip" data-lang="en">🇬🇧 English</button>
+        </div>
+        <div class="kw-asset-row" id="kwAssetRow">
+          <span class="kw-asset-label">Jenis Aset</span>
+          <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
+          <button type="button" class="filter-chip" data-asset="icon">Icon</button>
+          <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
+          <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
+          <button type="button" class="filter-chip" data-asset="template">Template</button>
+          <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
+        </div>
+        <div class="kw-count-row" id="kwCountRow">
+          <span class="kw-asset-label">Jumlah Kata</span>
+          <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
+          <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
+          <span class="kw-count-hint" id="kwCountHint">kata per kombinasi — Auto = panjang alami, atau tentukan sendiri (min 1 kata)</span>
+        </div>
         <div class="kw-row">
-          <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan, pernikahan..." maxlength="40">
-          <button class="btn" id="kwBtn">Buat Kombinasi</button>
+          <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
+          <button class="btn" id="kwBtn">🎲 Buat Kombinasi</button>
           <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
         </div>
+        <div class="kw-random-hint mono" id="kwRandomHint"></div>
         <div class="kw-results" id="kwResults"></div>
-        <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
+        <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar (atau kosongkan untuk ide acak) lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
       </div>
     </section>
 
@@ -629,6 +709,7 @@
               <span>Pengaturan Lanjutan</span>
               <span class="meta-adv-toggle-sub">Tipe file, jumlah keyword, batas karakter, hindari kata</span>
             </span>
+            <span class="meta-adv-saved" id="mdAdvSavedTag"></span>
             <span class="arrow">▸</span>
           </button>
           <div class="meta-adv-body" id="mdAdvBody">
@@ -848,40 +929,224 @@ document.addEventListener('mousemove', e=>{
 });
 
 /* ---------- Keyword generator ---------- */
-const styles = ['flat design','line art','minimalis','doodle','isometric','gaya 3D','watercolor','geometris','maximalist','hand-drawn','retro','gradient','naive art'];
-const formats = ['icon set','seamless pattern','ilustrasi','vector pack','clipart','badge','sticker set','background','banner template','character set'];
-const uses = ['media sosial','kemasan produk','poster','desain kaos','banner web','cetak','branding','presentasi'];
+/* Setiap bank kata (gaya, format, kegunaan, kata benda, ide acak) disediakan
+   dalam 2 bahasa terpisah. Kalimat hasil kombinasi disusun dari bank sesuai
+   bahasa yang dipilih saja, jadi tidak akan ada kata Indonesia & Inggris
+   yang tercampur dalam satu frasa. */
+const KW_STYLES = {
+  id: ['desain flat','line art','minimalis','doodle','isometrik','gaya 3D','cat air','geometris','maximalist','gambar tangan','retro','gradasi','naive art'],
+  en: ['flat design','line art','minimalist','doodle','isometric','3d style','watercolor','geometric','maximalist','hand-drawn','retro','gradient','naive art']
+};
+const KW_USES = {
+  id: ['media sosial','kemasan produk','poster','desain kaos','banner web','cetak','branding','presentasi'],
+  en: ['social media','product packaging','posters','t-shirt design','web banners','print','branding','presentations']
+};
+/* Format & "kata benda utama" berbeda per jenis aset, supaya kombinasi yang
+   dihasilkan benar-benar relevan dengan jenis aset yang dipilih (mis. tidak
+   memunculkan "seamless pattern" saat orang memang mencari ide untuk Icon). */
+const KW_ASSET_FORMATS = {
+  id: {
+    all: ['set ikon','pola mulus','ilustrasi','paket vektor','clipart','lencana','set stiker','latar belakang','templat banner','set karakter'],
+    icon: ['set ikon','ikon garis','paket ikon flat','paket ikon UI aplikasi','ikon lencana','paket ikon'],
+    vector: ['ilustrasi vektor','paket vektor','set karakter','ilustrasi adegan','ilustrasi konsep'],
+    pattern: ['pola mulus','latar belakang','pola berulang','latar wallpaper','pola tekstil'],
+    template: ['templat banner','templat poster','templat media sosial','templat presentasi','templat flyer'],
+    clipart: ['clipart','set stiker','paket clip art','stiker cutting','stiker lencana']
+  },
+  en: {
+    all: ['icon set','seamless pattern','illustration','vector pack','clipart','badge','sticker set','background','banner template','character set'],
+    icon: ['icon set','line icon','flat icon bundle','app UI icon pack','icon badge','icon pack'],
+    vector: ['vector illustration','vector pack','character set','scene illustration','concept illustration'],
+    pattern: ['seamless pattern','background','repeat pattern','wallpaper backdrop','textile pattern'],
+    template: ['banner template','poster template','social media template','presentation template','flyer template'],
+    clipart: ['clipart','sticker set','clip art bundle','die-cut sticker','badge sticker']
+  }
+};
+const KW_ASSET_NOUN = {
+  id: { all:'vektor', icon:'ikon', vector:'vektor', pattern:'pola', template:'templat', clipart:'clipart' },
+  en: { all:'vector', icon:'icon', vector:'vector', pattern:'pattern', template:'template', clipart:'clipart' }
+};
+const KW_ASSET_LABEL = { all:'Semua Jenis', icon:'Icon', vector:'Ilustrasi Vector', pattern:'Pola & Background', template:'Template', clipart:'Clipart & Stiker' };
+const KW_LANG_LABEL = { id:'Indonesia', en:'English' };
 
-function generateKeywords(base){
+/* Dipakai saat kolom kata kunci dikosongkan — sistem memilih salah satu ide
+   dasar secara acak (sesuai bahasa yang dipilih) supaya orang tetap bisa
+   mencoba tool ini tanpa harus memikirkan topik dulu. */
+const KW_RANDOM_IDEAS = {
+  id: [
+    'kucing','anjing','kopi','teh','keuangan','pernikahan','kesehatan','olahraga',
+    'makanan sehat','teknologi','pendidikan','alam','musim panas','natal','lebaran',
+    'liburan','kerja remote','fashion','kecantikan','otomotif','game','musik',
+    'yoga','meditasi','bisnis kecil','startup','anak-anak','hewan peliharaan',
+    'tanaman hias','dapur','interior rumah','perjalanan','pantai','gunung',
+    'luar angkasa','robot','kecerdasan buatan','sepak bola','fitness','kue ulang tahun',
+    'kopi pagi','sarapan','musim hujan','halloween','tahun baru','kemerdekaan'
+  ],
+  en: [
+    'cat','dog','coffee','tea','finance','wedding','health','sports',
+    'healthy food','technology','education','nature','summer','christmas','ramadan',
+    'holiday','remote work','fashion','beauty','automotive','gaming','music',
+    'yoga','meditation','small business','startup','kids','pets',
+    'houseplants','kitchen','home interior','travel','beach','mountains',
+    'outer space','robot','artificial intelligence','football','fitness','birthday cake',
+    'morning coffee','breakfast','rainy season','halloween','new year','independence day'
+  ]
+};
+
+let kwAssetType = 'all';
+let kwLang = 'id';
+let kwWordCount = 'auto'; // 'auto' atau angka bulat >= 1
+
+const kwAutoBtn = document.getElementById('kwAutoBtn');
+const kwWordCountInput = document.getElementById('kwWordCount');
+kwAutoBtn.addEventListener('click', ()=>{
+  kwWordCount = 'auto';
+  kwAutoBtn.classList.add('active');
+});
+kwWordCountInput.addEventListener('input', ()=>{
+  let v = parseInt(kwWordCountInput.value, 10);
+  if(isNaN(v) || v < 1) v = 1;
+  if(v > 12) v = 12;
+  kwWordCount = v;
+  kwAutoBtn.classList.remove('active');
+});
+kwWordCountInput.addEventListener('blur', ()=>{
+  // Pastikan nilai yang tampil di kolom selalu valid (min 1) begitu user selesai mengetik.
+  let v = parseInt(kwWordCountInput.value, 10);
+  if(isNaN(v) || v < 1) v = 1;
+  if(v > 12) v = 12;
+  kwWordCountInput.value = v;
+  if(!kwAutoBtn.classList.contains('active')) kwWordCount = v;
+});
+
+document.getElementById('kwAssetRow').addEventListener('click', e=>{
+  const btn = e.target.closest('.filter-chip');
+  if(!btn) return;
+  document.querySelectorAll('#kwAssetRow .filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  kwAssetType = btn.dataset.asset;
+});
+document.getElementById('kwLangRow').addEventListener('click', e=>{
+  const btn = e.target.closest('.filter-chip');
+  if(!btn) return;
+  document.querySelectorAll('#kwLangRow .filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  kwLang = btn.dataset.lang;
+  document.getElementById('kwInput').placeholder = kwLang === 'en'
+    ? 'e.g. cat, coffee, finance... (leave empty for a random idea)'
+    : 'mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)';
+});
+
+/* Memotong atau menambah kata pada sebuah frasa hasil kombinasi supaya
+   jumlah katanya persis sama dengan target yang dipilih pengguna (mode
+   "Auto" melewati fungsi ini apa adanya). Saat dipotong, kata dasar (base)
+   tetap diusahakan ikut supaya hasilnya tidak kehilangan makna aslinya.
+   Saat kurang, kolam kata dari style/format/use dipakai untuk menambah
+   kata secara acak tanpa duplikat. */
+function adjustWordCount(phrase, wordCount, baseWords, fillerPool){
+  if(wordCount === 'auto') return phrase;
+  const target = Math.max(1, parseInt(wordCount, 10) || 1);
+  let words = phrase.trim().split(/\s+/).filter(Boolean);
+
+  if(words.length > target){
+    // Pilih `target` kata secara ACAK dari kombinasi asli (bukan sekadar
+    // memotong dari depan lalu memaksa kata dasar) supaya target=1 atau 2
+    // kata tetap menghasilkan variasi berbeda-beda, bukan cuma 1 kata yang
+    // sama berulang-ulang. Urutan asalnya tetap dipertahankan biar terbaca wajar.
+    const indices = words.map((_, i) => i);
+    for(let i = indices.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    const picked = indices.slice(0, target).sort((a, b) => a - b);
+    words = picked.map(i => words[i]);
+  }else if(words.length < target){
+    let guard = 0;
+    while(words.length < target && guard < 60){
+      guard++;
+      const pick = fillerPool[Math.floor(Math.random()*fillerPool.length)];
+      const pickWords = String(pick).trim().split(/\s+/).filter(Boolean);
+      for(const w of pickWords){
+        if(words.length >= target) break;
+        if(!words.includes(w)) words.push(w);
+      }
+    }
+  }
+  return words.join(' ');
+}
+
+function generateKeywords(base, assetType, lang, wordCount){
   const results = new Set();
   const b = base.trim().toLowerCase();
   if(!b) return [];
-  // base + style + format
-  for(let i=0;i<8;i++){
-    const s = styles[Math.floor(Math.random()*styles.length)];
-    const f = formats[Math.floor(Math.random()*formats.length)];
-    results.add(`${b} ${f} gaya ${s}`);
-  }
-  // base + format + use
-  for(let i=0;i<8;i++){
-    const f = formats[Math.floor(Math.random()*formats.length)];
-    const u = uses[Math.floor(Math.random()*uses.length)];
-    results.add(`${f} ${b} untuk ${u}`);
-  }
-  // base + style + use
-  for(let i=0;i<8;i++){
-    const s = styles[Math.floor(Math.random()*styles.length)];
-    const u = uses[Math.floor(Math.random()*uses.length)];
-    results.add(`${b} vector ${s} untuk ${u}`);
+  const styleList = KW_STYLES[lang] || KW_STYLES.id;
+  const useList = KW_USES[lang] || KW_USES.id;
+  const fmtList = (KW_ASSET_FORMATS[lang] && KW_ASSET_FORMATS[lang][assetType]) || KW_ASSET_FORMATS.id.all;
+  const noun = (KW_ASSET_NOUN[lang] && KW_ASSET_NOUN[lang][assetType]) || 'vektor';
+  const baseWords = b.split(/\s+/).filter(Boolean);
+  const fillerPool = [].concat(styleList, useList, fmtList, [noun]);
+  const addResult = phrase => results.add(adjustWordCount(phrase, wordCount, baseWords, fillerPool));
+
+  if(lang === 'en'){
+    // style + base + format
+    for(let i=0;i<8;i++){
+      const s = styleList[Math.floor(Math.random()*styleList.length)];
+      const f = fmtList[Math.floor(Math.random()*fmtList.length)];
+      addResult(`${s} ${b} ${f}`);
+    }
+    // base + format + for + use
+    for(let i=0;i<8;i++){
+      const f = fmtList[Math.floor(Math.random()*fmtList.length)];
+      const u = useList[Math.floor(Math.random()*useList.length)];
+      addResult(`${b} ${f} for ${u}`);
+    }
+    // style + base + noun + for + use
+    for(let i=0;i<8;i++){
+      const s = styleList[Math.floor(Math.random()*styleList.length)];
+      const u = useList[Math.floor(Math.random()*useList.length)];
+      addResult(`${s} ${b} ${noun} for ${u}`);
+    }
+  }else{
+    // base + format + gaya + style
+    for(let i=0;i<8;i++){
+      const s = styleList[Math.floor(Math.random()*styleList.length)];
+      const f = fmtList[Math.floor(Math.random()*fmtList.length)];
+      addResult(`${b} ${f} gaya ${s}`);
+    }
+    // format + base + untuk + use
+    for(let i=0;i<8;i++){
+      const f = fmtList[Math.floor(Math.random()*fmtList.length)];
+      const u = useList[Math.floor(Math.random()*useList.length)];
+      addResult(`${f} ${b} untuk ${u}`);
+    }
+    // base + noun + style + untuk + use
+    for(let i=0;i<8;i++){
+      const s = styleList[Math.floor(Math.random()*styleList.length)];
+      const u = useList[Math.floor(Math.random()*useList.length)];
+      addResult(`${b} ${noun} ${s} untuk ${u}`);
+    }
   }
   return Array.from(results).slice(0,20);
 }
 
 function runKwGenerate(){
-  const val = document.getElementById('kwInput').value;
+  const input = document.getElementById('kwInput');
+  const hint = document.getElementById('kwRandomHint');
+  let val = input.value.trim();
+  if(!val){
+    const pool = KW_RANDOM_IDEAS[kwLang] || KW_RANDOM_IDEAS.id;
+    val = pool[Math.floor(Math.random()*pool.length)];
+    input.value = val;
+    hint.textContent = kwLang === 'en'
+      ? `🎲 Empty keyword — the system picked a random idea: "${val}" (asset type: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`
+      : `🎲 Kata kunci dikosongkan — sistem memilih ide acak: "${val}" (jenis aset: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`;
+    hint.classList.add('show');
+  }else{
+    hint.classList.remove('show');
+  }
   const box = document.getElementById('kwResults');
   const empty = document.getElementById('kwEmpty');
-  const list = generateKeywords(val);
+  const list = generateKeywords(val, kwAssetType, kwLang, kwWordCount);
   box.innerHTML = '';
   if(list.length===0){ empty.style.display='block'; return; }
   empty.style.display='none';
@@ -1220,6 +1485,59 @@ async function pStorageDelete(key){
   }catch(err){ return false; }
 }
 
+/* ---------- Advanced settings: saved automatically as you type ---------- */
+const MD_ADV_SETTINGS_KEY = 'md_advanced_settings';
+const mdAdvFileType = document.getElementById('mdFileType');
+const mdAdvCount = document.getElementById('mdCount');
+const mdAdvTitleLen = document.getElementById('mdTitleLen');
+const mdAdvDescLen = document.getElementById('mdDescLen');
+const mdAdvAvoidWords = document.getElementById('mdAvoidWords');
+const mdAdvNoSpecialChars = document.getElementById('mdNoSpecialChars');
+const mdAdvSavedTag = document.getElementById('mdAdvSavedTag');
+
+function readMdAdvSettings(){
+  return {
+    fileType: mdAdvFileType.value,
+    count: mdAdvCount.value,
+    titleLen: mdAdvTitleLen.value,
+    descLen: mdAdvDescLen.value,
+    avoidWords: mdAdvAvoidWords.value,
+    noSpecialChars: mdAdvNoSpecialChars.checked
+  };
+}
+
+async function loadMdAdvSettings(){
+  let s;
+  try{
+    const raw = await pStorageGet(MD_ADV_SETTINGS_KEY);
+    if(!raw) return;
+    s = JSON.parse(raw);
+  }catch(err){ return; /* nothing saved yet, or it's corrupted — keep defaults */ }
+  if(s.fileType) mdAdvFileType.value = s.fileType;
+  if(s.count) mdAdvCount.value = s.count;
+  if(s.titleLen) mdAdvTitleLen.value = s.titleLen;
+  if(s.descLen) mdAdvDescLen.value = s.descLen;
+  if(typeof s.avoidWords === 'string') mdAdvAvoidWords.value = s.avoidWords;
+  if(typeof s.noSpecialChars === 'boolean') mdAdvNoSpecialChars.checked = s.noSpecialChars;
+}
+
+let mdAdvSaveTimer = null;
+let mdAdvSavedFadeTimer = null;
+function scheduleMdAdvSave(){
+  clearTimeout(mdAdvSaveTimer);
+  mdAdvSaveTimer = setTimeout(async ()=>{
+    await pStorageSet(MD_ADV_SETTINGS_KEY, JSON.stringify(readMdAdvSettings()));
+    mdAdvSavedTag.textContent = 'Tersimpan ✓';
+    clearTimeout(mdAdvSavedFadeTimer);
+    mdAdvSavedFadeTimer = setTimeout(()=>{ mdAdvSavedTag.textContent = ''; }, 2000);
+  }, 500);
+}
+[mdAdvFileType, mdAdvCount, mdAdvTitleLen, mdAdvDescLen, mdAdvAvoidWords, mdAdvNoSpecialChars].forEach(el=>{
+  el.addEventListener('input', scheduleMdAdvSave);
+  el.addEventListener('change', scheduleMdAdvSave);
+});
+loadMdAdvSettings();
+
 function currentProviderConfig(){
   return MD_PROVIDERS[mdProviderSelect.value] || MD_PROVIDERS.claude;
 }
@@ -1521,7 +1839,7 @@ function renderMdResultCard(img, index){
           <h5>Keyword <span class="kw-count-badge ${kwBadgeClass}">${r.keywords.length} keyword</span></h5>
           <button class="copy-mini" data-field="keywords">Salin Semua</button>
         </div>
-        <div class="meta-kw-text" data-field="keywords">${escapeHtml(r.keywords.join(', '))}</div>
+        <div class="meta-kw-text" data-field="keywords" data-raw="${escapeHtml(r.keywords.join(', '))}">${r.keywords.map(k=>`<span class="meta-kw-pill" title="Klik untuk salin kata ini">${escapeHtml(k)}</span>`).join('')}</div>
       </div>
       <div class="meta-result-foot">
         <span class="meta-created-with">Dibuat dengan ${escapeHtml(MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || '—')}</span>
@@ -1557,6 +1875,13 @@ function renderMdResults(){
 }
 
 document.getElementById('mdOutput').addEventListener('click', e=>{
+  const kwPill = e.target.closest('.meta-kw-pill');
+  if(kwPill){
+    navigator.clipboard?.writeText(kwPill.textContent).catch(()=>{});
+    kwPill.classList.add('copied');
+    setTimeout(()=>{ kwPill.classList.remove('copied'); }, 500);
+    return;
+  }
   const retryBtn = e.target.closest('.retry-btn');
   if(retryBtn){
     if(mdBatchBusy) return;
@@ -1574,7 +1899,8 @@ document.getElementById('mdOutput').addEventListener('click', e=>{
   const card = btn.closest('.meta-result-card');
   const targetEl = card?.querySelector(`[data-field="${btn.dataset.field}"]:not(.copy-mini)`);
   if(!targetEl) return;
-  navigator.clipboard?.writeText(targetEl.textContent).catch(()=>{});
+  const textToCopy = targetEl.dataset.raw || targetEl.textContent;
+  navigator.clipboard?.writeText(textToCopy).catch(()=>{});
   const original = btn.textContent;
   btn.textContent = 'Tersalin ✓';
   setTimeout(()=>{ btn.textContent = original; }, 900);
