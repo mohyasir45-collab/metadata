@@ -150,10 +150,16 @@
     display:flex;align-items:center;gap:10px;
     padding:10px 12px;border-radius:9px;
     font-family:'Space Grotesk';font-size:13.5px;font-weight:500;
-    color:var(--ink-soft); cursor:pointer; border:none; background:none;
+    color:var(--ink-soft); cursor:grab; border:none; background:none;
     text-align:left; width:100%;
     transition: background-color .15s ease, color .15s ease, transform .15s ease;
   }
+  .nav-list{display:flex;flex-direction:column;gap:2px;}
+  .drag-handle{flex:none;font-size:13px;line-height:1;color:var(--ink-soft);opacity:0.5;letter-spacing:-2px;cursor:grab;}
+  .nav-btn:hover .drag-handle{opacity:0.9;}
+  .nav-btn.dragging{opacity:0.45; cursor:grabbing;}
+  .nav-btn.drag-over-top{box-shadow: inset 0 2px 0 var(--blue);}
+  .nav-btn.drag-over-bottom{box-shadow: inset 0 -2px 0 var(--blue);}
   .nav-btn .num{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);opacity:0.6;}
   .nav-btn:hover{background:var(--blue-soft); color:var(--ink); transform:translateX(2px);}
   .nav-btn.active{background:var(--nav-active-bg); color:var(--nav-active-text); box-shadow:var(--shadow-sm);}
@@ -546,13 +552,15 @@
   </div>
 
   <div class="sidebar">
-    <button class="nav-btn active" data-view="explorer"><span class="num">01</span> Eksplorasi Niche</button>
-    <button class="nav-btn" data-view="calendar"><span class="num">02</span> Kalender Musiman</button>
-    <button class="nav-btn" data-view="saved"><span class="num">03</span> Riset Tersimpan</button>
-    <button class="nav-btn" data-view="keyword"><span class="num">04</span> Generator Kata Kunci</button>
-    <button class="nav-btn" data-view="metadata"><span class="num">05</span> Generator Metadata</button>
-    <button class="nav-btn" data-view="social"><span class="num">06</span> Referensi Media Sosial</button>
-    <div class="sidebar-foot">Data tren berdasarkan riset pasar terkini. Selalu cek panel "Discover" di Adobe Stock sebelum produksi massal.</div>
+    <div class="nav-list" id="navList">
+      <button class="nav-btn active" data-view="explorer" draggable="true"><span class="drag-handle">⠿</span><span class="num">01</span> Eksplorasi Niche</button>
+      <button class="nav-btn" data-view="calendar" draggable="true"><span class="drag-handle">⠿</span><span class="num">02</span> Kalender Musiman</button>
+      <button class="nav-btn" data-view="saved" draggable="true"><span class="drag-handle">⠿</span><span class="num">03</span> Riset Tersimpan</button>
+      <button class="nav-btn" data-view="keyword" draggable="true"><span class="drag-handle">⠿</span><span class="num">04</span> Generator Kata Kunci</button>
+      <button class="nav-btn" data-view="metadata" draggable="true"><span class="drag-handle">⠿</span><span class="num">05</span> Generator Metadata</button>
+      <button class="nav-btn" data-view="social" draggable="true"><span class="drag-handle">⠿</span><span class="num">06</span> Referensi Media Sosial</button>
+    </div>
+    <div class="sidebar-foot">Data tren berdasarkan riset pasar terkini. Selalu cek panel "Discover" di Adobe Stock sebelum produksi massal.<br><span style="opacity:0.75;">Seret (drag) item menu untuk mengubah urutan.</span></div>
   </div>
 
   <main>
@@ -1095,6 +1103,67 @@ function renderSocialPlatforms(){
   });
 }
 renderSocialPlatforms();
+
+/* ---------- Sidebar nav: drag & drop reordering (tersimpan otomatis) ---------- */
+const NAV_ORDER_KEY = 'artboard-nav-order';
+const navList = document.getElementById('navList');
+
+function renumberNav(){
+  navList.querySelectorAll('.nav-btn').forEach((btn, i)=>{
+    const numEl = btn.querySelector('.num');
+    if(numEl) numEl.textContent = String(i+1).padStart(2,'0');
+  });
+}
+
+function applyNavOrder(order){
+  if(!Array.isArray(order)) return;
+  order.forEach(view=>{
+    const btn = navList.querySelector(`.nav-btn[data-view="${view}"]`);
+    if(btn) navList.appendChild(btn);
+  });
+  renumberNav();
+}
+
+async function saveNavOrder(){
+  const order = Array.from(navList.querySelectorAll('.nav-btn')).map(b=>b.dataset.view);
+  await pStorageSet(NAV_ORDER_KEY, JSON.stringify(order));
+}
+
+(async function initNavOrder(){
+  const raw = await pStorageGet(NAV_ORDER_KEY);
+  if(!raw) return;
+  try{ applyNavOrder(JSON.parse(raw)); }catch(err){ /* abaikan, pakai urutan default */ }
+})();
+
+let draggedNavBtn = null;
+
+navList.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('dragstart', e=>{
+    draggedNavBtn = btn;
+    btn.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', btn.dataset.view);
+  });
+  btn.addEventListener('dragend', ()=>{
+    btn.classList.remove('dragging');
+    navList.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('drag-over-top','drag-over-bottom'));
+    draggedNavBtn = null;
+    renumberNav();
+    saveNavOrder();
+  });
+  btn.addEventListener('dragover', e=>{
+    e.preventDefault();
+    if(!draggedNavBtn || draggedNavBtn === btn) return;
+    const rect = btn.getBoundingClientRect();
+    const before = (e.clientY - rect.top) < rect.height / 2;
+    btn.classList.toggle('drag-over-top', before);
+    btn.classList.toggle('drag-over-bottom', !before);
+    navList.insertBefore(draggedNavBtn, before ? btn : btn.nextSibling);
+  });
+  btn.addEventListener('dragleave', ()=>{
+    btn.classList.remove('drag-over-top','drag-over-bottom');
+  });
+});
 
 /* ---------- Nav switching ---------- */
 document.querySelectorAll('.nav-btn').forEach(btn=>{
