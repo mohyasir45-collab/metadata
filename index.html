@@ -2277,7 +2277,7 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
       },
       body: JSON.stringify({
         // Model gratis (tag ":free") — cek daftar terbaru di openrouter.ai/models?max_price=0
-        model: "meta-llama/llama-3.2-11b-vision-instruct:free",
+        model: "google/gemma-4-31b-it:free",
         max_tokens: 1200,
         messages: [
           {
