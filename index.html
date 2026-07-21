@@ -310,7 +310,11 @@
   /* calendar */
   .cal-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;}
   .cal-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; position:relative;}
-  .cal-card .m{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--blue); font-weight:600; letter-spacing:0.05em;}
+  .cal-top{display:flex; align-items:center; gap:8px; margin-bottom:2px;}
+  .cal-icon{flex:none; width:22px; height:22px; color:var(--blue); opacity:0.85;}
+  .cal-icon svg{width:100%; height:100%; display:block;}
+  .cal-card.is-current .cal-icon{color:var(--blue-text);}
+  .cal-card .m{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--blue); font-weight:600; letter-spacing:0.05em; flex:1;}
   .cal-card h4{font-family:'Space Grotesk'; font-size:14px; margin:4px 0 8px;}
   .cal-card p{font-size:12px; color:var(--ink-soft); line-height:1.55; margin:0;}
   .cal-card.is-current{border-color:var(--blue); box-shadow:0 0 0 1px var(--blue), 0 4px 18px rgba(46,94,255,0.14); background:var(--blue-soft);}
@@ -396,9 +400,23 @@
   }
 
   /* metadata: image upload */
-  .meta-upload{background:var(--paper);border:1px dashed var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;}
+  .meta-upload{
+    background:
+      linear-gradient(135deg, var(--blue-soft) 0%, transparent 55%),
+      var(--panel);
+    border:1.5px dashed var(--blue);
+    border-radius:14px;padding:18px 20px;margin-bottom:12px;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;
+    box-shadow:var(--shadow-sm);
+  }
+  .meta-upload-icon{
+    flex:none;width:38px;height:38px;border-radius:10px;
+    background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .meta-upload-icon svg{width:19px;height:19px;}
   .meta-upload-info{flex:1;min-width:200px;}
-  .meta-upload-info h5{font-family:'Space Grotesk';font-size:12.5px;text-transform:uppercase;letter-spacing:0.03em;color:var(--ink-soft);margin:0 0 4px;}
+  .meta-upload-info h5{font-family:'Space Grotesk';font-size:12.5px;text-transform:uppercase;letter-spacing:0.03em;color:var(--blue-text);margin:0 0 4px;}
   .meta-upload-info p{font-size:12px;color:var(--ink-soft);margin:0;line-height:1.5;}
   .meta-choose-btn{flex:none;cursor:pointer;display:inline-flex;align-items:center;}
   .meta-upload-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
@@ -462,8 +480,8 @@
   .retry-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
   /* drag & drop */
-  .meta-upload{transition:border-color .15s ease, background .15s ease; cursor:pointer;}
-  .meta-upload.dragover{border-color:var(--blue); background:var(--blue-soft); border-style:solid;}
+  .meta-upload{transition:border-color .15s ease, background .15s ease, box-shadow .15s ease; cursor:pointer;}
+  .meta-upload.dragover{border-style:solid; box-shadow:var(--shadow-md); background:linear-gradient(135deg, var(--blue-soft) 0%, var(--blue-soft) 100%), var(--panel);}
 
   /* API key */
   .meta-key-row{
@@ -771,7 +789,6 @@
               <option value="claude">3. Claude (Anthropic)</option>
               <option value="openai">4. ChatGPT (OpenAI)</option>
               <option value="openrouter">5. OpenRouter (Free Models)</option>
-              <option value="huggingface">6. Hugging Face (Router Free)</option>
             </select>
           </div>
           <div class="meta-key-field" id="mdKeyFieldGroup">
@@ -787,6 +804,9 @@
         </div>
 
         <div class="meta-upload" id="mdDropzone">
+          <div class="meta-upload-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <div class="meta-upload-info">
             <h5>Upload Preview Gambar</h5>
             <p>Klik atau seret file ke sini (bisa banyak sekaligus) — PNG/JPG/WEBP, tiap gambar dibuatkan metadata terpisah.</p>
@@ -1670,6 +1690,33 @@ document.getElementById('kwCopyAll').addEventListener('click', ()=>{
    monthIdx = 0 (Jan) ... 11 (Des). Sengaja dipisah jadi 2 momen per bulan
    (bukan digabung dalam satu catatan) supaya tiap peluang niche lebih
    mudah dibaca & dieksekusi terpisah. */
+const MONTH_ICONS = {
+  // Kepingan salju / percikan "awal baru" — Tahun Baru & musim dingin
+  JAN: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2v20M4.2 7l15.6 10M4.2 17L19.8 7"/></svg>`,
+  // Lampion merah — Imlek
+  FEB: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M12 3v2"/><rect x="7" y="6" width="10" height="11" rx="4"/><path d="M9.5 9.5h5M9.5 13.5h5M12 17v3"/></svg>`,
+  // Bulan sabit & bintang — awal Ramadan
+  MAR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4a8 8 0 1 0 0 16 6.5 6.5 0 0 1 0-16Z"/><path d="M19 4v2M18 5h2"/></svg>`,
+  // Ketupat — Idulfitri
+  APR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 12 12 21 4 12Z"/><path d="M12 3v18M4 12h16"/></svg>`,
+  // Hati — Hari Buruh & Hari Ibu
+  MEI: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-9C1.4 8 2.4 4.8 5.4 4c2-.5 3.8.4 4.6 2 .8-1.6 2.6-2.5 4.6-2 3 .8 4 4 3.2 7-2.3 4.6-9.4 9-9.4 9Z"/></svg>`,
+  // Koper — liburan sekolah & Hari Ayah
+  JUN: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>`,
+  // Matahari — musim panas global
+  JUL: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>`,
+  // Bendera — Kemerdekaan RI
+  AGU: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>`,
+  // Daun jatuh — musim gugur
+  SEP: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4C10 4 4 10 4 20c10 0 16-6 16-16Z"/><path d="M20 4 8 16"/></svg>`,
+  // Labu — Halloween
+  OKT: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2"/><path d="M12 5c-.6-1-2-1.3-2.6-.2"/><ellipse cx="12" cy="14" rx="8" ry="7"/><path d="M12 7v14M8 7.6c0 3.7 0 10.1 0 13.3M16 7.6c0 3.7 0 10.1 0 13.3"/></svg>`,
+  // Tas belanja — Black Friday & Cyber Monday
+  NOV: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8V6a5 5 0 0 1 10 0v2"/><rect x="4" y="8" width="16" height="13" rx="2"/><path d="M9 12a3 3 0 0 0 6 0"/></svg>`,
+  // Pohon Natal — Desember
+  DES: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 8 8h2l-3 5h2.5l-3.5 5h12l-3.5-5H17l-3-5h2Z"/><path d="M12 20v2"/></svg>`
+};
+
 const calendarData = [
   {m:'JAN', monthIdx:0, events:[
     {title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
@@ -1727,7 +1774,7 @@ calendarData.forEach((c)=>{
   const isCurrent = c.monthIdx === currentMonthIdx;
   el.className = 'cal-card' + (isCurrent ? ' is-current' : '');
   const [main, ...extra] = c.events;
-  let html = `<div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div>`;
+  let html = `<div class="cal-top"><span class="cal-icon" aria-hidden="true">${MONTH_ICONS[c.m] || ''}</span><div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div></div>`;
   html += `<h4>${main.title}</h4><p>${main.note}</p>`;
   if(extra.length){
     html += `<details class="cal-more"><summary>+${extra.length} info tambahan</summary>`;
@@ -1974,14 +2021,6 @@ const MD_PROVIDERS = {
     hint: 'Dari openrouter.ai/keys. Pakai model gratis (tag ":free"). Disimpan hanya di browsermu.',
     storageKey: 'artboard-api-key-openrouter'
   },
-  huggingface: {
-    label: 'Hugging Face',
-    keyLabel: 'Hugging Face API Key',
-    keyPlaceholder: 'hf_...',
-    keyPrefix: 'hf_',
-    hint: 'Dari huggingface.co/settings/tokens (tier gratis, router model Qwen2-VL). Disimpan hanya di browsermu.',
-    storageKey: 'artboard-api-key-huggingface'
-  },
   auto: {
     label: 'Otomatis',
     isAuto: true,
@@ -1990,7 +2029,7 @@ const MD_PROVIDERS = {
 };
 
 /* Urutan fallback lintas provider untuk mode "Otomatis". */
-const MD_AUTO_ORDER_DEFAULT = ['gemini', 'groq', 'openrouter', 'huggingface', 'claude', 'openai'];
+const MD_AUTO_ORDER_DEFAULT = ['gemini', 'groq', 'openrouter', 'claude', 'openai'];
 let MD_AUTO_ORDER = MD_AUTO_ORDER_DEFAULT.slice();
 
 const mdProviderSelect = document.getElementById('mdProvider');
@@ -2404,39 +2443,6 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
       const errBody = await response.json().catch(()=>({}));
       const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
       throw new Error(`API key error (OpenRouter): ${errMsg}`);
-    }
-    const data = await response.json();
-    return data?.choices?.[0]?.message?.content || '';
-  }
-
-  if(provider === 'huggingface'){
-    if(!userApiKey) throw new Error('Hugging Face API key wajib diisi.');
-    const response = await fetch("https://router.huggingface.co/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${userApiKey}`
-      },
-      body: JSON.stringify({
-        // Model vision gratis yang aktif dilayani provider di router HF (Novita/Nscale) —
-        // cek daftar terbaru di huggingface.co/models?inference_provider=all&pipeline_tag=image-text-to-text
-        model: "Qwen/Qwen2-VL-72B-Instruct",
-        max_tokens: 1200,
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: prompt },
-              { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
-            ]
-          }
-        ]
-      })
-    });
-    if(!response.ok){
-      const errBody = await response.json().catch(()=>({}));
-      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-      throw new Error(`API key error (Hugging Face): ${errMsg}`);
     }
     const data = await response.json();
     return data?.choices?.[0]?.message?.content || '';
