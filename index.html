@@ -1979,7 +1979,7 @@ const MD_PROVIDERS = {
     keyLabel: 'Hugging Face API Key',
     keyPlaceholder: 'hf_...',
     keyPrefix: 'hf_',
-    hint: 'Dari huggingface.co/settings/tokens (tier gratis, router model Qwen2.5-VL). Disimpan hanya di browsermu.',
+    hint: 'Dari huggingface.co/settings/tokens (tier gratis, router model Qwen2-VL). Disimpan hanya di browsermu.',
     storageKey: 'artboard-api-key-huggingface'
   },
   auto: {
@@ -2418,8 +2418,9 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
         "Authorization": `Bearer ${userApiKey}`
       },
       body: JSON.stringify({
-        // Model vision gratis di router HF — cek daftar terbaru di huggingface.co/docs/inference-providers
-        model: "Qwen/Qwen2.5-VL-7B-Instruct",
+        // Model vision gratis yang aktif dilayani provider di router HF (Novita/Nscale) —
+        // cek daftar terbaru di huggingface.co/models?inference_provider=all&pipeline_tag=image-text-to-text
+        model: "Qwen/Qwen2-VL-72B-Instruct",
         max_tokens: 1200,
         messages: [
           {
