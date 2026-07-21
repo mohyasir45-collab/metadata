@@ -546,6 +546,33 @@
   .meta-checkbox-row span{color:var(--ink-soft);}
   @media (max-width:600px){ .meta-adv-body.open{grid-template-columns:1fr;} }
 
+  /* provider auto-order: draggable list + up/down fallback for touch */
+  .auto-order-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+  .auto-order-item{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;border:1px solid var(--border);border-radius:8px;
+    background:var(--panel);cursor:grab;user-select:none;
+    font-family:'JetBrains Mono';font-size:12px;color:var(--ink);
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+  .auto-order-item:active{cursor:grabbing;}
+  .auto-order-item.dragging{opacity:0.4;}
+  .auto-order-item.drag-over{border-color:var(--blue);background:var(--blue-soft);}
+  .auto-order-item .n{
+    flex:none;width:20px;height:20px;border-radius:6px;background:var(--paper);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:10.5px;
+  }
+  .auto-order-item .handle{flex:none;color:var(--ink-soft);letter-spacing:-1px;font-size:13px;}
+  .auto-order-item .label{flex:1;min-width:0;}
+  .auto-order-item .moves{flex:none;display:flex;gap:2px;}
+  .auto-order-item .moves button{
+    border:1px solid var(--border);background:var(--paper);color:var(--ink-soft);
+    border-radius:5px;width:22px;height:22px;cursor:pointer;font-size:11px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .auto-order-item .moves button:hover:not(:disabled){border-color:var(--blue);color:var(--blue-text);}
+  .auto-order-item .moves button:disabled{opacity:0.3;cursor:not-allowed;}
+
   @media (max-width: 600px){
   }
 
@@ -817,6 +844,10 @@
                 <input type="checkbox" id="mdNoSpecialChars">
                 <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
               </label>
+            </div>
+            <div class="meta-field span3">
+              <label>Urutan Provider (Mode Otomatis) — geser untuk mengubah urutan coba</label>
+              <ul class="auto-order-list" id="mdAutoOrderList"></ul>
             </div>
           </div>
         </div>
@@ -1958,7 +1989,8 @@ const MD_PROVIDERS = {
 };
 
 /* Urutan fallback lintas provider untuk mode "Otomatis". */
-const MD_AUTO_ORDER = ['gemini', 'groq', 'openrouter', 'mistral', 'claude', 'openai'];
+const MD_AUTO_ORDER_DEFAULT = ['gemini', 'groq', 'openrouter', 'mistral', 'claude', 'openai'];
+let MD_AUTO_ORDER = MD_AUTO_ORDER_DEFAULT.slice();
 
 const mdProviderSelect = document.getElementById('mdProvider');
 const mdApiKeyInput = document.getElementById('mdApiKey');
@@ -2026,7 +2058,8 @@ function readMdAdvSettings(){
     titleLen: mdAdvTitleLen.value,
     descLen: mdAdvDescLen.value,
     avoidWords: mdAdvAvoidWords.value,
-    noSpecialChars: mdAdvNoSpecialChars.checked
+    noSpecialChars: mdAdvNoSpecialChars.checked,
+    providerOrder: MD_AUTO_ORDER.slice()
   };
 }
 
@@ -2043,7 +2076,83 @@ async function loadMdAdvSettings(){
   if(s.descLen) mdAdvDescLen.value = s.descLen;
   if(typeof s.avoidWords === 'string') mdAdvAvoidWords.value = s.avoidWords;
   if(typeof s.noSpecialChars === 'boolean') mdAdvNoSpecialChars.checked = s.noSpecialChars;
+  if(Array.isArray(s.providerOrder)){
+    // Keep only ids that still exist, then append any newly-added
+    // providers (e.g. from a later update) that aren't in the saved list yet.
+    const known = s.providerOrder.filter(id => MD_PROVIDERS[id] && id !== 'auto');
+    const missing = MD_AUTO_ORDER_DEFAULT.filter(id => !known.includes(id));
+    MD_AUTO_ORDER = [...known, ...missing];
+  }
+  renderAutoOrderList();
 }
+
+/* ---------- Provider order list: drag to reorder (+ up/down for touch) ---------- */
+const mdAutoOrderListEl = document.getElementById('mdAutoOrderList');
+
+function renderAutoOrderList(){
+  mdAutoOrderListEl.innerHTML = MD_AUTO_ORDER.map((id, i) => {
+    const label = (MD_PROVIDERS[id]?.label || id).replace(/\s*\(.*\)/, '');
+    return `
+      <li class="auto-order-item" draggable="true" data-id="${id}">
+        <span class="n">${i + 1}</span>
+        <span class="handle">⠿</span>
+        <span class="label">${escapeHtml(label)}</span>
+        <span class="moves">
+          <button type="button" data-move="up" ${i === 0 ? 'disabled' : ''} aria-label="Naikkan urutan">↑</button>
+          <button type="button" data-move="down" ${i === MD_AUTO_ORDER.length - 1 ? 'disabled' : ''} aria-label="Turunkan urutan">↓</button>
+        </span>
+      </li>`;
+  }).join('');
+}
+
+function moveAutoOrderItem(fromIndex, toIndex){
+  if(toIndex < 0 || toIndex >= MD_AUTO_ORDER.length || fromIndex === toIndex) return;
+  const [moved] = MD_AUTO_ORDER.splice(fromIndex, 1);
+  MD_AUTO_ORDER.splice(toIndex, 0, moved);
+  renderAutoOrderList();
+  scheduleMdAdvSave();
+  if(currentProviderConfig().isAuto) loadKeyForCurrentProvider();
+}
+
+let mdAutoDragFromId = null;
+mdAutoOrderListEl.addEventListener('dragstart', e=>{
+  const li = e.target.closest('.auto-order-item');
+  if(!li) return;
+  mdAutoDragFromId = li.dataset.id;
+  li.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+});
+mdAutoOrderListEl.addEventListener('dragend', e=>{
+  const li = e.target.closest('.auto-order-item');
+  if(li) li.classList.remove('dragging');
+  mdAutoOrderListEl.querySelectorAll('.auto-order-item.drag-over').forEach(el=>el.classList.remove('drag-over'));
+});
+mdAutoOrderListEl.addEventListener('dragover', e=>{
+  e.preventDefault();
+  const li = e.target.closest('.auto-order-item');
+  if(!li || li.dataset.id === mdAutoDragFromId) return;
+  mdAutoOrderListEl.querySelectorAll('.auto-order-item.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  li.classList.add('drag-over');
+  e.dataTransfer.dropEffect = 'move';
+});
+mdAutoOrderListEl.addEventListener('drop', e=>{
+  e.preventDefault();
+  const li = e.target.closest('.auto-order-item');
+  if(!li || !mdAutoDragFromId || li.dataset.id === mdAutoDragFromId) return;
+  const fromIndex = MD_AUTO_ORDER.indexOf(mdAutoDragFromId);
+  const toIndex = MD_AUTO_ORDER.indexOf(li.dataset.id);
+  mdAutoDragFromId = null;
+  moveAutoOrderItem(fromIndex, toIndex);
+});
+mdAutoOrderListEl.addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-move]');
+  if(!btn) return;
+  const li = btn.closest('.auto-order-item');
+  const fromIndex = MD_AUTO_ORDER.indexOf(li.dataset.id);
+  const toIndex = btn.dataset.move === 'up' ? fromIndex - 1 : fromIndex + 1;
+  moveAutoOrderItem(fromIndex, toIndex);
+});
+renderAutoOrderList();
 
 let mdAdvSaveTimer = null;
 let mdAdvSavedFadeTimer = null;
