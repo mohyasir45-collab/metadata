@@ -743,6 +743,8 @@
               <option value="groq">2. Groq</option>
               <option value="claude">3. Claude (Anthropic)</option>
               <option value="openai">4. ChatGPT (OpenAI)</option>
+              <option value="openrouter">5. OpenRouter (Free Models)</option>
+              <option value="mistral">6. Mistral (Pixtral Free)</option>
             </select>
           </div>
           <div class="meta-key-field" id="mdKeyFieldGroup">
@@ -1933,6 +1935,21 @@ const MD_PROVIDERS = {
     hint: 'Dari console.groq.com. Disimpan hanya di browsermu.',
     storageKey: 'artboard-api-key-groq'
   },
+  openrouter: {
+    label: 'OpenRouter',
+    keyLabel: 'OpenRouter API Key',
+    keyPlaceholder: 'sk-or-v1-...',
+    keyPrefix: 'sk-or-',
+    hint: 'Dari openrouter.ai/keys. Pakai model gratis (tag ":free"). Disimpan hanya di browsermu.',
+    storageKey: 'artboard-api-key-openrouter'
+  },
+  mistral: {
+    label: 'Mistral',
+    keyLabel: 'Mistral API Key',
+    keyPrefix: '',
+    hint: 'Dari console.mistral.ai (tier gratis, model Pixtral). Disimpan hanya di browsermu.',
+    storageKey: 'artboard-api-key-mistral'
+  },
   auto: {
     label: 'Otomatis',
     isAuto: true,
@@ -1941,7 +1958,7 @@ const MD_PROVIDERS = {
 };
 
 /* Urutan fallback lintas provider untuk mode "Otomatis". */
-const MD_AUTO_ORDER = ['gemini', 'groq', 'claude', 'openai'];
+const MD_AUTO_ORDER = ['gemini', 'groq', 'openrouter', 'mistral', 'claude', 'openai'];
 
 const mdProviderSelect = document.getElementById('mdProvider');
 const mdApiKeyInput = document.getElementById('mdApiKey');
@@ -2245,6 +2262,69 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
       const errBody = await response.json().catch(()=>({}));
       const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
       throw new Error(`API key error (Groq): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'openrouter'){
+    if(!userApiKey) throw new Error('OpenRouter API key wajib diisi.');
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userApiKey}`
+      },
+      body: JSON.stringify({
+        // Model gratis (tag ":free") — cek daftar terbaru di openrouter.ai/models?max_price=0
+        model: "meta-llama/llama-3.2-11b-vision-instruct:free",
+        max_tokens: 1200,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
+            ]
+          }
+        ]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (OpenRouter): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'mistral'){
+    if(!userApiKey) throw new Error('Mistral API key wajib diisi.');
+    const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userApiKey}`
+      },
+      body: JSON.stringify({
+        model: "pixtral-12b-2409",
+        max_tokens: 1200,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: `data:${imageMediaType};base64,${imageBase64}` }
+            ]
+          }
+        ]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (Mistral): ${errMsg}`);
     }
     const data = await response.json();
     return data?.choices?.[0]?.message?.content || '';
