@@ -1778,10 +1778,15 @@ async function runKwGenerateAI(){
     if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
       cleaned = cleaned.slice(firstBrace, lastBrace + 1);
     }
+    if(!cleaned){
+      throw new Error('empty');
+    }
     const parsed = JSON.parse(cleaned);
     list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
   }catch(err){
-    statusEl.textContent = 'AI merespons tapi formatnya tidak terbaca — coba lagi.';
+    statusEl.textContent = result.text.trim()
+      ? 'AI merespons tapi formatnya tidak terbaca — coba lagi.'
+      : 'AI mengembalikan respons kosong (model kemungkinan menghabiskan token untuk "reasoning" tersembunyi) — coba lagi atau ganti provider.';
     renderKwPills([]);
     return;
   }
@@ -2523,6 +2528,10 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
         // Model gratis (tag ":free") — cek daftar terbaru di openrouter.ai/models?max_price=0
         model: "google/gemma-4-31b-it:free",
         max_tokens: 1200,
+        // This model has thinking/reasoning mode on by default, which can burn
+        // the whole max_tokens budget on hidden reasoning and leave the final
+        // answer empty. Turn it off so tokens go to the actual output.
+        reasoning: { enabled: false },
         messages: [
           {
             role: "user",
@@ -2660,6 +2669,10 @@ async function callTextProvider(provider, userApiKey, prompt){
       body: JSON.stringify({
         model: "google/gemma-4-31b-it:free",
         max_tokens: 1200,
+        // This model has thinking/reasoning mode on by default, which can burn
+        // the whole max_tokens budget on hidden reasoning and leave the final
+        // answer empty. Turn it off so tokens go to the actual output.
+        reasoning: { enabled: false },
         messages: [{ role: "user", content: prompt }]
       })
     });
