@@ -256,10 +256,6 @@
   .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);transition:border-color .15s ease, color .15s ease, transform .15s ease;}
   .filter-chip:hover{border-color:var(--blue); color:var(--blue-text); transform:translateY(-1px);}
   .filter-chip.active{background:var(--nav-active-bg);color:var(--nav-active-text);border-color:var(--nav-active-bg);}
-  .filter-chip{display:inline-flex;align-items:center;gap:5px;}
-  .filter-chip .chip-icon{width:13px;height:13px;flex:none;}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;}
-  .btn .chip-icon{width:15px;height:15px;flex:none;}
 
   /* Keyword generator */
   .kw-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;}
@@ -715,7 +711,7 @@
     <!-- 02 CALENDAR -->
     <section class="view" id="view-calendar">
       <h1 class="page-title">Kalender Musiman</h1>
-      <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak. Tanggal hari raya berbasis Hijriah & Imlek sudah disesuaikan dengan kalender 2026-2027 (per Jul 2026) dan bisa maju ~10-11 hari tiap tahun — cek ulang saat berganti tahun.</p>
+      <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak.</p>
       <div class="cal-grid" id="calGrid"></div>
     </section>
 
@@ -746,7 +742,7 @@
     <!-- 04 KEYWORD -->
     <section class="view" id="view-keyword">
       <h1 class="page-title">Generator Kata Kunci</h1>
-      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, filter kata (Adobe Stock = istilah yang laku di Adobe Stock, Umum = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
+      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, mode kata (Filter = istilah yang laku di Adobe Stock, Unfilter = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
 
       <div class="kw-panel">
         <div class="kw-controls" id="kwControls">
@@ -758,17 +754,17 @@
             </div>
           </div>
           <div class="kw-ctrl-row" id="kwModeRow">
-            <span class="kw-ctrl-label">Filter</span>
+            <span class="kw-ctrl-label">Mode</span>
             <div class="kw-ctrl-options">
-              <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l7.5 3v6c0 5-3.2 8-7.5 10-4.3-2-7.5-5-7.5-10V6l7.5-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.7 12.2l2.3 2.3 4.3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Adobe Stock</button>
-              <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.3 2.5 15 0 17M12 3.5c-2.5 2.3-2.5 15 0 17" stroke="currentColor" stroke-width="1.3"/></svg> Umum</button>
-              <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="1.4" stroke="currentColor" stroke-width="1.6"/><path d="M9 3.2v3M15 3.2v3M9 17.8v3M15 17.8v3M3.2 9h3M3.2 15h3M17.8 9h3M17.8 15h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> AI</button>
+              <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter</button>
+              <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter</button>
+              <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata">🤖 AI</button>
             </div>
           </div>
           <div class="kw-ctrl-row" id="kwCountRow">
             <span class="kw-ctrl-label">Jumlah Kata</span>
             <div class="kw-ctrl-options">
-              <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><polyline points="16 3 21 3 21 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="20" x2="21" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="21 16 21 21 16 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Auto</button>
+              <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
               <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
             </div>
           </div>
@@ -788,7 +784,7 @@
         <div class="kw-ai-hint" id="kwAiHint">🤖 Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
         <div class="kw-row">
           <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
-          <button class="btn" id="kwBtn"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M18.5 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg> Buat Kombinasi</button>
+          <button class="btn" id="kwBtn">🎲 Buat Kombinasi</button>
           <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
         </div>
         <div class="kw-random-hint mono" id="kwRandomHint"></div>
@@ -980,6 +976,13 @@ const niches = [
     tags:['maximalist pattern','bold color illustration','y2k inspired vector','clash color design']
   },
   {
+    id:'editorial-design', title:'Konten Editorial (Berhak Cipta / Editorial Use Only)', icon:'editorial',
+    trend:'stable', trendLabel:'⚠️ Kategori Khusus', sat:'low', satLabel:'Peserta Terbatas (aturan ketat)',
+    note:'Kategori "Editorial" di Adobe Stock mencakup konten yang menampilkan elemen berhak cipta/merek dagang — produk asli, logo brand, figur publik, atau peristiwa aktual — tanpa surat izin (release), dan hanya boleh dilisensikan untuk keperluan berita/komentar, bukan untuk iklan atau produk komersial. Kategori ini didominasi foto & video peristiwa nyata; Adobe Stock umumnya tetap menolak karya vektor yang meniru logo atau karakter berhak cipta secara persis, sekalipun diberi label Editorial. Judul & keterangan wajib akurat secara faktual (nama tempat, tanggal, konteks peristiwa) — cek kebijakan Editorial Adobe Stock sebelum submit.',
+    tags:['current events illustration','newsworthy concept vector','accurate caption required','editorial use only'],
+    editorialFilter:true
+  },
+  {
     id:'business-data', title:'Ikon & Ilustrasi Bisnis / Data', icon:'chart',
     trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
     note:'Kategori matang dengan jutaan aset — permintaan stabil tapi arah visual bergeser ke gaya kantor yang lebih "otentik", bukan kaku.',
@@ -1021,7 +1024,8 @@ const iconPaths = {
   grid:'<rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/>',
   mascot:'<circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="9.5" cy="9" r="1" fill="currentColor"/><circle cx="14.5" cy="9" r="1" fill="currentColor"/><path d="M9 12.5c1.5 1.3 4.5 1.3 6 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M12 16v4" stroke="currentColor" stroke-width="1.6"/>',
   lines:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>'
+  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>',
+  editorial:'<rect x="4" y="3" width="16" height="18" rx="1.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 7.5h3M8 10.5h3M8 13.5h3M13 7.5h3M13 10.5h3M13 13.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M8 17h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
 };
 
 function renderNiches(filter){
@@ -1049,7 +1053,7 @@ function renderNiches(filter){
       </div>
       <p class="card-note">${n.note}</p>
       <div class="chips">${n.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
-      <a class="card-link" href="https://stock.adobe.com/uk/search?k=${encodeURIComponent(n.tags[0])}" target="_blank" rel="noopener">
+      <a class="card-link" href="${n.editorialFilter ? buildAdobeStockUrl(n.tags[0]) : ('https://stock.adobe.com/uk/search?k=' + encodeURIComponent(n.tags[0]))}" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Lihat aset tren serupa
       </a>
@@ -1480,7 +1484,7 @@ const KW_ASSET_NOUN = {
 };
 const KW_ASSET_LABEL = { all:'Semua Jenis', icon:'Icon', vector:'Ilustrasi Vector', pattern:'Pola & Background', template:'Template', clipart:'Clipart & Stiker' };
 const KW_LANG_LABEL = { id:'Indonesia', en:'English' };
-const KW_MODE_LABEL = { filter:'Adobe Stock (Laku di Adobe Stock)', unfilter:'Umum (Umum & Kaya Kata)', ai:'AI (Disusun oleh AI)' };
+const KW_MODE_LABEL = { filter:'Filter (Laku di Adobe Stock)', unfilter:'Unfilter (Umum & Kaya Kata)', ai:'AI (Disusun oleh AI)' };
 
 /* Dipakai saat kolom kata kunci dikosongkan — sistem memilih salah satu ide
    dasar secara acak (sesuai bahasa yang dipilih) supaya orang tetap bisa
@@ -1761,7 +1765,19 @@ async function runKwGenerateAI(){
 
   let list = [];
   try{
-    const cleaned = result.text.trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+    // Some models prepend a reasoning block, wrap the JSON in markdown
+    // fences, or add stray preamble/explanation text around it. Strip all
+    // of that defensively before parsing (same approach used for the image
+    // metadata parser below).
+    let cleaned = result.text
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')
+      .replace(/```json|```/g, '')
+      .trim();
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+    }
     const parsed = JSON.parse(cleaned);
     list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
   }catch(err){
@@ -1793,35 +1809,28 @@ document.getElementById('kwCopyAll').addEventListener('click', ()=>{
 });
 
 /* ---------- Calendar ----------
-   monthIdx = 0 (Jan) ... 11 (Des). Sengaja dipisah jadi beberapa momen per
-   bulan (bukan digabung dalam satu catatan) supaya tiap peluang niche lebih
-   mudah dibaca & dieksekusi terpisah.
-   Catatan validitas (diperbarui Jul 2026): hari raya berbasis kalender
-   Hijriah (Ramadan, Idulfitri, Idul Adha, Maulid Nabi) maju sekitar 10-11
-   hari tiap tahun Masehi, begitu juga Imlek (kalender lunar Tionghoa) yang
-   bergeser dalam rentang 21 Jan - 20 Feb. Posisi bulan di bawah ini
-   mengikuti tanggal riil 2026-2027 dan perlu dicek ulang tiap tahun via
-   kalender Hijriah Kemenag agar tetap akurat.*/
+   monthIdx = 0 (Jan) ... 11 (Des). Sengaja dipisah jadi 2 momen per bulan
+   (bukan digabung dalam satu catatan) supaya tiap peluang niche lebih
+   mudah dibaca & dieksekusi terpisah. */
 const calendarData = [
   {m:'JAN', monthIdx:0, events:[
     {title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
     {title:'Musim Dingin Belahan Utara', note:'Pola salju, sweater, minuman hangat; permintaan tinggi di pasar Amerika/Eropa.'}
   ]},
   {m:'FEB', monthIdx:1, events:[
-    {title:'Imlek', note:'Motif shio, angpao, lentera merah-emas, karakter keberuntungan gaya flat. Tanggal: 17 Feb 2026 (Tahun Kuda) · 6 Feb 2027 (Tahun Kambing) — geser tiap tahun dalam rentang 21 Jan-20 Feb.'},
-    {title:'Awal Ramadan', note:'Lentera, bulan sabit, pola geometris Islami, kaligrafi dekoratif. Perkiraan mulai: 19 Feb 2026 (1447H) · 8 Feb 2027 (1448H) — konten sebaiknya sudah naik 2-3 bulan sebelumnya, jadi mulai produksi dari Nov/Des.'},
-    {title:'Hari Valentine', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis. Tanggal tetap: 14 Feb.'}
+    {title:'Imlek', note:'Motif shio, angpao, lentera merah-emas, karakter keberuntungan gaya flat.'},
+    {title:'Hari Valentine', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis.'}
   ]},
   {m:'MAR', monthIdx:2, events:[
-    {title:'Idulfitri / Lebaran', note:'Ketupat, motif lebaran, kartu ucapan bertema silaturahmi & maaf-memaafkan. Tanggal: 21 Mar 2026 (versi pemerintah) · ~9-10 Mar 2027 (perkiraan) — ikut geser mengikuti akhir Ramadan.'},
-    {title:'Hari Perempuan Internasional', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas. Tanggal tetap: 8 Mar.'}
+    {title:'Awal Ramadan', note:'Lentera, bulan sabit, pola geometris Islami, kaligrafi dekoratif.'},
+    {title:'Hari Perempuan Internasional', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas.'}
   ]},
   {m:'APR', monthIdx:3, events:[
-    {title:'Paskah & Hari Bumi', note:'Telur & kelinci Paskah gaya pastel; ikon daur ulang, bumi, tema ramah lingkungan. Paskah sekitar awal April (tanggal persis ikut kalender liturgis, cek ulang tiap tahun); Hari Bumi tetap 22 Apr.'}
+    {title:'Idulfitri', note:'Ketupat, motif lebaran, kartu ucapan bertema silaturahmi & maaf-memaafkan.'},
+    {title:'Paskah & Hari Bumi', note:'Telur & kelinci Paskah gaya pastel; ikon daur ulang, bumi, tema ramah lingkungan.'}
   ]},
   {m:'MEI', monthIdx:4, events:[
-    {title:'Hari Buruh & Mother\'s Day', note:'Ilustrasi profesi/pekerja untuk 1 Mei; tema keluarga & kasih sayang untuk kartu ucapan Mother\'s Day gaya internasional (Minggu kedua Mei) — beda dengan Hari Ibu versi Indonesia (22 Des).'},
-    {title:'Idul Adha', note:'Motif hewan kurban gaya sederhana, ornamen islami, kartu ucapan Idul Adha. Tanggal: 27 Mei 2026 (1447H) · ~17 Mei 2027 (perkiraan) — sudah bergeser dari Juni ke Mei dibanding tahun-tahun sebelumnya, cek ulang tiap tahun.'},
+    {title:'Hari Buruh & Hari Ibu', note:'Ilustrasi profesi/pekerja, tema keluarga & kasih sayang untuk kartu ucapan.'},
     {title:'Musim Wisuda (Barat)', note:'Toga, topi wisuda, ikon pencapaian akademik — mulai dicari sejak awal Mei.'}
   ]},
   {m:'JUN', monthIdx:5, events:[
@@ -1830,15 +1839,15 @@ const calendarData = [
   ]},
   {m:'JUL', monthIdx:6, events:[
     {title:'Musim Panas Global', note:'Pantai, es krim, pola tropis — pasar Amerika/Eropa mulai cari konten musim panas.'},
-    {title:'Hari Anak Nasional', note:'Ilustrasi anak-anak, tema ceria & edukasi; tanggal tetap 23 Jul, relevan untuk niche children book & sekolah.'}
+    {title:'Idul Adha', note:'Motif hewan kurban gaya sederhana, ornamen islami, kartu ucapan Idul Adha.'}
   ]},
   {m:'AGU', monthIdx:7, events:[
     {title:'Kemerdekaan RI', note:'Palet merah-putih, ornamen perayaan 17 Agustus, ikon lomba & kemeriahan.'},
-    {title:'Back to School', note:'Alat tulis, ilustrasi ruang kelas, tas sekolah — puncak pencarian pasar Amerika/Eropa.'},
-    {title:'Maulid Nabi', note:'Ornamen islami lembut, kaligrafi, palet hijau-emas untuk kartu ucapan. Tanggal: 25 Agu 2026 · 15 Agu 2027 — sudah bergeser dari September (tahun-tahun sebelumnya) ke Agustus, cek ulang tiap tahun.'}
+    {title:'Back to School', note:'Alat tulis, ilustrasi ruang kelas, tas sekolah — puncak pencarian pasar Amerika/Eropa.'}
   ]},
   {m:'SEP', monthIdx:8, events:[
-    {title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'}
+    {title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'},
+    {title:'Maulid Nabi', note:'Ornamen islami lembut, kaligrafi, palet hijau-emas untuk kartu ucapan.'}
   ]},
   {m:'OKT', monthIdx:9, events:[
     {title:'Halloween', note:'Labu, hantu lucu, tema spooky-cute, pola kelelawar & laba-laba playful.'},
