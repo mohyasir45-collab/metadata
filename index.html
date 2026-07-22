@@ -256,28 +256,46 @@
   .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);transition:border-color .15s ease, color .15s ease, transform .15s ease;}
   .filter-chip:hover{border-color:var(--blue); color:var(--blue-text); transform:translateY(-1px);}
   .filter-chip.active{background:var(--nav-active-bg);color:var(--nav-active-text);border-color:var(--nav-active-bg);}
+  .filter-chip{display:inline-flex;align-items:center;gap:5px;}
+  .filter-chip .chip-icon{width:13px;height:13px;flex:none;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+  .btn .chip-icon{width:15px;height:15px;flex:none;}
 
   /* Keyword generator */
   .kw-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;}
-  /* Satu toolbar ringkas: semua grup kontrol berjejer, dipisah garis vertikal
-     tipis alih-alih 4 baris penuh dengan border bawah masing-masing — sama
-     persis fiturnya, cuma jauh lebih padat & mudah dipindai matanya. */
+  /* Panel kontrol berbentuk baris berlabel sejajar (mirip form), bukan deretan
+     chip yang dipisah garis vertikal — label selalu di kolom yang sama tiap
+     baris jadi mata langsung tahu baris mana yang mengatur apa, dan baris
+     "Jenis Aset" yang isinya paling banyak chip tidak bikin baris lain ikut
+     berantakan karena tiap baris punya ruangnya sendiri. */
   .kw-controls{
-    display:flex; align-items:center; flex-wrap:wrap;
-    gap:8px 18px;
-    margin-bottom:8px; padding-bottom:14px;
+    display:flex; flex-direction:column;
+    margin-bottom:8px; padding-bottom:2px;
     border-bottom:1px solid var(--border);
   }
-  .kw-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-right:18px;border-right:1px solid var(--border);}
-  .kw-group:last-child{padding-right:0;border-right:none;}
-  .kw-group-wide{flex:1 1 100%;padding-right:0;border-right:none;}
-  .kw-asset-label{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px;}
+  .kw-ctrl-row{
+    display:grid; grid-template-columns:112px 1fr; align-items:center;
+    gap:6px 14px; padding:9px 2px;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .kw-ctrl-row:last-child{border-bottom:none;}
+  .kw-ctrl-label{
+    font-family:'JetBrains Mono'; font-size:10px; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .kw-ctrl-options{display:flex;align-items:center;flex-wrap:wrap;gap:6px;}
   .kw-controls .filter-chip{padding:5px 10px;font-size:10.5px;}
   .kw-count-input{width:56px;padding:6px 9px;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
   .kw-count-input:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
   .kw-count-hint{font-size:11px;color:var(--ink-soft);display:block;margin-bottom:14px;}
   .kw-random-hint{font-size:11px;color:var(--blue-text);margin-top:10px;display:none;}
   .kw-random-hint.show{display:block;}
+  .kw-ai-hint{
+    font-size:11px; color:var(--amber-text); background:var(--amber-soft);
+    border:1px solid var(--amber-soft); border-radius:8px;
+    padding:8px 12px; margin-bottom:14px; line-height:1.5; display:none;
+  }
+  .kw-ai-hint.show{display:block;}
   .kw-row{display:flex;gap:10px;flex-wrap:wrap;}
   .kw-row input{
     flex:1; min-width:220px;
@@ -310,11 +328,7 @@
   /* calendar */
   .cal-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px;}
   .cal-card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; position:relative;}
-  .cal-top{display:flex; align-items:center; gap:8px; margin-bottom:2px;}
-  .cal-icon{flex:none; width:22px; height:22px; color:var(--blue); opacity:0.85;}
-  .cal-icon svg{width:100%; height:100%; display:block;}
-  .cal-card.is-current .cal-icon{color:var(--blue-text);}
-  .cal-card .m{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--blue); font-weight:600; letter-spacing:0.05em; flex:1;}
+  .cal-card .m{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--blue); font-weight:600; letter-spacing:0.05em;}
   .cal-card h4{font-family:'Space Grotesk'; font-size:14px; margin:4px 0 8px;}
   .cal-card p{font-size:12px; color:var(--ink-soft); line-height:1.55; margin:0;}
   .cal-card.is-current{border-color:var(--blue); box-shadow:0 0 0 1px var(--blue), 0 4px 18px rgba(46,94,255,0.14); background:var(--blue-soft);}
@@ -701,7 +715,7 @@
     <!-- 02 CALENDAR -->
     <section class="view" id="view-calendar">
       <h1 class="page-title">Kalender Musiman</h1>
-      <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak.</p>
+      <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak. Tanggal hari raya berbasis Hijriah & Imlek sudah disesuaikan dengan kalender 2026-2027 (per Jul 2026) dan bisa maju ~10-11 hari tiap tahun — cek ulang saat berganti tahun.</p>
       <div class="cal-grid" id="calGrid"></div>
     </section>
 
@@ -732,42 +746,53 @@
     <!-- 04 KEYWORD -->
     <section class="view" id="view-keyword">
       <h1 class="page-title">Generator Kata Kunci</h1>
-      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, mode kata (Filter = istilah yang laku di Adobe Stock, Unfilter = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
+      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, filter kata (Adobe Stock = istilah yang laku di Adobe Stock, Umum = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
 
       <div class="kw-panel">
         <div class="kw-controls" id="kwControls">
-          <div class="kw-group" id="kwLangRow">
-            <span class="kw-asset-label">Bahasa</span>
-            <button type="button" class="filter-chip active" data-lang="id">🇮🇩 ID</button>
-            <button type="button" class="filter-chip" data-lang="en">🇬🇧 EN</button>
+          <div class="kw-ctrl-row" id="kwLangRow">
+            <span class="kw-ctrl-label">Bahasa</span>
+            <div class="kw-ctrl-options">
+              <button type="button" class="filter-chip active" data-lang="id">🇮🇩 ID</button>
+              <button type="button" class="filter-chip" data-lang="en">🇬🇧 EN</button>
+            </div>
           </div>
-          <div class="kw-group" id="kwModeRow">
-            <span class="kw-asset-label">Mode</span>
-            <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter</button>
-            <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter</button>
+          <div class="kw-ctrl-row" id="kwModeRow">
+            <span class="kw-ctrl-label">Filter</span>
+            <div class="kw-ctrl-options">
+              <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l7.5 3v6c0 5-3.2 8-7.5 10-4.3-2-7.5-5-7.5-10V6l7.5-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.7 12.2l2.3 2.3 4.3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Adobe Stock</button>
+              <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.3 2.5 15 0 17M12 3.5c-2.5 2.3-2.5 15 0 17" stroke="currentColor" stroke-width="1.3"/></svg> Umum</button>
+              <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="1.4" stroke="currentColor" stroke-width="1.6"/><path d="M9 3.2v3M15 3.2v3M9 17.8v3M15 17.8v3M3.2 9h3M3.2 15h3M17.8 9h3M17.8 15h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> AI</button>
+            </div>
           </div>
-          <div class="kw-group" id="kwCountRow">
-            <span class="kw-asset-label">Jumlah Kata</span>
-            <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
-            <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
+          <div class="kw-ctrl-row" id="kwCountRow">
+            <span class="kw-ctrl-label">Jumlah Kata</span>
+            <div class="kw-ctrl-options">
+              <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><polyline points="16 3 21 3 21 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="20" x2="21" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="21 16 21 21 16 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Auto</button>
+              <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
+            </div>
           </div>
-          <div class="kw-group kw-group-wide" id="kwAssetRow">
-            <span class="kw-asset-label">Jenis Aset</span>
-            <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
-            <button type="button" class="filter-chip" data-asset="icon">Icon</button>
-            <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
-            <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
-            <button type="button" class="filter-chip" data-asset="template">Template</button>
-            <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
+          <div class="kw-ctrl-row" id="kwAssetRow">
+            <span class="kw-ctrl-label">Jenis Aset</span>
+            <div class="kw-ctrl-options">
+              <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
+              <button type="button" class="filter-chip" data-asset="icon">Icon</button>
+              <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
+              <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
+              <button type="button" class="filter-chip" data-asset="template">Template</button>
+              <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
+            </div>
           </div>
         </div>
         <span class="kw-count-hint" id="kwCountHint">Auto = panjang alami mengikuti mode kata, atau tentukan sendiri jumlah kata per kombinasi (min 1).</span>
+        <div class="kw-ai-hint" id="kwAiHint">🤖 Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
         <div class="kw-row">
           <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
-          <button class="btn" id="kwBtn">🎲 Buat Kombinasi</button>
+          <button class="btn" id="kwBtn"><svg class="chip-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M18.5 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg> Buat Kombinasi</button>
           <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
         </div>
         <div class="kw-random-hint mono" id="kwRandomHint"></div>
+        <div class="status-msg" id="kwAiStatus"></div>
         <div class="kw-results" id="kwResults"></div>
         <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar (atau kosongkan untuk ide acak) lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
       </div>
@@ -955,13 +980,6 @@ const niches = [
     tags:['maximalist pattern','bold color illustration','y2k inspired vector','clash color design']
   },
   {
-    id:'editorial-design', title:'Konten Editorial (Berhak Cipta / Editorial Use Only)', icon:'editorial',
-    trend:'stable', trendLabel:'⚠️ Kategori Khusus', sat:'low', satLabel:'Peserta Terbatas (aturan ketat)',
-    note:'Kategori "Editorial" di Adobe Stock mencakup konten yang menampilkan elemen berhak cipta/merek dagang — produk asli, logo brand, figur publik, atau peristiwa aktual — tanpa surat izin (release), dan hanya boleh dilisensikan untuk keperluan berita/komentar, bukan untuk iklan atau produk komersial. Kategori ini didominasi foto & video peristiwa nyata; Adobe Stock umumnya tetap menolak karya vektor yang meniru logo atau karakter berhak cipta secara persis, sekalipun diberi label Editorial. Judul & keterangan wajib akurat secara faktual (nama tempat, tanggal, konteks peristiwa) — cek kebijakan Editorial Adobe Stock sebelum submit.',
-    tags:['current events illustration','newsworthy concept vector','accurate caption required','editorial use only'],
-    editorialFilter:true
-  },
-  {
     id:'business-data', title:'Ikon & Ilustrasi Bisnis / Data', icon:'chart',
     trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
     note:'Kategori matang dengan jutaan aset — permintaan stabil tapi arah visual bergeser ke gaya kantor yang lebih "otentik", bukan kaku.',
@@ -1003,8 +1021,7 @@ const iconPaths = {
   grid:'<rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/>',
   mascot:'<circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="9.5" cy="9" r="1" fill="currentColor"/><circle cx="14.5" cy="9" r="1" fill="currentColor"/><path d="M9 12.5c1.5 1.3 4.5 1.3 6 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M12 16v4" stroke="currentColor" stroke-width="1.6"/>',
   lines:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>',
-  editorial:'<rect x="4" y="3" width="16" height="18" rx="1.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 7.5h3M8 10.5h3M8 13.5h3M13 7.5h3M13 10.5h3M13 13.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M8 17h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
+  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>'
 };
 
 function renderNiches(filter){
@@ -1032,7 +1049,7 @@ function renderNiches(filter){
       </div>
       <p class="card-note">${n.note}</p>
       <div class="chips">${n.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
-      <a class="card-link" href="${n.editorialFilter ? buildAdobeStockUrl(n.tags[0]) : ('https://stock.adobe.com/uk/search?k=' + encodeURIComponent(n.tags[0]))}" target="_blank" rel="noopener">
+      <a class="card-link" href="https://stock.adobe.com/uk/search?k=${encodeURIComponent(n.tags[0])}" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Lihat aset tren serupa
       </a>
@@ -1463,7 +1480,7 @@ const KW_ASSET_NOUN = {
 };
 const KW_ASSET_LABEL = { all:'Semua Jenis', icon:'Icon', vector:'Ilustrasi Vector', pattern:'Pola & Background', template:'Template', clipart:'Clipart & Stiker' };
 const KW_LANG_LABEL = { id:'Indonesia', en:'English' };
-const KW_MODE_LABEL = { filter:'Filter (Laku di Adobe Stock)', unfilter:'Unfilter (Umum & Kaya Kata)' };
+const KW_MODE_LABEL = { filter:'Adobe Stock (Laku di Adobe Stock)', unfilter:'Umum (Umum & Kaya Kata)', ai:'AI (Disusun oleh AI)' };
 
 /* Dipakai saat kolom kata kunci dikosongkan — sistem memilih salah satu ide
    dasar secara acak (sesuai bahasa yang dipilih) supaya orang tetap bisa
@@ -1491,8 +1508,13 @@ const KW_RANDOM_IDEAS = {
 
 let kwAssetType = 'all';
 let kwLang = 'id';
-let kwMode = 'filter'; // 'filter' (istilah yang laku di Adobe Stock) atau 'unfilter' (umum & kaya kata)
+let kwMode = 'filter'; // 'filter' (istilah yang laku di Adobe Stock), 'unfilter' (umum & kaya kata), atau 'ai' (disusun langsung oleh AI)
 let kwWordCount = 'auto'; // 'auto' atau angka bulat >= 1
+// Melacak kata yang barusan diisi otomatis oleh sistem (saat kolom
+// dikosongkan) supaya klik "Buat Kombinasi" berikutnya — selama kolom
+// masih berisi kata acak itu, belum diubah manual oleh pengguna — bisa
+// mengganti dengan kata acak yang baru lagi, bukan macet di kata yang sama.
+let kwAutoFilledValue = null;
 
 document.getElementById('kwModeRow').addEventListener('click', e=>{
   const btn = e.target.closest('.filter-chip');
@@ -1500,6 +1522,8 @@ document.getElementById('kwModeRow').addEventListener('click', e=>{
   document.querySelectorAll('#kwModeRow .filter-chip').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   kwMode = btn.dataset.mode;
+  document.getElementById('kwAiHint').classList.toggle('show', kwMode === 'ai');
+  document.getElementById('kwAiStatus').textContent = '';
 });
 
 const kwAutoBtn = document.getElementById('kwAutoBtn');
@@ -1640,26 +1664,49 @@ function generateKeywords(base, assetType, lang, wordCount, mode){
   return Array.from(results).slice(0, resultCap);
 }
 
-function runKwGenerate(){
+/* Fills the input with a random idea when it's left empty (shared by both
+   the local word-list mode and AI mode), and returns the topic to use.
+   If the field still holds the word the system auto-filled last time (the
+   user hasn't typed anything of their own since), each new click swaps in
+   a fresh random word instead of reusing the same one forever. */
+function kwResolveTopic(){
   const input = document.getElementById('kwInput');
   const hint = document.getElementById('kwRandomHint');
   let val = input.value.trim();
-  if(!val){
+  const isStillAutoFilled = kwAutoFilledValue !== null && val === kwAutoFilledValue;
+
+  if(!val || isStillAutoFilled){
     const pool = KW_RANDOM_IDEAS[kwLang] || KW_RANDOM_IDEAS.id;
-    val = pool[Math.floor(Math.random()*pool.length)];
+    let pick = pool[Math.floor(Math.random()*pool.length)];
+    if(pool.length > 1){
+      let guard = 0;
+      while(pick === kwAutoFilledValue && guard < 10){
+        pick = pool[Math.floor(Math.random()*pool.length)];
+        guard++;
+      }
+    }
+    val = pick;
     input.value = val;
+    kwAutoFilledValue = val;
     hint.textContent = kwLang === 'en'
       ? `🎲 Empty keyword — the system picked a random idea: "${val}" (asset type: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`
       : `🎲 Kata kunci dikosongkan — sistem memilih ide acak: "${val}" (jenis aset: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`;
     hint.classList.add('show');
   }else{
+    kwAutoFilledValue = null; // pengguna sudah mengetik kata sendiri — berhenti mengganti otomatis
     hint.classList.remove('show');
   }
+  return val;
+}
+
+/* Renders a flat list of keyword strings as clickable copy pills — shared
+   by both the local word-list mode and AI mode so results look identical
+   either way. */
+function renderKwPills(list){
   const box = document.getElementById('kwResults');
   const empty = document.getElementById('kwEmpty');
-  const list = generateKeywords(val, kwAssetType, kwLang, kwWordCount, kwMode);
   box.innerHTML = '';
-  if(list.length===0){ empty.style.display='block'; return; }
+  if(!list || list.length===0){ empty.style.display='block'; return; }
   empty.style.display='none';
   list.forEach(kw=>{
     const pill = document.createElement('span');
@@ -1674,6 +1721,65 @@ function runKwGenerate(){
     box.appendChild(pill);
   });
 }
+
+function runKwGenerate(){
+  document.getElementById('kwAiStatus').textContent = '';
+  if(kwMode === 'ai'){ runKwGenerateAI(); return; }
+  const val = kwResolveTopic();
+  const list = generateKeywords(val, kwAssetType, kwLang, kwWordCount, kwMode);
+  renderKwPills(list);
+}
+
+/* Mode AI: same input/controls, but the combinations come from a live AI
+   call instead of the local word-pool algorithm. Reuses whichever
+   provider + API key is already configured in the Generator Metadata tab. */
+async function runKwGenerateAI(){
+  const val = kwResolveTopic();
+  const statusEl = document.getElementById('kwAiStatus');
+  const btn = document.getElementById('kwBtn');
+
+  statusEl.textContent = 'Menyiapkan…';
+  const settings = await buildKwAiSettings();
+  if(!settings.ok){
+    statusEl.textContent = settings.error;
+    return;
+  }
+
+  btn.disabled = true;
+  const providerLabel = settings.providerCfg.isAuto ? 'Otomatis' : settings.providerCfg.label;
+  statusEl.textContent = `Meminta kombinasi kata kunci via ${providerLabel}…`;
+
+  const prompt = buildKwAiPrompt(val, kwAssetType, kwLang, kwWordCount);
+  const result = await callKwAi(prompt, settings);
+  btn.disabled = false;
+
+  if(!result.ok){
+    statusEl.textContent = `Gagal: ${result.error}`;
+    renderKwPills([]);
+    return;
+  }
+
+  let list = [];
+  try{
+    const cleaned = result.text.trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+    const parsed = JSON.parse(cleaned);
+    list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
+  }catch(err){
+    statusEl.textContent = 'AI merespons tapi formatnya tidak terbaca — coba lagi.';
+    renderKwPills([]);
+    return;
+  }
+
+  if(list.length === 0){
+    statusEl.textContent = 'AI tidak mengembalikan hasil apa pun — coba lagi.';
+    renderKwPills([]);
+    return;
+  }
+
+  const usedLabel = MD_PROVIDERS[result.provider]?.label || result.provider;
+  statusEl.textContent = `Selesai — ${list.length} kombinasi dibuat dengan ${usedLabel} ✓`;
+  renderKwPills(list);
+}
 document.getElementById('kwBtn').addEventListener('click', runKwGenerate);
 document.getElementById('kwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') runKwGenerate(); });
 document.getElementById('kwCopyAll').addEventListener('click', ()=>{
@@ -1687,55 +1793,35 @@ document.getElementById('kwCopyAll').addEventListener('click', ()=>{
 });
 
 /* ---------- Calendar ----------
-   monthIdx = 0 (Jan) ... 11 (Des). Sengaja dipisah jadi 2 momen per bulan
-   (bukan digabung dalam satu catatan) supaya tiap peluang niche lebih
-   mudah dibaca & dieksekusi terpisah. */
-const MONTH_ICONS = {
-  // Kepingan salju / percikan "awal baru" — Tahun Baru & musim dingin
-  JAN: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2v20M4.2 7l15.6 10M4.2 17L19.8 7"/></svg>`,
-  // Lampion merah — Imlek
-  FEB: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M12 3v2"/><rect x="7" y="6" width="10" height="11" rx="4"/><path d="M9.5 9.5h5M9.5 13.5h5M12 17v3"/></svg>`,
-  // Bulan sabit & bintang — awal Ramadan
-  MAR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4a8 8 0 1 0 0 16 6.5 6.5 0 0 1 0-16Z"/><path d="M19 4v2M18 5h2"/></svg>`,
-  // Ketupat — Idulfitri
-  APR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 12 12 21 4 12Z"/><path d="M12 3v18M4 12h16"/></svg>`,
-  // Hati — Hari Buruh & Hari Ibu
-  MEI: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.3-9C1.4 8 2.4 4.8 5.4 4c2-.5 3.8.4 4.6 2 .8-1.6 2.6-2.5 4.6-2 3 .8 4 4 3.2 7-2.3 4.6-9.4 9-9.4 9Z"/></svg>`,
-  // Koper — liburan sekolah & Hari Ayah
-  JUN: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>`,
-  // Matahari — musim panas global
-  JUL: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>`,
-  // Bendera — Kemerdekaan RI
-  AGU: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>`,
-  // Daun jatuh — musim gugur
-  SEP: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4C10 4 4 10 4 20c10 0 16-6 16-16Z"/><path d="M20 4 8 16"/></svg>`,
-  // Labu — Halloween
-  OKT: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2"/><path d="M12 5c-.6-1-2-1.3-2.6-.2"/><ellipse cx="12" cy="14" rx="8" ry="7"/><path d="M12 7v14M8 7.6c0 3.7 0 10.1 0 13.3M16 7.6c0 3.7 0 10.1 0 13.3"/></svg>`,
-  // Tas belanja — Black Friday & Cyber Monday
-  NOV: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8V6a5 5 0 0 1 10 0v2"/><rect x="4" y="8" width="16" height="13" rx="2"/><path d="M9 12a3 3 0 0 0 6 0"/></svg>`,
-  // Pohon Natal — Desember
-  DES: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 8 8h2l-3 5h2.5l-3.5 5h12l-3.5-5H17l-3-5h2Z"/><path d="M12 20v2"/></svg>`
-};
-
+   monthIdx = 0 (Jan) ... 11 (Des). Sengaja dipisah jadi beberapa momen per
+   bulan (bukan digabung dalam satu catatan) supaya tiap peluang niche lebih
+   mudah dibaca & dieksekusi terpisah.
+   Catatan validitas (diperbarui Jul 2026): hari raya berbasis kalender
+   Hijriah (Ramadan, Idulfitri, Idul Adha, Maulid Nabi) maju sekitar 10-11
+   hari tiap tahun Masehi, begitu juga Imlek (kalender lunar Tionghoa) yang
+   bergeser dalam rentang 21 Jan - 20 Feb. Posisi bulan di bawah ini
+   mengikuti tanggal riil 2026-2027 dan perlu dicek ulang tiap tahun via
+   kalender Hijriah Kemenag agar tetap akurat.*/
 const calendarData = [
   {m:'JAN', monthIdx:0, events:[
     {title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
     {title:'Musim Dingin Belahan Utara', note:'Pola salju, sweater, minuman hangat; permintaan tinggi di pasar Amerika/Eropa.'}
   ]},
   {m:'FEB', monthIdx:1, events:[
-    {title:'Imlek', note:'Motif shio, angpao, lentera merah-emas, karakter keberuntungan gaya flat.'},
-    {title:'Hari Valentine', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis.'}
+    {title:'Imlek', note:'Motif shio, angpao, lentera merah-emas, karakter keberuntungan gaya flat. Tanggal: 17 Feb 2026 (Tahun Kuda) · 6 Feb 2027 (Tahun Kambing) — geser tiap tahun dalam rentang 21 Jan-20 Feb.'},
+    {title:'Awal Ramadan', note:'Lentera, bulan sabit, pola geometris Islami, kaligrafi dekoratif. Perkiraan mulai: 19 Feb 2026 (1447H) · 8 Feb 2027 (1448H) — konten sebaiknya sudah naik 2-3 bulan sebelumnya, jadi mulai produksi dari Nov/Des.'},
+    {title:'Hari Valentine', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis. Tanggal tetap: 14 Feb.'}
   ]},
   {m:'MAR', monthIdx:2, events:[
-    {title:'Awal Ramadan', note:'Lentera, bulan sabit, pola geometris Islami, kaligrafi dekoratif.'},
-    {title:'Hari Perempuan Internasional', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas.'}
+    {title:'Idulfitri / Lebaran', note:'Ketupat, motif lebaran, kartu ucapan bertema silaturahmi & maaf-memaafkan. Tanggal: 21 Mar 2026 (versi pemerintah) · ~9-10 Mar 2027 (perkiraan) — ikut geser mengikuti akhir Ramadan.'},
+    {title:'Hari Perempuan Internasional', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas. Tanggal tetap: 8 Mar.'}
   ]},
   {m:'APR', monthIdx:3, events:[
-    {title:'Idulfitri', note:'Ketupat, motif lebaran, kartu ucapan bertema silaturahmi & maaf-memaafkan.'},
-    {title:'Paskah & Hari Bumi', note:'Telur & kelinci Paskah gaya pastel; ikon daur ulang, bumi, tema ramah lingkungan.'}
+    {title:'Paskah & Hari Bumi', note:'Telur & kelinci Paskah gaya pastel; ikon daur ulang, bumi, tema ramah lingkungan. Paskah sekitar awal April (tanggal persis ikut kalender liturgis, cek ulang tiap tahun); Hari Bumi tetap 22 Apr.'}
   ]},
   {m:'MEI', monthIdx:4, events:[
-    {title:'Hari Buruh & Hari Ibu', note:'Ilustrasi profesi/pekerja, tema keluarga & kasih sayang untuk kartu ucapan.'},
+    {title:'Hari Buruh & Mother\'s Day', note:'Ilustrasi profesi/pekerja untuk 1 Mei; tema keluarga & kasih sayang untuk kartu ucapan Mother\'s Day gaya internasional (Minggu kedua Mei) — beda dengan Hari Ibu versi Indonesia (22 Des).'},
+    {title:'Idul Adha', note:'Motif hewan kurban gaya sederhana, ornamen islami, kartu ucapan Idul Adha. Tanggal: 27 Mei 2026 (1447H) · ~17 Mei 2027 (perkiraan) — sudah bergeser dari Juni ke Mei dibanding tahun-tahun sebelumnya, cek ulang tiap tahun.'},
     {title:'Musim Wisuda (Barat)', note:'Toga, topi wisuda, ikon pencapaian akademik — mulai dicari sejak awal Mei.'}
   ]},
   {m:'JUN', monthIdx:5, events:[
@@ -1744,15 +1830,15 @@ const calendarData = [
   ]},
   {m:'JUL', monthIdx:6, events:[
     {title:'Musim Panas Global', note:'Pantai, es krim, pola tropis — pasar Amerika/Eropa mulai cari konten musim panas.'},
-    {title:'Idul Adha', note:'Motif hewan kurban gaya sederhana, ornamen islami, kartu ucapan Idul Adha.'}
+    {title:'Hari Anak Nasional', note:'Ilustrasi anak-anak, tema ceria & edukasi; tanggal tetap 23 Jul, relevan untuk niche children book & sekolah.'}
   ]},
   {m:'AGU', monthIdx:7, events:[
     {title:'Kemerdekaan RI', note:'Palet merah-putih, ornamen perayaan 17 Agustus, ikon lomba & kemeriahan.'},
-    {title:'Back to School', note:'Alat tulis, ilustrasi ruang kelas, tas sekolah — puncak pencarian pasar Amerika/Eropa.'}
+    {title:'Back to School', note:'Alat tulis, ilustrasi ruang kelas, tas sekolah — puncak pencarian pasar Amerika/Eropa.'},
+    {title:'Maulid Nabi', note:'Ornamen islami lembut, kaligrafi, palet hijau-emas untuk kartu ucapan. Tanggal: 25 Agu 2026 · 15 Agu 2027 — sudah bergeser dari September (tahun-tahun sebelumnya) ke Agustus, cek ulang tiap tahun.'}
   ]},
   {m:'SEP', monthIdx:8, events:[
-    {title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'},
-    {title:'Maulid Nabi', note:'Ornamen islami lembut, kaligrafi, palet hijau-emas untuk kartu ucapan.'}
+    {title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'}
   ]},
   {m:'OKT', monthIdx:9, events:[
     {title:'Halloween', note:'Labu, hantu lucu, tema spooky-cute, pola kelelawar & laba-laba playful.'},
@@ -1774,7 +1860,7 @@ calendarData.forEach((c)=>{
   const isCurrent = c.monthIdx === currentMonthIdx;
   el.className = 'cal-card' + (isCurrent ? ' is-current' : '');
   const [main, ...extra] = c.events;
-  let html = `<div class="cal-top"><span class="cal-icon" aria-hidden="true">${MONTH_ICONS[c.m] || ''}</span><div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div></div>`;
+  let html = `<div class="m">${c.m}${isCurrent ? '<span class="now-badge">BULAN INI</span>' : ''}</div>`;
   html += `<h4>${main.title}</h4><p>${main.note}</p>`;
   if(extra.length){
     html += `<details class="cal-more"><summary>+${extra.length} info tambahan</summary>`;
@@ -2482,6 +2568,202 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
     .map(item => item.type === 'text' ? item.text : '')
     .filter(Boolean)
     .join('\n');
+}
+
+/* ---------- Text-only variant of callVisionProvider, used by "Mode AI"
+   in the Generator Kata Kunci (no image involved, just a text prompt). Kept
+   as its own function rather than reusing callVisionProvider with an
+   optional image, so the working image-metadata flow above is never at
+   risk of being touched by this change. ---------- */
+async function callTextProvider(provider, userApiKey, prompt){
+  if(provider === 'openai'){
+    const headers = { "Content-Type": "application/json" };
+    if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 900,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (OpenAI): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'gemini'){
+    if(!userApiKey) throw new Error('Google AI (Gemini) API key wajib diisi.');
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(userApiKey)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 900 }
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (Gemini): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.candidates?.[0]?.content?.parts?.map(p=>p.text || '').join('\n') || '';
+  }
+
+  if(provider === 'groq'){
+    if(!userApiKey) throw new Error('Groq API key wajib diisi.');
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userApiKey}`
+      },
+      body: JSON.stringify({
+        model: "qwen/qwen3.6-27b",
+        max_tokens: 1500,
+        reasoning_format: "hidden",
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (Groq): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'openrouter'){
+    if(!userApiKey) throw new Error('OpenRouter API key wajib diisi.');
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userApiKey}`
+      },
+      body: JSON.stringify({
+        model: "google/gemma-4-31b-it:free",
+        max_tokens: 1200,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    if(!response.ok){
+      const errBody = await response.json().catch(()=>({}));
+      const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+      throw new Error(`API key error (OpenRouter): ${errMsg}`);
+    }
+    const data = await response.json();
+    return data?.choices?.[0]?.message?.content || '';
+  }
+
+  // default: Claude (Anthropic)
+  const headers = { "Content-Type": "application/json" };
+  if(userApiKey){
+    headers["x-api-key"] = userApiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    headers["anthropic-dangerous-direct-browser-access"] = "true";
+  }
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 900,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  if(!response.ok){
+    const errBody = await response.json().catch(()=>({}));
+    const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
+    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
+  }
+  const data = await response.json();
+  return (data.content || [])
+    .map(item => item.type === 'text' ? item.text : '')
+    .filter(Boolean)
+    .join('\n');
+}
+
+/* Builds the prompt sent to the AI for "Mode AI" in Generator Kata Kunci. */
+function buildKwAiPrompt(topic, assetType, lang, wordCountMode){
+  const assetLabel = KW_ASSET_LABEL[assetType] || 'Semua Jenis';
+  const langName = lang === 'en' ? 'English' : 'Indonesian';
+  const lengthInstr = wordCountMode === 'auto'
+    ? 'a natural varying length, roughly 2 to 6 words each'
+    : `exactly ${wordCountMode} word${wordCountMode === 1 ? '' : 's'} each`;
+  return `You are a keyword research assistant for a vector stock illustrator selling on Adobe Stock.
+Base topic: "${topic}"
+Asset type: ${assetLabel}
+Target language: ${langName}
+Generate 24 distinct, natural, high-intent long-tail keyword/title phrases a buyer might search for on Adobe Stock, related to this topic and asset type. Each phrase should have ${lengthInstr}, lowercase, no hashtags, no numbering, no duplicates, ordered from most to least commercially relevant.
+Respond with ONLY a raw JSON object (no markdown fences, no preamble, no explanation) with exactly this shape:
+{"keywords": ["phrase one", "phrase two", "..."]}`;
+}
+
+/* Resolves which provider(s)/key(s) "Mode AI" should use. Deliberately
+   reuses the exact same saved keys as the Generator Metadata tab (via
+   loadStoredKeysFor / MD_PROVIDERS) instead of asking for a separate key,
+   so there's only ever one place in the app to manage API keys. */
+async function buildKwAiSettings(){
+  const provider = mdProviderSelect.value;
+  const providerCfg = MD_PROVIDERS[provider] || MD_PROVIDERS.claude;
+
+  if(providerCfg.isAuto){
+    const keyEntries = [];
+    for(const id of MD_AUTO_ORDER){
+      const keys = await loadStoredKeysFor(id);
+      if(id === 'claude'){
+        (keys.length ? keys : ['']).forEach(key => keyEntries.push({ provider: id, key }));
+      }else{
+        keys.forEach(key => keyEntries.push({ provider: id, key }));
+      }
+    }
+    if(keyEntries.length === 0){
+      return { ok:false, error:'Isi minimal satu API key (di tab Generator Metadata) untuk pakai mode Otomatis.' };
+    }
+    return { ok:true, provider, providerCfg, keyEntries };
+  }
+
+  const keys = await loadStoredKeysFor(provider);
+  if(provider !== 'claude' && keys.length === 0){
+    return { ok:false, error:`Isi ${providerCfg.keyLabel} dulu di tab Generator Metadata untuk pakai ${providerCfg.label}.` };
+  }
+  const keyEntries = (keys.length ? keys : ['']).map(key => ({ provider, key }));
+  return { ok:true, provider, providerCfg, keyEntries };
+}
+
+/* Runs the prompt through the resolved key entries, rotating on rate-limit
+   (or falling forward to the next provider entirely in Otomatis mode),
+   mirroring the same fallback behavior used for image metadata. */
+async function callKwAi(prompt, settings){
+  const keys = settings.keyEntries.length ? settings.keyEntries : [{ provider: settings.provider, key: '' }];
+  const isAuto = !!settings.providerCfg.isAuto;
+  let lastErr = null, lastProvider = settings.provider;
+  for(let i=0; i<keys.length; i++){
+    const { provider, key } = keys[i];
+    lastProvider = provider;
+    try{
+      const text = await callTextProvider(provider, key, prompt);
+      return { ok:true, text, provider };
+    }catch(err){
+      lastErr = err;
+      const isRateLimit = /rate limit|429|quota/i.test(err?.message || '');
+      if((!isRateLimit && !isAuto) || keys.length === 1) break;
+    }
+  }
+  return {
+    ok:false,
+    error: isAuto
+      ? `Semua provider di urutan Otomatis gagal. Terakhir dicoba: ${MD_PROVIDERS[lastProvider]?.label || lastProvider} — ${lastErr?.message || 'coba lagi.'}`
+      : (lastErr?.message || 'coba lagi.')
+  };
 }
 
 function renderMdResultCard(img, index){
