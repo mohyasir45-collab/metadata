@@ -1765,7 +1765,20 @@ async function runKwGenerateAI(){
 
   let list = [];
   try{
-    const cleaned = result.text.trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+    // Sama seperti processOneMdImage: sebagian model (terutama model
+    // reasoning seperti Qwen via Groq, atau model gratisan di OpenRouter)
+    // menyisipkan blok <think>...</think>, atau teks/pagar markdown yang
+    // tidak persis di awal/akhir string. Bersihkan semua itu dulu sebelum
+    // parse, jangan cuma strip pagar di posisi awal.
+    let cleaned = result.text
+      .replace(/<think>[\s\S]*?<\/think>/gi, '')
+      .replace(/```json|```/g, '')
+      .trim();
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+    }
     const parsed = JSON.parse(cleaned);
     list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
   }catch(err){
