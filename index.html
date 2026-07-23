@@ -2431,23 +2431,32 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
   if(provider === 'openai'){
     const headers = { "Content-Type": "application/json" };
     if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: "gpt-4o",
-        max_tokens: 600,
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: prompt },
-              { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
-            ]
-          }
-        ]
-      })
-    });
+    let response;
+    try{
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: "gpt-4o",
+          max_tokens: 600,
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: prompt },
+                { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
+              ]
+            }
+          ]
+        })
+      });
+    }catch(networkErr){
+      // OpenAI's API does not return CORS headers for browser-origin requests,
+      // so a call from a static site (not routed through a backend proxy)
+      // always fails at the network level — a platform limitation, not
+      // something fixable in this file.
+      throw new Error('OpenAI tidak mendukung panggilan langsung dari browser (diblokir CORS) — provider ini butuh server perantara dan tidak akan pernah berhasil dari situs statis. Pertimbangkan menghapusnya dari urutan Otomatis.');
+    }
     if(!response.ok){
       const errBody = await response.json().catch(()=>({}));
       const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
@@ -2553,33 +2562,46 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
   }
 
   // default: Claude (Anthropic)
-  const headers = { "Content-Type": "application/json" };
-  if(userApiKey){
-    headers["x-api-key"] = userApiKey;
-    headers["anthropic-version"] = "2023-06-01";
-    headers["anthropic-dangerous-direct-browser-access"] = "true";
+  if(!userApiKey){
+    // Calling Anthropic's API with no key at all only works inside Claude.ai's
+    // own artifact sandbox (which proxies the request automatically). Once
+    // this file is hosted elsewhere (e.g. GitHub Pages), there's no key and
+    // no proxy, so this call would always fail CORS — skip straight to that
+    // clear explanation instead of making a doomed network request.
+    throw new Error('Claude butuh API key Anthropic sendiri saat dijalankan di luar claude.ai — isi di tab Generator Metadata.');
   }
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 600,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: imageMediaType, data: imageBase64 } },
-            { type: "text", text: prompt }
-          ]
-        }
-      ]
-    })
-  });
+  const headers = {
+    "Content-Type": "application/json",
+    "x-api-key": userApiKey,
+    "anthropic-version": "2023-06-01",
+    "anthropic-dangerous-direct-browser-access": "true"
+  };
+  let response;
+  try{
+    response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 600,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "image", source: { type: "base64", media_type: imageMediaType, data: imageBase64 } },
+              { type: "text", text: prompt }
+            ]
+          }
+        ]
+      })
+    });
+  }catch(networkErr){
+    throw new Error('Panggilan ke Claude diblokir CORS — periksa API key Anthropic-mu di tab Generator Metadata.');
+  }
   if(!response.ok){
     const errBody = await response.json().catch(()=>({}));
     const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
+    throw new Error(`API key error: ${errMsg}`);
   }
   const data = await response.json();
   return (data.content || [])
@@ -2597,15 +2619,24 @@ async function callTextProvider(provider, userApiKey, prompt){
   if(provider === 'openai'){
     const headers = { "Content-Type": "application/json" };
     if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: "gpt-4o",
-        max_tokens: 900,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
+    let response;
+    try{
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: "gpt-4o",
+          max_tokens: 900,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+    }catch(networkErr){
+      // OpenAI's API does not return CORS headers for browser-origin requests,
+      // so a call from a static site (not routed through a backend proxy)
+      // always fails at the network level before any response is received —
+      // this is a platform limitation, not something fixable in this file.
+      throw new Error('OpenAI tidak mendukung panggilan langsung dari browser (diblokir CORS) — provider ini butuh server perantara dan tidak akan pernah berhasil dari situs statis. Pertimbangkan menghapusnya dari urutan Otomatis.');
+    }
     if(!response.ok){
       const errBody = await response.json().catch(()=>({}));
       const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
@@ -2686,25 +2717,38 @@ async function callTextProvider(provider, userApiKey, prompt){
   }
 
   // default: Claude (Anthropic)
-  const headers = { "Content-Type": "application/json" };
-  if(userApiKey){
-    headers["x-api-key"] = userApiKey;
-    headers["anthropic-version"] = "2023-06-01";
-    headers["anthropic-dangerous-direct-browser-access"] = "true";
+  if(!userApiKey){
+    // Calling Anthropic's API with no key at all only works inside Claude.ai's
+    // own artifact sandbox (which proxies the request automatically). Once
+    // this file is hosted elsewhere (e.g. GitHub Pages), there's no key and
+    // no proxy, so this call would always fail CORS — skip straight to that
+    // clear explanation instead of making a doomed network request.
+    throw new Error('Claude butuh API key Anthropic sendiri saat dijalankan di luar claude.ai — isi di tab Generator Metadata.');
   }
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 900,
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
+  const headers = {
+    "Content-Type": "application/json",
+    "x-api-key": userApiKey,
+    "anthropic-version": "2023-06-01",
+    "anthropic-dangerous-direct-browser-access": "true"
+  };
+  let response;
+  try{
+    response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 900,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+  }catch(networkErr){
+    throw new Error('Panggilan ke Claude diblokir CORS — periksa API key Anthropic-mu di tab Generator Metadata.');
+  }
   if(!response.ok){
     const errBody = await response.json().catch(()=>({}));
     const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
+    throw new Error(`API key error: ${errMsg}`);
   }
   const data = await response.json();
   return (data.content || [])
