@@ -1734,35 +1734,6 @@ function runKwGenerate(){
   renderKwPills(list);
 }
 
-/* Cleans and parses a raw AI text response into a keyword list. Throws on
-   empty or unparseable content so the caller's retry loop treats it exactly
-   like a network/rate-limit failure and rotates to the next key/provider —
-   this is what makes the "estafet" (relay) system actually kick in for bad
-   or empty responses, not just for outright request errors. */
-function parseKwAiResponse(text){
-  const raw = text || '';
-  let cleaned = raw
-    .replace(/<think>[\s\S]*?<\/think>/gi, '')
-    .replace(/```json|```/g, '')
-    .trim();
-  const firstBrace = cleaned.indexOf('{');
-  const lastBrace = cleaned.lastIndexOf('}');
-  if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
-    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
-  }
-  if(!cleaned){
-    throw new Error(raw.trim()
-      ? 'formatnya tidak terbaca'
-      : 'respons kosong (kemungkinan token habis untuk reasoning tersembunyi)');
-  }
-  const parsed = JSON.parse(cleaned);
-  const list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
-  if(list.length === 0){
-    throw new Error('tidak mengembalikan kata kunci apa pun');
-  }
-  return list;
-}
-
 /* Mode AI: same input/controls, but the combinations come from a live AI
    call instead of the local word-pool algorithm. Reuses whichever
    provider + API key is already configured in the Generator Metadata tab. */
@@ -1783,12 +1754,7 @@ async function runKwGenerateAI(){
   statusEl.textContent = `Meminta kombinasi kata kunci via ${providerLabel}…`;
 
   const prompt = buildKwAiPrompt(val, kwAssetType, kwLang, kwWordCount);
-  const result = await callKwAi(prompt, settings, (activeProvider) => {
-    const activeLabel = MD_PROVIDERS[activeProvider]?.label || activeProvider;
-    statusEl.textContent = `Meminta kombinasi kata kunci via ${activeLabel}…`;
-    if(settings.providerCfg.isAuto) setActiveAutoPill(activeProvider);
-  });
-  if(settings.providerCfg.isAuto) setActiveAutoPill(null);
+  const result = await callKwAi(prompt, settings);
   btn.disabled = false;
 
   if(!result.ok){
@@ -1797,9 +1763,26 @@ async function runKwGenerateAI(){
     return;
   }
 
+  let list = [];
+  try{
+    const cleaned = result.text.trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
+    const parsed = JSON.parse(cleaned);
+    list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
+  }catch(err){
+    statusEl.textContent = 'AI merespons tapi formatnya tidak terbaca — coba lagi.';
+    renderKwPills([]);
+    return;
+  }
+
+  if(list.length === 0){
+    statusEl.textContent = 'AI tidak mengembalikan hasil apa pun — coba lagi.';
+    renderKwPills([]);
+    return;
+  }
+
   const usedLabel = MD_PROVIDERS[result.provider]?.label || result.provider;
-  statusEl.textContent = `Selesai — ${result.list.length} kombinasi dibuat dengan ${usedLabel} ✓`;
-  renderKwPills(result.list);
+  statusEl.textContent = `Selesai — ${list.length} kombinasi dibuat dengan ${usedLabel} ✓`;
+  renderKwPills(list);
 }
 document.getElementById('kwBtn').addEventListener('click', runKwGenerate);
 document.getElementById('kwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') runKwGenerate(); });
@@ -2431,32 +2414,23 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
   if(provider === 'openai'){
     const headers = { "Content-Type": "application/json" };
     if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
-    let response;
-    try{
-      response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          model: "gpt-4o",
-          max_tokens: 600,
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
-              ]
-            }
-          ]
-        })
-      });
-    }catch(networkErr){
-      // OpenAI's API does not return CORS headers for browser-origin requests,
-      // so a call from a static site (not routed through a backend proxy)
-      // always fails at the network level — a platform limitation, not
-      // something fixable in this file.
-      throw new Error('OpenAI tidak mendukung panggilan langsung dari browser (diblokir CORS) — provider ini butuh server perantara dan tidak akan pernah berhasil dari situs statis. Pertimbangkan menghapusnya dari urutan Otomatis.');
-    }
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 600,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: prompt },
+              { type: "image_url", image_url: { url: `data:${imageMediaType};base64,${imageBase64}` } }
+            ]
+          }
+        ]
+      })
+    });
     if(!response.ok){
       const errBody = await response.json().catch(()=>({}));
       const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
@@ -2537,10 +2511,6 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
         // Model gratis (tag ":free") — cek daftar terbaru di openrouter.ai/models?max_price=0
         model: "google/gemma-4-31b-it:free",
         max_tokens: 1200,
-        // This model has thinking/reasoning mode on by default, which can burn
-        // the whole max_tokens budget on hidden reasoning and leave the final
-        // answer empty. Turn it off so tokens go to the actual output.
-        reasoning: { enabled: false },
         messages: [
           {
             role: "user",
@@ -2562,46 +2532,33 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
   }
 
   // default: Claude (Anthropic)
-  if(!userApiKey){
-    // Calling Anthropic's API with no key at all only works inside Claude.ai's
-    // own artifact sandbox (which proxies the request automatically). Once
-    // this file is hosted elsewhere (e.g. GitHub Pages), there's no key and
-    // no proxy, so this call would always fail CORS — skip straight to that
-    // clear explanation instead of making a doomed network request.
-    throw new Error('Claude butuh API key Anthropic sendiri saat dijalankan di luar claude.ai — isi di tab Generator Metadata.');
+  const headers = { "Content-Type": "application/json" };
+  if(userApiKey){
+    headers["x-api-key"] = userApiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    headers["anthropic-dangerous-direct-browser-access"] = "true";
   }
-  const headers = {
-    "Content-Type": "application/json",
-    "x-api-key": userApiKey,
-    "anthropic-version": "2023-06-01",
-    "anthropic-dangerous-direct-browser-access": "true"
-  };
-  let response;
-  try{
-    response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 600,
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "image", source: { type: "base64", media_type: imageMediaType, data: imageBase64 } },
-              { type: "text", text: prompt }
-            ]
-          }
-        ]
-      })
-    });
-  }catch(networkErr){
-    throw new Error('Panggilan ke Claude diblokir CORS — periksa API key Anthropic-mu di tab Generator Metadata.');
-  }
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 600,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: imageMediaType, data: imageBase64 } },
+            { type: "text", text: prompt }
+          ]
+        }
+      ]
+    })
+  });
   if(!response.ok){
     const errBody = await response.json().catch(()=>({}));
     const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-    throw new Error(`API key error: ${errMsg}`);
+    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
   }
   const data = await response.json();
   return (data.content || [])
@@ -2619,24 +2576,15 @@ async function callTextProvider(provider, userApiKey, prompt){
   if(provider === 'openai'){
     const headers = { "Content-Type": "application/json" };
     if(userApiKey) headers["Authorization"] = `Bearer ${userApiKey}`;
-    let response;
-    try{
-      response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          model: "gpt-4o",
-          max_tokens: 900,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-    }catch(networkErr){
-      // OpenAI's API does not return CORS headers for browser-origin requests,
-      // so a call from a static site (not routed through a backend proxy)
-      // always fails at the network level before any response is received —
-      // this is a platform limitation, not something fixable in this file.
-      throw new Error('OpenAI tidak mendukung panggilan langsung dari browser (diblokir CORS) — provider ini butuh server perantara dan tidak akan pernah berhasil dari situs statis. Pertimbangkan menghapusnya dari urutan Otomatis.');
-    }
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "gpt-4o",
+        max_tokens: 900,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
     if(!response.ok){
       const errBody = await response.json().catch(()=>({}));
       const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
@@ -2700,10 +2648,6 @@ async function callTextProvider(provider, userApiKey, prompt){
       body: JSON.stringify({
         model: "google/gemma-4-31b-it:free",
         max_tokens: 1200,
-        // This model has thinking/reasoning mode on by default, which can burn
-        // the whole max_tokens budget on hidden reasoning and leave the final
-        // answer empty. Turn it off so tokens go to the actual output.
-        reasoning: { enabled: false },
         messages: [{ role: "user", content: prompt }]
       })
     });
@@ -2717,38 +2661,25 @@ async function callTextProvider(provider, userApiKey, prompt){
   }
 
   // default: Claude (Anthropic)
-  if(!userApiKey){
-    // Calling Anthropic's API with no key at all only works inside Claude.ai's
-    // own artifact sandbox (which proxies the request automatically). Once
-    // this file is hosted elsewhere (e.g. GitHub Pages), there's no key and
-    // no proxy, so this call would always fail CORS — skip straight to that
-    // clear explanation instead of making a doomed network request.
-    throw new Error('Claude butuh API key Anthropic sendiri saat dijalankan di luar claude.ai — isi di tab Generator Metadata.');
+  const headers = { "Content-Type": "application/json" };
+  if(userApiKey){
+    headers["x-api-key"] = userApiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    headers["anthropic-dangerous-direct-browser-access"] = "true";
   }
-  const headers = {
-    "Content-Type": "application/json",
-    "x-api-key": userApiKey,
-    "anthropic-version": "2023-06-01",
-    "anthropic-dangerous-direct-browser-access": "true"
-  };
-  let response;
-  try{
-    response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 900,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-  }catch(networkErr){
-    throw new Error('Panggilan ke Claude diblokir CORS — periksa API key Anthropic-mu di tab Generator Metadata.');
-  }
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 900,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
   if(!response.ok){
     const errBody = await response.json().catch(()=>({}));
     const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-    throw new Error(`API key error: ${errMsg}`);
+    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
   }
   const data = await response.json();
   return (data.content || [])
@@ -2807,23 +2738,17 @@ async function buildKwAiSettings(){
 
 /* Runs the prompt through the resolved key entries, rotating on rate-limit
    (or falling forward to the next provider entirely in Otomatis mode),
-   mirroring the same fallback behavior used for image metadata. Parsing
-   happens *inside* this loop (not by the caller afterwards) so an empty or
-   unparseable response is treated the same as a network error and also
-   triggers a rotation to the next key/provider — otherwise a single bad
-   response from one provider would end the whole attempt right there. */
-async function callKwAi(prompt, settings, onAttempt){
+   mirroring the same fallback behavior used for image metadata. */
+async function callKwAi(prompt, settings){
   const keys = settings.keyEntries.length ? settings.keyEntries : [{ provider: settings.provider, key: '' }];
   const isAuto = !!settings.providerCfg.isAuto;
   let lastErr = null, lastProvider = settings.provider;
   for(let i=0; i<keys.length; i++){
     const { provider, key } = keys[i];
     lastProvider = provider;
-    if(onAttempt) onAttempt(provider);
     try{
       const text = await callTextProvider(provider, key, prompt);
-      const list = parseKwAiResponse(text);
-      return { ok:true, list, provider };
+      return { ok:true, text, provider };
     }catch(err){
       lastErr = err;
       const isRateLimit = /rate limit|429|quota/i.test(err?.message || '');
