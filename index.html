@@ -1734,6 +1734,35 @@ function runKwGenerate(){
   renderKwPills(list);
 }
 
+/* Cleans and parses a raw AI text response into a keyword list. Throws on
+   empty or unparseable content so the caller's retry loop treats it exactly
+   like a network/rate-limit failure and rotates to the next key/provider —
+   this is what makes the "estafet" (relay) system actually kick in for bad
+   or empty responses, not just for outright request errors. */
+function parseKwAiResponse(text){
+  const raw = text || '';
+  let cleaned = raw
+    .replace(/<think>[\s\S]*?<\/think>/gi, '')
+    .replace(/```json|```/g, '')
+    .trim();
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  }
+  if(!cleaned){
+    throw new Error(raw.trim()
+      ? 'formatnya tidak terbaca'
+      : 'respons kosong (kemungkinan token habis untuk reasoning tersembunyi)');
+  }
+  const parsed = JSON.parse(cleaned);
+  const list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
+  if(list.length === 0){
+    throw new Error('tidak mengembalikan kata kunci apa pun');
+  }
+  return list;
+}
+
 /* Mode AI: same input/controls, but the combinations come from a live AI
    call instead of the local word-pool algorithm. Reuses whichever
    provider + API key is already configured in the Generator Metadata tab. */
@@ -1754,7 +1783,12 @@ async function runKwGenerateAI(){
   statusEl.textContent = `Meminta kombinasi kata kunci via ${providerLabel}…`;
 
   const prompt = buildKwAiPrompt(val, kwAssetType, kwLang, kwWordCount);
-  const result = await callKwAi(prompt, settings);
+  const result = await callKwAi(prompt, settings, (activeProvider) => {
+    const activeLabel = MD_PROVIDERS[activeProvider]?.label || activeProvider;
+    statusEl.textContent = `Meminta kombinasi kata kunci via ${activeLabel}…`;
+    if(settings.providerCfg.isAuto) setActiveAutoPill(activeProvider);
+  });
+  if(settings.providerCfg.isAuto) setActiveAutoPill(null);
   btn.disabled = false;
 
   if(!result.ok){
@@ -1763,43 +1797,9 @@ async function runKwGenerateAI(){
     return;
   }
 
-  let list = [];
-  try{
-    // Some models prepend a reasoning block, wrap the JSON in markdown
-    // fences, or add stray preamble/explanation text around it. Strip all
-    // of that defensively before parsing (same approach used for the image
-    // metadata parser below).
-    let cleaned = result.text
-      .replace(/<think>[\s\S]*?<\/think>/gi, '')
-      .replace(/```json|```/g, '')
-      .trim();
-    const firstBrace = cleaned.indexOf('{');
-    const lastBrace = cleaned.lastIndexOf('}');
-    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
-      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
-    }
-    if(!cleaned){
-      throw new Error('empty');
-    }
-    const parsed = JSON.parse(cleaned);
-    list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
-  }catch(err){
-    statusEl.textContent = result.text.trim()
-      ? 'AI merespons tapi formatnya tidak terbaca — coba lagi.'
-      : 'AI mengembalikan respons kosong (model kemungkinan menghabiskan token untuk "reasoning" tersembunyi) — coba lagi atau ganti provider.';
-    renderKwPills([]);
-    return;
-  }
-
-  if(list.length === 0){
-    statusEl.textContent = 'AI tidak mengembalikan hasil apa pun — coba lagi.';
-    renderKwPills([]);
-    return;
-  }
-
   const usedLabel = MD_PROVIDERS[result.provider]?.label || result.provider;
-  statusEl.textContent = `Selesai — ${list.length} kombinasi dibuat dengan ${usedLabel} ✓`;
-  renderKwPills(list);
+  statusEl.textContent = `Selesai — ${result.list.length} kombinasi dibuat dengan ${usedLabel} ✓`;
+  renderKwPills(result.list);
 }
 document.getElementById('kwBtn').addEventListener('click', runKwGenerate);
 document.getElementById('kwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') runKwGenerate(); });
@@ -2763,17 +2763,23 @@ async function buildKwAiSettings(){
 
 /* Runs the prompt through the resolved key entries, rotating on rate-limit
    (or falling forward to the next provider entirely in Otomatis mode),
-   mirroring the same fallback behavior used for image metadata. */
-async function callKwAi(prompt, settings){
+   mirroring the same fallback behavior used for image metadata. Parsing
+   happens *inside* this loop (not by the caller afterwards) so an empty or
+   unparseable response is treated the same as a network error and also
+   triggers a rotation to the next key/provider — otherwise a single bad
+   response from one provider would end the whole attempt right there. */
+async function callKwAi(prompt, settings, onAttempt){
   const keys = settings.keyEntries.length ? settings.keyEntries : [{ provider: settings.provider, key: '' }];
   const isAuto = !!settings.providerCfg.isAuto;
   let lastErr = null, lastProvider = settings.provider;
   for(let i=0; i<keys.length; i++){
     const { provider, key } = keys[i];
     lastProvider = provider;
+    if(onAttempt) onAttempt(provider);
     try{
       const text = await callTextProvider(provider, key, prompt);
-      return { ok:true, text, provider };
+      const list = parseKwAiResponse(text);
+      return { ok:true, list, provider };
     }catch(err){
       lastErr = err;
       const isRateLimit = /rate limit|429|quota/i.test(err?.message || '');
