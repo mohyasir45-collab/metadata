@@ -917,6 +917,13 @@
 </div>
 
 <script>
+/* ---------- Cloudflare Worker proxy (default Claude API access) ----------
+   Ganti URL di bawah ini dengan URL Worker kamu setelah deploy
+   (lihat WORKER-README.md). Ini dipakai sebagai "limit default website"
+   untuk provider Claude ketika pengguna TIDAK mengisi API key sendiri —
+   supaya kunci Anthropic asli tidak pernah dikirim ke browser pengguna. */
+const CLAUDE_PROXY_URL = "https://artboard-claude-proxy.YOUR-SUBDOMAIN.workers.dev";
+
 /* ---------- Dark mode toggle ---------- */
 (function(){
   const THEME_KEY = 'artboard-theme';
@@ -1765,20 +1772,7 @@ async function runKwGenerateAI(){
 
   let list = [];
   try{
-    // Sama seperti processOneMdImage: sebagian model (terutama model
-    // reasoning seperti Qwen via Groq, atau model gratisan di OpenRouter)
-    // menyisipkan blok <think>...</think>, atau teks/pagar markdown yang
-    // tidak persis di awal/akhir string. Bersihkan semua itu dulu sebelum
-    // parse, jangan cuma strip pagar di posisi awal.
-    let cleaned = result.text
-      .replace(/<think>[\s\S]*?<\/think>/gi, '')
-      .replace(/```json|```/g, '')
-      .trim();
-    const firstBrace = cleaned.indexOf('{');
-    const lastBrace = cleaned.lastIndexOf('}');
-    if(firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace){
-      cleaned = cleaned.slice(firstBrace, lastBrace + 1);
-    }
+    const cleaned = result.text.trim().replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'');
     const parsed = JSON.parse(cleaned);
     list = Array.isArray(parsed.keywords) ? parsed.keywords.map(String).map(s=>s.trim()).filter(Boolean) : [];
   }catch(err){
@@ -2544,14 +2538,17 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
     return data?.choices?.[0]?.message?.content || '';
   }
 
-  // default: Claude (Anthropic)
+  // default: Claude (Anthropic) — via Cloudflare Worker proxy jika user tidak
+  // mengisi API key sendiri; kalau isi key sendiri, panggil langsung ke Anthropic.
+  const useProxy = !userApiKey;
+  const endpoint = useProxy ? CLAUDE_PROXY_URL : "https://api.anthropic.com/v1/messages";
   const headers = { "Content-Type": "application/json" };
   if(userApiKey){
     headers["x-api-key"] = userApiKey;
     headers["anthropic-version"] = "2023-06-01";
     headers["anthropic-dangerous-direct-browser-access"] = "true";
   }
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -2571,7 +2568,7 @@ async function callVisionProvider(provider, userApiKey, prompt, imageBase64, ima
   if(!response.ok){
     const errBody = await response.json().catch(()=>({}));
     const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
+    throw new Error(userApiKey ? `API key error: ${errMsg}` : (useProxy ? `Limit default website habis atau proxy error: ${errMsg}` : errMsg));
   }
   const data = await response.json();
   return (data.content || [])
@@ -2673,14 +2670,17 @@ async function callTextProvider(provider, userApiKey, prompt){
     return data?.choices?.[0]?.message?.content || '';
   }
 
-  // default: Claude (Anthropic)
+  // default: Claude (Anthropic) — via Cloudflare Worker proxy jika user tidak
+  // mengisi API key sendiri; kalau isi key sendiri, panggil langsung ke Anthropic.
+  const useProxy = !userApiKey;
+  const endpoint = useProxy ? CLAUDE_PROXY_URL : "https://api.anthropic.com/v1/messages";
   const headers = { "Content-Type": "application/json" };
   if(userApiKey){
     headers["x-api-key"] = userApiKey;
     headers["anthropic-version"] = "2023-06-01";
     headers["anthropic-dangerous-direct-browser-access"] = "true";
   }
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -2692,7 +2692,7 @@ async function callTextProvider(provider, userApiKey, prompt){
   if(!response.ok){
     const errBody = await response.json().catch(()=>({}));
     const errMsg = errBody?.error?.message || `HTTP ${response.status}`;
-    throw new Error(userApiKey ? `API key error: ${errMsg}` : errMsg);
+    throw new Error(userApiKey ? `API key error: ${errMsg}` : (useProxy ? `Limit default website habis atau proxy error: ${errMsg}` : errMsg));
   }
   const data = await response.json();
   return (data.content || [])
