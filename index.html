@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Artboard — Riset Vector Adobe Stock</title>
+
+<!-- Icon untuk "Add to Home Screen" di iOS (disisipkan langsung, tidak perlu file terpisah) -->
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAABmJLR0QA/wD/AP+gvaeTAAACuklEQVRIibWWu2tWQRDFf7PfjeELVqK2IhJQm6iFKQJKUBFSiEJCQJFIAiIWWtr6L5jKItHGF4gPtLQRYiGiIKJGk4CFlpoiSAKa7Fjsfeze3RtJopctdu/MnDNzZu5DTl5RwAhCsfx9eDQCnsmAUN1xIHh7gcxajKCKlhCKuzQ8IljNIQARbAHtQEsQEbSIylTzsNKgXkbOr860KpmPrpCheWBpkAKi9HPo6sH5VbrcJQQpAzNrQ1pBNa1MDaKU1CdWqkBHnKkGtFIY4mRrZeWUJZngoNwdKYgzNJBMTLreuA0OQotxyssS0KjJvmQuSGM1CXX3GiZSuakngDNlagOtEdBqfuJk/eki1JNCgCpKiwp8rUXrM+NPl4T9DxpUCOC7ZWrDwSh6kBy73h6A1+88RcI80j0op9AIdiV4fHz0TR30HwJ4+57lFfyr9LSRvCYvSouZ06pM1WqhDA3QzmhnDA6ArZZoeo8FxajFWlSxtlqqqK0Wyu5dHOljfJJrE/T3sae7IPbyqOdEQVCjjY9dnVw6x+Q9vv9gfp6J21wcYXM7kbufk9uYmDY+nj/N9BwvXuU3X75hepaxM4moWG3j615rgzse7mVvN5N3A9PNO+zcQd/Bxqhyb/yPif+dccdtWxgbZvwGi4uBaWmJ6zc4O8z2rYkof29WQTfC5VGeTfHxcwJiZo7nU1wYpWUa0XOCJHpnByODdLW5/7QxwUdPaLUYOkVnRxpdwCTRBXr3ceIYtx6wstyYoLU8fMzxo+zvSaMLtLoPXPVtpXnhJ3Nf+PAJ90VqSnBhga/fmJ3h9y+ESq7Kc2BM6z3RtGirdMvPDw1MWSJsvehSviL935bYr0xhHeiOwD9msR8bQI8FyP5a45rQYwESPWAD6LEA9QetNkJrRte6tfFBWwd6k+f/RU+/Tf8VusAfCmikZ1rl1/EAAAAASUVORK5CYII=">
+<link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABmJLR0QA/wD/AP+gvaeTAAAA/UlEQVQokZWRMUpEMRCGvz95lR5AxWVrK21kC0HcVlaw2hN4By9kJZYiiN5BZR8q3mK10ebNWOQ9kuAWawgDM/Pl/yeJzi89iABRCKIIFFs5JqAxA5DoIIIBIi0JAwkHFwYBGusQGISibQP9t9h4l1UTRM0xFKPw3qEwpZ5BwyQMxcZtxSSTAwTPLU51ODuUppsb7O8h8f7Bz3ceLMXeoXyT+YybW3DmZ1xdV7RDwMCQ9/FkQvvGcsnXJy8Ljg5zK8UQhs+KYrTFeIenRZ+2r4xH7G5nIEAok9Mpd4+UEvcPTI8LGjS78EqASm9F6380xR3WobPDunRyWJ+O4hdAAGa6/xxSGgAAAABJRU5ErkJggg==">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Artboard">
+<meta name="theme-color" content="#2e5eff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -176,23 +185,26 @@
   h1.page-title{font-family:'Space Grotesk';font-size:23px;margin:0 0 4px;letter-spacing:-0.01em;}
   .page-sub{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px; max-width:640px; line-height:1.55;}
 
-  /* Cards grid (niche explorer) */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(270px,1fr));gap:14px;}
+  /* Cards grid (niche explorer) — CSS grid dengan align-items:stretch
+     supaya semua kartu di baris yang sama punya tinggi sama persis
+     (tidak ada celah kosong akibat kartu pendek di sebelah kartu tinggi). */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(270px,1fr));gap:16px;align-items:stretch;}
   .art-card{
     position:relative;
     background:var(--panel);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:16px;
+    padding:18px;
     transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
-    display:flex; flex-direction:column; height:100%;
+    display:flex; flex-direction:column;
+    height:100%;
   }
   .art-card:hover{border-color:var(--blue); box-shadow:var(--shadow-md); transform:translateY(-2px);}
   .handle{position:absolute;width:7px;height:7px;background:var(--blue);border-radius:1px;opacity:0;transition:opacity .12s ease;}
   .art-card:hover .handle{opacity:1;}
   .h-tl{top:-4px;left:-4px;} .h-tr{top:-4px;right:-4px;} .h-bl{bottom:-4px;left:-4px;} .h-br{bottom:-4px;right:-4px;}
 
-  .card-icon{width:34px;height:34px;margin-bottom:10px;color:var(--ink);}
+  .card-icon{width:32px;height:32px;margin-bottom:12px;color:var(--blue);}
 
   /* Social media reference cards (section 06) */
   .social-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(260px,1fr));gap:14px;}
@@ -218,8 +230,12 @@
     transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
   }
   .format-chip:hover{background:var(--blue-soft); border-color:var(--blue); color:var(--blue-text); transform:translateY(-1px);}
-  .art-card h3{font-family:'Space Grotesk';font-size:14.5px;margin:0 0 8px;line-height:1.3;}
-  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+  .art-card h3{
+    font-family:'Space Grotesk';font-size:14.5px;margin:0 0 10px;line-height:1.35;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+    min-height:2.7em;
+  }
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
   .badge{font-family:'JetBrains Mono';font-size:10px;padding:3px 7px;border-radius:5px;font-weight:500;}
   .b-hot{background:var(--amber-soft); color:var(--amber-text);}
   .b-rising{background:var(--green-soft); color:var(--green-text);}
@@ -227,8 +243,11 @@
   .b-sat-low{background:var(--green-soft); color:var(--green-text);}
   .b-sat-med{background:var(--amber-soft); color:var(--amber-text);}
   .b-sat-high{background:var(--red-soft); color:var(--red-text);}
-  .card-note{font-size:12px;color:var(--ink-soft);line-height:1.5;margin-bottom:10px;}
-  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;}
+  .card-note{
+    font-size:12px;color:var(--ink-soft);line-height:1.55;margin-bottom:12px;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:2px;}
   .chip{font-size:11px;background:var(--paper);border:1px solid var(--border);padding:3px 8px;border-radius:20px;color:var(--ink-soft);}
 
   /* trend resource links */
@@ -651,7 +670,7 @@
     <!-- 01 EXPLORER -->
     <section class="view active" id="view-explorer">
       <h1 class="page-title">Eksplorasi Niche Vector</h1>
-      <p class="page-sub">Sepuluh kategori vector dengan permintaan tertinggi di Adobe Stock saat ini. Prioritaskan niche dengan tren naik dan saturasi rendah — itu titik masuk paling realistis untuk kontributor baru.</p>
+      <p class="page-sub">Sembilan kategori vector dengan permintaan tertinggi di Adobe Stock saat ini. Prioritaskan niche dengan tren naik dan saturasi rendah — itu titik masuk paling realistis untuk kontributor baru.</p>
 
       <div class="trend-links">
         <h4>Sumber Insight Tren Resmi (Adobe Stock Contributor)</h4>
@@ -711,7 +730,7 @@
     <!-- 02 CALENDAR -->
     <section class="view" id="view-calendar">
       <h1 class="page-title">Kalender Musiman</h1>
-      <p class="page-sub">Konten musiman perlu diunggah 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak.</p>
+      <p class="page-sub">Hari besar global dengan tanggal tetap setiap tahun (bukan mengikuti kalender lunar/hijriah seperti Imlek atau Idulfitri). Unggah konten musiman 2–3 bulan sebelum momennya agar terindeks dan matang di pencarian saat permintaan memuncak.</p>
       <div class="cal-grid" id="calGrid"></div>
     </section>
 
@@ -983,13 +1002,6 @@ const niches = [
     tags:['maximalist pattern','bold color illustration','y2k inspired vector','clash color design']
   },
   {
-    id:'editorial-design', title:'Konten Editorial (Berhak Cipta / Editorial Use Only)', icon:'editorial',
-    trend:'stable', trendLabel:'⚠️ Kategori Khusus', sat:'low', satLabel:'Peserta Terbatas (aturan ketat)',
-    note:'Kategori "Editorial" di Adobe Stock mencakup konten yang menampilkan elemen berhak cipta/merek dagang — produk asli, logo brand, figur publik, atau peristiwa aktual — tanpa surat izin (release), dan hanya boleh dilisensikan untuk keperluan berita/komentar, bukan untuk iklan atau produk komersial. Kategori ini didominasi foto & video peristiwa nyata; Adobe Stock umumnya tetap menolak karya vektor yang meniru logo atau karakter berhak cipta secara persis, sekalipun diberi label Editorial. Judul & keterangan wajib akurat secara faktual (nama tempat, tanggal, konteks peristiwa) — cek kebijakan Editorial Adobe Stock sebelum submit.',
-    tags:['current events illustration','newsworthy concept vector','accurate caption required','editorial use only'],
-    editorialFilter:true
-  },
-  {
     id:'business-data', title:'Ikon & Ilustrasi Bisnis / Data', icon:'chart',
     trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
     note:'Kategori matang dengan jutaan aset — permintaan stabil tapi arah visual bergeser ke gaya kantor yang lebih "otentik", bukan kaku.',
@@ -1031,8 +1043,7 @@ const iconPaths = {
   grid:'<rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" fill="none"/>',
   mascot:'<circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="9.5" cy="9" r="1" fill="currentColor"/><circle cx="14.5" cy="9" r="1" fill="currentColor"/><path d="M9 12.5c1.5 1.3 4.5 1.3 6 0" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M12 16v4" stroke="currentColor" stroke-width="1.6"/>',
   lines:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
-  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>',
-  editorial:'<rect x="4" y="3" width="16" height="18" rx="1.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 7.5h3M8 10.5h3M8 13.5h3M13 7.5h3M13 10.5h3M13 13.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M8 17h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'
+  star:'<path d="M12 2l2.6 6.6L21 9.3l-5 4.6L17.4 21 12 17.3 6.6 21 8 13.9l-5-4.6 6.4-.7z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>'
 };
 
 function renderNiches(filter){
@@ -1809,52 +1820,54 @@ document.getElementById('kwCopyAll').addEventListener('click', ()=>{
    mudah dibaca & dieksekusi terpisah. */
 const calendarData = [
   {m:'JAN', monthIdx:0, events:[
-    {title:'Tahun Baru & Resolusi', note:'Ikon planner, kalender, tema "fresh start", warna dingin & metalik.'},
-    {title:'Musim Dingin Belahan Utara', note:'Pola salju, sweater, minuman hangat; permintaan tinggi di pasar Amerika/Eropa.'}
+    {title:'Tahun Baru Masehi (1 Januari)', note:'Kembang api, confetti, ikon jam menuju tengah malam; tema resolusi & planner selalu laris tiap awal tahun.'},
+    {title:'Hari Privasi Data Sedunia (28 Januari)', note:'Ikon gembok, perisai, keamanan siber — niche ilustrasi tech/privacy yang stabil sepanjang tahun.'}
   ]},
   {m:'FEB', monthIdx:1, events:[
-    {title:'Imlek', note:'Motif shio, angpao, lentera merah-emas, karakter keberuntungan gaya flat.'},
-    {title:'Hari Valentine', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis.'}
+    {title:'Hari Valentine (14 Februari)', note:'Elemen hati, mawar, palet merah muda-merah; kartu ucapan & bingkai romantis minimalis.'},
+    {title:'Hari Kanker Sedunia (4 Februari)', note:'Pita kesadaran, palet lembut, ikon dukungan kesehatan — permintaan stabil untuk kampanye sosial.'}
   ]},
   {m:'MAR', monthIdx:2, events:[
-    {title:'Awal Ramadan', note:'Lentera, bulan sabit, pola geometris Islami, kaligrafi dekoratif.'},
-    {title:'Hari Perempuan Internasional', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas.'}
+    {title:'Hari Perempuan Internasional (8 Maret)', note:'Ilustrasi pemberdayaan perempuan, palet ungu, ikon kesetaraan & solidaritas.'},
+    {title:"St. Patrick's Day (17 Maret)", note:'Motif semanggi hijau, palet hijau-emas — populer untuk kartu ucapan & pola bertema Barat.'}
   ]},
   {m:'APR', monthIdx:3, events:[
-    {title:'Idulfitri', note:'Ketupat, motif lebaran, kartu ucapan bertema silaturahmi & maaf-memaafkan.'},
-    {title:'Paskah & Hari Bumi', note:'Telur & kelinci Paskah gaya pastel; ikon daur ulang, bumi, tema ramah lingkungan.'}
+    {title:'Hari Bumi (22 April)', note:'Ikon daur ulang, bumi, tema ramah lingkungan; permintaan naik menjelang akhir bulan.'},
+    {title:'Hari Buku Sedunia (23 April)', note:'Ilustrasi buku, rak baca, karakter membaca — niche edukasi yang konsisten sepanjang tahun.'}
   ]},
   {m:'MEI', monthIdx:4, events:[
-    {title:'Hari Buruh & Hari Ibu', note:'Ilustrasi profesi/pekerja, tema keluarga & kasih sayang untuk kartu ucapan.'},
-    {title:'Musim Wisuda (Barat)', note:'Toga, topi wisuda, ikon pencapaian akademik — mulai dicari sejak awal Mei.'}
+    {title:'Hari Buruh Internasional (1 Mei)', note:'Ilustrasi profesi/pekerja, ikon alat kerja, tema apresiasi tenaga kerja.'},
+    {title:'Cinco de Mayo (5 Mei)', note:'Motif fiesta Meksiko — papel picado, kaktus, sombrero, palet warna cerah dan meriah.'}
   ]},
   {m:'JUN', monthIdx:5, events:[
-    {title:'Hari Ayah & Liburan Sekolah', note:'Tema aktivitas outdoor, family time, packing/travel vector.'},
-    {title:'Pride Month', note:'Pola pelangi, ikon keberagaman & inklusi, palet warna cerah berlapis.'}
+    {title:'Hari Lingkungan Hidup Sedunia (5 Juni)', note:'Ikon hijau, tanaman, energi terbarukan — tema keberlanjutan yang terus dicari brand.'},
+    {title:'Pride Month (sepanjang Juni)', note:'Pola pelangi, ikon keberagaman & inklusi, palet warna cerah berlapis.'},
+    {title:'Hari Musik Sedunia (21 Juni)', note:'Ikon not musik, vinil, alat musik retro — niche ilustrasi hobi & gaya hidup.'}
   ]},
   {m:'JUL', monthIdx:6, events:[
-    {title:'Musim Panas Global', note:'Pantai, es krim, pola tropis — pasar Amerika/Eropa mulai cari konten musim panas.'},
-    {title:'Idul Adha', note:'Motif hewan kurban gaya sederhana, ornamen islami, kartu ucapan Idul Adha.'}
+    {title:'Hari Kemerdekaan Amerika Serikat (4 Juli)', note:'Palet merah-putih-biru, kembang api, bintang — permintaan tinggi di pasar Amerika.'},
+    {title:'Hari Persahabatan Internasional (30 Juli)', note:'Ilustrasi kebersamaan, ikon pelukan/gandeng tangan, palet hangat untuk kartu ucapan.'}
   ]},
   {m:'AGU', monthIdx:7, events:[
-    {title:'Kemerdekaan RI', note:'Palet merah-putih, ornamen perayaan 17 Agustus, ikon lomba & kemeriahan.'},
-    {title:'Back to School', note:'Alat tulis, ilustrasi ruang kelas, tas sekolah — puncak pencarian pasar Amerika/Eropa.'}
+    {title:'Kemerdekaan RI (17 Agustus)', note:'Palet merah-putih, ornamen perayaan 17 Agustus, ikon lomba & kemeriahan.'},
+    {title:'Hari Kucing Sedunia (8 Agustus)', note:'Ilustrasi kucing gaya flat/kawaii — niche hewan peliharaan yang selalu diminati.'}
   ]},
   {m:'SEP', monthIdx:8, events:[
-    {title:'Musim Gugur (pasar Barat)', note:'Dedaunan jatuh, labu, palet hangat — permintaan tinggi di pasar Amerika/Eropa.'},
-    {title:'Maulid Nabi', note:'Ornamen islami lembut, kaligrafi, palet hijau-emas untuk kartu ucapan.'}
+    {title:'Hari Literasi Internasional (8 September)', note:'Ikon buku, pensil, ruang kelas — niche edukasi yang stabil sepanjang tahun.'},
+    {title:'Hari Perdamaian Dunia (21 September)', note:'Simbol merpati, tanda damai, palet biru-putih lembut untuk kampanye sosial.'}
   ]},
   {m:'OKT', monthIdx:9, events:[
-    {title:'Halloween', note:'Labu, hantu lucu, tema spooky-cute, pola kelelawar & laba-laba playful.'},
-    {title:'Hari Batik & Bulan Kesadaran Kanker Payudara', note:'Motif batik & budaya nusantara; pita pink, ikon kesadaran kesehatan.'}
+    {title:'Halloween (31 Oktober)', note:'Labu, hantu lucu, tema spooky-cute, pola kelelawar & laba-laba playful.'},
+    {title:'Hari Kopi Internasional (1 Oktober)', note:'Ikon cangkir kopi, biji kopi, kedai kopi — niche lifestyle dengan pencarian tinggi sepanjang tahun.'},
+    {title:'Hari Batik Nasional (2 Oktober)', note:'Motif batik & budaya nusantara, relevan kuat untuk pasar lokal Indonesia.'}
   ]},
   {m:'NOV', monthIdx:10, events:[
-    {title:'Black Friday & Cyber Monday', note:'Banner diskon, tag harga, badge promo, tema belanja online.'},
-    {title:'Thanksgiving & Singles Day (11.11)', note:'Ilustrasi keluarga & rasa syukur; badge flash sale & ikon e-commerce.'}
+    {title:'Hari Belanja 11.11 / Singles Day (11 November)', note:'Badge diskon, tag harga, tema flash sale — puncak pencarian ikon e-commerce di pasar Asia.'},
+    {title:'Hari Anak Sedunia (20 November)', note:'Ilustrasi anak-anak, karakter ceria, palet warna cerah untuk konten edukasi & mainan.'}
   ]},
   {m:'DES', monthIdx:11, events:[
-    {title:'Natal', note:'Ornamen pohon Natal, salju, kembang api, kartu ucapan & pola kado.'},
-    {title:'Malam Tahun Baru & Boxing Day', note:'Confetti, jam menuju tengah malam, badge diskon akhir tahun.'}
+    {title:'Hari Natal (25 Desember)', note:'Ornamen pohon Natal, salju, kembang api, kartu ucapan & pola kado.'},
+    {title:'Malam Tahun Baru (31 Desember)', note:'Confetti, jam menuju tengah malam, badge diskon akhir tahun.'}
   ]}
 ];
 const calGrid = document.getElementById('calGrid');
