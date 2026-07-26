@@ -289,8 +289,8 @@
     border-bottom:1px solid var(--border);
   }
   .kw-ctrl-row{
-    display:grid; grid-template-columns:112px 1fr; align-items:center;
-    gap:6px 14px; padding:9px 2px;
+    display:flex; flex-direction:column; align-items:flex-start;
+    gap:7px; padding:11px 2px;
     border-bottom:1px solid var(--paper-line);
   }
   .kw-ctrl-row:last-child{border-bottom:none;}
@@ -298,11 +298,11 @@
     font-family:'JetBrains Mono'; font-size:10px; color:var(--ink-soft);
     text-transform:uppercase; letter-spacing:0.04em;
   }
-  .kw-ctrl-options{display:flex;align-items:center;flex-wrap:wrap;gap:6px;}
+  .kw-ctrl-options{display:flex;align-items:center;flex-wrap:wrap;gap:6px; width:100%;}
   .kw-controls .filter-chip{padding:5px 10px;font-size:10.5px;}
   .kw-count-input{width:56px;padding:6px 9px;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
   .kw-count-input:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
-  .kw-count-hint{font-size:11px;color:var(--ink-soft);display:block;margin-bottom:14px;}
+  .kw-count-hint{font-size:11px;color:var(--ink-soft);flex-basis:100%;margin-top:2px;}
   .kw-random-hint{font-size:11px;color:var(--blue-text);margin-top:10px;display:none;}
   .kw-random-hint.show{display:block;}
   .kw-ai-hint{
@@ -620,7 +620,359 @@
   .auto-order-item .moves button:hover:not(:disabled){border-color:var(--blue);color:var(--blue-text);}
   .auto-order-item .moves button:disabled{opacity:0.3;cursor:not-allowed;}
 
+  /* ==========================================================
+     GENERATOR METADATA — tampilan dashboard invoice (gelap,
+     aksen hijau neon, kartu rounded, list + panel detail)
+     Semua aturan di-scope dengan #view-metadata supaya halaman
+     lain tetap memakai tema terang/gelap standar seperti biasa.
+     ========================================================== */
+  #view-metadata{
+    --md-bg:#14171c;
+    --md-panel:#1c2027;
+    --md-panel-2:#20242c;
+    --md-border: rgba(255,255,255,0.08);
+    --md-text:#f2f4f6;
+    --md-text-soft:#9aa1a8;
+    --md-accent:#c6ff4d;
+    --md-accent-text:#1a2400;
+    --md-radius:20px;
+    background:var(--md-bg);
+    color:var(--md-text);
+    border-radius:28px;
+    padding:26px;
+    margin:0 0 10px;
+  }
+  #view-metadata .page-title{color:var(--md-text);}
+  #view-metadata .page-sub{color:var(--md-text-soft);}
+
+  /* ---- baris statistik atas (mirip kartu Overdue/Due/Average) ---- */
+  .md-stats-row{display:grid; grid-template-columns:repeat(3,1fr) 1.35fr; gap:14px; margin-bottom:16px;}
+  @media (max-width:900px){ .md-stats-row{grid-template-columns:repeat(2,1fr);} }
+  .md-stat{background:var(--md-panel); border:1px solid var(--md-border); border-radius:16px; padding:16px 18px;}
+  .md-stat .lbl{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--md-text-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .md-stat .val{font-family:'Space Grotesk'; font-size:25px; font-weight:700; margin-top:8px; color:var(--md-text);}
+  .md-stat .val span{font-size:12.5px; color:var(--md-text-soft); font-weight:500; margin-left:2px;}
+
+  /* kartu provider AI + tombol generate, mirip kartu "Available for Instant Payout" */
+  .md-provider-card{
+    background:var(--md-panel); border:1px solid var(--md-border); border-radius:16px;
+    padding:14px 16px; display:flex; flex-direction:column; gap:9px; justify-content:center;
+  }
+  .md-provider-card .lbl{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--md-text-soft); text-transform:uppercase; letter-spacing:.05em;}
+  #view-metadata select#mdProvider{
+    background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text);
+    border-radius:10px; padding:9px 10px; font-family:'JetBrains Mono'; font-size:11.5px; width:100%;
+  }
+  #view-metadata select#mdProvider:focus{outline:none;border-color:var(--md-accent);}
+  .md-provider-row{display:flex; gap:8px;}
+  #view-metadata .md-generate-btn{
+    flex:1; background:var(--md-accent); color:var(--md-accent-text); border:none;
+    font-family:'Space Grotesk'; font-weight:700; font-size:13px; padding:10px 14px;
+    border-radius:12px; cursor:pointer; box-shadow:none;
+  }
+  #view-metadata .md-generate-btn:hover{filter:brightness(1.07); transform:none;}
+  #view-metadata .md-generate-btn:disabled{opacity:.5; cursor:not-allowed; filter:none;}
+
+  /* ---- layout dua kolom: daftar upload (kiri) + panel detail (kanan) ---- */
+  .md-main-grid{display:grid; grid-template-columns:340px 1fr; gap:16px; align-items:start;}
+  @media (max-width:980px){ .md-main-grid{grid-template-columns:1fr;} }
+
+  .md-list-panel{background:var(--md-panel); border:1px solid var(--md-border); border-radius:var(--md-radius); overflow:hidden;}
+  .md-list-head{display:flex; align-items:baseline; justify-content:space-between; padding:16px 16px 8px;}
+  .md-list-head h3{font-family:'Space Grotesk'; font-size:14.5px; margin:0; color:var(--md-text);}
+  .md-list-head .count{font-family:'JetBrains Mono'; font-size:10.5px; color:var(--md-text-soft);}
+
+  #view-metadata .meta-key-row{
+    margin:0 16px 12px; padding:12px 14px; background:var(--md-panel-2); border:1px solid var(--md-border);
+    grid-template-columns:1fr; gap:10px;
+  }
+  #view-metadata .meta-key-field label{color:var(--md-text-soft);}
+  #view-metadata .meta-key-field textarea, #view-metadata .meta-key-field input, #view-metadata .meta-key-field select{
+    background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);
+  }
+  #view-metadata .meta-key-hint{color:var(--md-text-soft);}
+  #view-metadata .meta-key-status{color:var(--md-accent);}
+  #view-metadata .auto-pill{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-metadata .auto-pill .n{color:var(--md-text-soft);}
+  #view-metadata .auto-pill.on{border-color:var(--md-accent); color:var(--md-accent);}
+  #view-metadata .auto-pill.on .n{color:var(--md-accent); opacity:.8;}
+  #view-metadata .auto-pill.active{border-color:#5b82ff; color:#8ea4ff; background:rgba(91,130,255,0.12);}
+
+  /* dropzone dipadatkan supaya muat di kolom kiri sempit */
+  #view-metadata .meta-upload{
+    margin:0 16px 12px; background:var(--md-panel-2);
+    border:1.5px dashed rgba(198,255,77,0.4); border-radius:14px;
+    padding:14px 16px; box-shadow:none; flex-direction:column; align-items:flex-start; gap:8px;
+  }
+  #view-metadata .meta-upload.dragover{background:rgba(198,255,77,0.08); border-color:var(--md-accent);}
+  #view-metadata .meta-upload-icon{background:rgba(198,255,77,0.14); color:var(--md-accent);}
+  #view-metadata .meta-upload-info h5{color:var(--md-accent); margin:0 0 3px;}
+  #view-metadata .meta-upload-info p{color:var(--md-text-soft); font-size:11.5px;}
+  #view-metadata .meta-choose-btn{background:var(--md-panel); border:1px solid var(--md-border); color:var(--md-text); box-shadow:none;}
+  #view-metadata .meta-choose-btn:hover{border-color:var(--md-accent); color:var(--md-accent);}
+  #view-metadata .meta-upload-toolbar{margin:0 16px 10px;}
+  #view-metadata .meta-upload-status{padding:0 16px 10px; margin:0 !important; color:var(--md-text-soft);}
+
+  /* daftar unggahan bergaya baris (seperti list "Unpaid Invoices") */
+  #view-metadata .meta-thumbs-grid{display:flex; flex-direction:column; gap:2px; padding:0 10px 12px; margin:0;}
+  #view-metadata .meta-thumb-item{
+    display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:12px;
+    cursor:pointer; border:1px solid transparent;
+  }
+  #view-metadata .meta-thumb-item:hover{background:var(--md-panel-2);}
+  #view-metadata .meta-thumb-item.active{background:var(--md-panel-2); border-color:var(--md-accent);}
+  #view-metadata .meta-thumb-item img{
+    width:36px; height:36px; border-radius:9px; object-fit:cover; flex:none; border:1px solid var(--md-border);
+    position:static; aspect-ratio:auto;
+  }
+  #view-metadata .meta-thumb-item .thumb-name{
+    flex:1; min-width:0; font-size:11.5px; color:var(--md-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  #view-metadata .meta-thumb-status{
+    position:static; transform:none; font-family:'JetBrains Mono'; font-size:9.5px; padding:3px 9px;
+    border-radius:20px; background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text-soft); white-space:nowrap; flex:none;
+  }
+  #view-metadata .meta-thumb-status.ok{color:#7be08a; border-color:rgba(123,224,138,0.4); background:rgba(123,224,138,0.1);}
+  #view-metadata .meta-thumb-status.error{color:#ff8a9c; border-color:rgba(255,138,156,0.4); background:rgba(255,138,156,0.1);}
+  #view-metadata .meta-thumb-status.busy{color:var(--md-accent); border-color:rgba(198,255,77,0.4); background:rgba(198,255,77,0.1);}
+  #view-metadata .meta-thumb-remove{
+    position:static; width:20px; height:20px; background:var(--md-panel-2); color:var(--md-text-soft);
+    border:1px solid var(--md-border); flex:none; border-radius:50%;
+  }
+  #view-metadata .meta-thumb-remove:hover{background:#ff5470; color:#fff; border-color:#ff5470;}
+  #view-metadata .empty-hint{color:var(--md-text-soft); text-align:center; padding:26px 12px; font-size:12px;}
+
+  /* pengaturan lanjutan (accordion) di bawah daftar */
+  #view-metadata .meta-adv{margin:0 16px 16px; background:var(--md-panel-2); border-color:var(--md-border); border-radius:14px;}
+  #view-metadata .meta-adv-toggle:hover{background:rgba(198,255,77,0.08);}
+  #view-metadata .meta-adv-toggle-title>span:first-child{color:var(--md-text);}
+  #view-metadata .meta-adv-toggle-sub{color:var(--md-text-soft);}
+  #view-metadata .meta-adv-toggle .arrow{color:var(--md-text-soft);}
+  #view-metadata .meta-adv-saved{color:var(--md-accent);}
+  #view-metadata .meta-adv-body{border-top-color:var(--md-border); grid-template-columns:1fr;}
+  #view-metadata .meta-field label{color:var(--md-text-soft);}
+  #view-metadata .meta-field input, #view-metadata .meta-field select{
+    background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);
+  }
+  #view-metadata .meta-field input:focus, #view-metadata .meta-field select:focus{border-color:var(--md-accent); box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-metadata .meta-checkbox-row span{color:var(--md-text-soft);}
+  #view-metadata .meta-checkbox-row input{accent-color:var(--md-accent);}
+  #view-metadata .auto-order-item{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);}
+  #view-metadata .auto-order-item.drag-over{border-color:var(--md-accent); background:rgba(198,255,77,0.08);}
+  #view-metadata .auto-order-item .n{background:var(--md-panel-2); color:var(--md-text-soft);}
+  #view-metadata .auto-order-item .handle{color:var(--md-text-soft);}
+  #view-metadata .auto-order-item .moves button{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-metadata .auto-order-item .moves button:hover:not(:disabled){border-color:var(--md-accent); color:var(--md-accent);}
+
+  /* ---- panel kanan: detail metadata (mirip panel "Invoice details") ---- */
+  .md-detail-panel{background:var(--md-panel); border:1px solid var(--md-border); border-radius:var(--md-radius); padding:18px;}
+  .md-detail-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .md-detail-head h3{font-family:'Space Grotesk'; font-size:15px; margin:0; color:var(--md-text);}
+
+  #view-metadata .meta-output-toolbar{margin:0 0 14px;}
+  #view-metadata .meta-output-summary{color:var(--md-text-soft); font-size:11px;}
+  #view-metadata .copy-mini{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-metadata .copy-mini:hover{border-color:var(--md-accent); color:var(--md-accent);}
+  #view-metadata .btn.ghost{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text); box-shadow:none;}
+  #view-metadata .btn.ghost:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(198,255,77,0.08); box-shadow:none;}
+
+  #view-metadata .meta-result-card{
+    background:var(--md-panel-2); border:1px solid var(--md-border); border-radius:18px; padding:18px; margin-bottom:14px;
+    scroll-margin-top:90px;
+  }
+  #view-metadata .meta-result-card:hover{border-color:rgba(198,255,77,0.5); box-shadow:0 10px 26px rgba(0,0,0,0.35); transform:none;}
+  #view-metadata .meta-result-card.active{border-color:var(--md-accent); box-shadow:0 0 0 1px var(--md-accent);}
+  #view-metadata .meta-result-card.error{border-color:#ff5470;}
+  #view-metadata .meta-result-card.error:hover{border-color:#ff5470; transform:none;}
+  #view-metadata .meta-batch-num{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-metadata .meta-result-head img{border-color:var(--md-border);}
+  #view-metadata .meta-result-name{color:var(--md-text); font-family:'Space Grotesk'; font-weight:600; font-size:13.5px;}
+  #view-metadata .meta-result-status{color:var(--md-text-soft);}
+  #view-metadata .meta-result-status.ok{color:#7be08a;}
+  #view-metadata .meta-result-status.error{color:#ff8a9c;}
+  #view-metadata .meta-cat-chip{background:rgba(198,255,77,0.12); border-color:rgba(198,255,77,0.3); color:var(--md-accent);}
+
+  /* tiga kotak Judul/Deskripsi/Keyword mirip kotak breakdown biaya invoice */
+  #view-metadata .meta-out-block{background:var(--md-panel); border:1px solid var(--md-border); border-radius:14px; padding:14px 16px;}
+  #view-metadata .meta-out-head h5{color:var(--md-text-soft);}
+  #view-metadata .meta-title-text{color:var(--md-text);}
+  #view-metadata .meta-desc-text{color:var(--md-text-soft);}
+  #view-metadata .meta-kw-pill{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-metadata .meta-kw-pill:hover{border-color:var(--md-accent); color:var(--md-accent);}
+  #view-metadata .meta-kw-pill.copied{background:var(--md-accent); color:var(--md-accent-text); border-color:var(--md-accent);}
+  #view-metadata .kw-count-badge.ok{background:rgba(123,224,138,0.14); color:#7be08a;}
+  #view-metadata .kw-count-badge.warn{background:rgba(255,84,112,0.14); color:#ff8a9c;}
+  #view-metadata .meta-created-with{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-metadata .retry-btn, #view-metadata .regen-btn{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);}
+  #view-metadata .retry-btn:hover, #view-metadata .regen-btn:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(198,255,77,0.08);}
+
+  @media (max-width:600px){
+    #view-metadata{padding:16px; border-radius:18px;}
+    .md-stats-row{grid-template-columns:1fr 1fr;}
+  }
   @media (max-width: 600px){
+  }
+
+  /* ==========================================================
+     GENERATOR KATA KUNCI — memakai tema & layout yang sama
+     persis dengan Generator Metadata (kartu gelap, aksen hijau
+     neon, baris statistik atas, grid dua kolom list + detail).
+     Semua aturan di-scope dengan #view-keyword, sama seperti
+     #view-metadata, supaya halaman lain tidak ikut terpengaruh.
+     ========================================================== */
+  #view-keyword{
+    --md-bg:#14171c;
+    --md-panel:#1c2027;
+    --md-panel-2:#20242c;
+    --md-border: rgba(255,255,255,0.08);
+    --md-text:#f2f4f6;
+    --md-text-soft:#9aa1a8;
+    --md-accent:#c6ff4d;
+    --md-accent-text:#1a2400;
+    --md-radius:20px;
+    background:var(--md-bg);
+    color:var(--md-text);
+    border-radius:28px;
+    padding:26px;
+    margin:0 0 10px;
+  }
+  #view-keyword .page-title{color:var(--md-text);}
+  #view-keyword .page-sub{color:var(--md-text-soft);}
+
+  /* kartu kata kunci dasar + tombol generate, mirip kartu provider AI di Generator Metadata */
+  #view-keyword .kw-quick-input{
+    background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text);
+    border-radius:10px; padding:9px 10px; font-family:'JetBrains Mono'; font-size:12.5px; width:100%;
+  }
+  #view-keyword .kw-quick-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-keyword .md-generate-btn{
+    flex:1; background:var(--md-accent); color:var(--md-accent-text); border:none;
+    font-family:'Space Grotesk'; font-weight:700; font-size:13px; padding:10px 14px;
+    border-radius:12px; cursor:pointer; box-shadow:none;
+  }
+  #view-keyword .md-generate-btn:hover{filter:brightness(1.07); transform:none;}
+  #view-keyword .md-generate-btn:disabled{opacity:.5; cursor:not-allowed; filter:none;}
+  #view-keyword .btn.ghost{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text); box-shadow:none;}
+  #view-keyword .btn.ghost:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(198,255,77,0.08); box-shadow:none; transform:none;}
+
+  /* kolom kiri: pengaturan pencarian, mirip daftar unggahan */
+  #view-keyword .md-list-head{padding:16px 16px 8px;}
+  #view-keyword .kw-controls{margin:0 16px 4px; padding-bottom:2px; border-bottom-color:var(--md-border);}
+  #view-keyword .kw-ctrl-row{border-bottom-color:var(--md-border);}
+  #view-keyword .kw-ctrl-label{color:var(--md-text-soft);}
+  #view-keyword .filter-chip{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-keyword .filter-chip:hover{border-color:var(--md-accent); color:var(--md-accent); transform:none;}
+  #view-keyword .filter-chip.active{background:var(--md-accent); color:var(--md-accent-text); border-color:var(--md-accent);}
+  #view-keyword .kw-count-input{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text);}
+  #view-keyword .kw-count-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-keyword .kw-count-hint{color:var(--md-text-soft);}
+  #view-keyword .kw-ai-hint{
+    margin:0 16px 14px; color:var(--md-accent); background:rgba(198,255,77,0.1); border-color:rgba(198,255,77,0.3);
+  }
+
+  #view-keyword .status-msg{margin:0 16px 14px; color:var(--md-text-soft);}
+
+  /* kolom kanan: hasil kombinasi, mirip panel detail metadata */
+  #view-keyword .md-detail-panel{display:flex; flex-direction:column;}
+  #view-keyword .kw-random-hint{color:var(--md-accent);}
+  #view-keyword .kw-results{margin-top:6px;}
+  #view-keyword .kw-pill{
+    background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);
+  }
+  #view-keyword .kw-pill:hover{border-color:var(--md-accent); color:var(--md-accent);}
+  #view-keyword .empty-hint{color:var(--md-text-soft); text-align:center; padding:26px 12px; font-size:12px;}
+
+  @media (max-width:600px){
+    #view-keyword{padding:16px; border-radius:18px;}
+  }
+
+  /* ==========================================================
+     BERANDA — layar depan ringkasan, tema & layout sama persis
+     dengan Generator Metadata / Generator Kata Kunci (kartu
+     gelap, aksen hijau neon, statistik atas, grid dua kolom
+     list + detail), diisi konten riset niche.
+     ========================================================== */
+  #view-beranda{
+    --md-bg:#14171c;
+    --md-panel:#1c2027;
+    --md-panel-2:#20242c;
+    --md-border: rgba(255,255,255,0.08);
+    --md-text:#f2f4f6;
+    --md-text-soft:#9aa1a8;
+    --md-accent:#c6ff4d;
+    --md-accent-text:#1a2400;
+    --md-radius:20px;
+    background:var(--md-bg);
+    color:var(--md-text);
+    border-radius:28px;
+    padding:26px;
+    margin:0 0 10px;
+  }
+  #view-beranda .page-title{color:var(--md-text);}
+  #view-beranda .page-sub{color:var(--md-text-soft);}
+  #view-beranda .md-provider-card{gap:6px;}
+  #view-beranda .bh-month-title{font-family:'Space Grotesk'; font-size:14.5px; font-weight:600; color:var(--md-text); line-height:1.35;}
+  #view-beranda .md-generate-btn{
+    background:var(--md-accent); color:var(--md-accent-text); border:none;
+    font-family:'Space Grotesk'; font-weight:700; font-size:13px; padding:10px 14px;
+    border-radius:12px; cursor:pointer; box-shadow:none; width:100%;
+  }
+  #view-beranda .md-generate-btn:hover{filter:brightness(1.07);}
+
+  /* baris filter aktif + pencarian */
+  #view-beranda .bh-filter-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px;}
+  #view-beranda .filter-bar{margin:0; flex:1; min-width:220px;}
+  #view-beranda .filter-chip{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
+  #view-beranda .filter-chip:hover{border-color:var(--md-accent); color:var(--md-accent); transform:none;}
+  #view-beranda .filter-chip.active{background:var(--md-accent); color:var(--md-accent-text); border-color:var(--md-accent);}
+  #view-beranda .bh-search{max-width:240px;}
+  #view-beranda .kw-quick-input{
+    background:var(--md-panel); border:1px solid var(--md-border); color:var(--md-text);
+    border-radius:10px; padding:9px 12px; font-family:'JetBrains Mono'; font-size:12.5px;
+  }
+  #view-beranda .kw-quick-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+
+  /* kolom kiri: daftar riset tersimpan bergaya baris, mirip "Unpaid Invoices" */
+  #view-beranda .md-list-head{padding:16px 16px 8px;}
+  #view-beranda .bh-list{display:flex; flex-direction:column; gap:2px; padding:0 10px 12px;}
+  #view-beranda .bh-row{
+    display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:12px;
+    cursor:pointer; border:1px solid transparent;
+  }
+  #view-beranda .bh-row:hover{background:var(--md-panel-2);}
+  #view-beranda .bh-row.active{background:var(--md-panel-2); border-color:var(--md-accent);}
+  #view-beranda .bh-row-avatar{
+    flex:none; width:32px; height:32px; border-radius:50%; background:var(--md-panel-2);
+    border:1px solid var(--md-border); display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk'; font-weight:700; font-size:13px; color:var(--md-accent);
+  }
+  #view-beranda .bh-row-main{flex:1; min-width:0;}
+  #view-beranda .bh-row-title{font-size:12.5px; color:var(--md-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #view-beranda .bh-row-date{font-family:'JetBrains Mono'; font-size:10px; color:var(--md-text-soft); margin-top:2px;}
+  #view-beranda .bh-row-badge{
+    flex:none; font-family:'JetBrains Mono'; font-size:9.5px; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.03em; padding:3px 9px; border-radius:20px; background:var(--md-panel-2); border:1px solid var(--md-border);
+  }
+  #view-beranda .empty-hint{color:var(--md-text-soft); text-align:center; padding:26px 12px; font-size:12px;}
+
+  /* kolom kanan: detail niche terpilih, mirip panel "Invoice details" */
+  #view-beranda .bh-detail-title-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:16px;}
+  #view-beranda .bh-detail-badge{font-family:'JetBrains Mono'; font-size:10px; font-weight:600; letter-spacing:0.04em; margin-bottom:4px;}
+  #view-beranda .bh-detail-title{font-family:'Space Grotesk'; font-size:19px; margin:0; color:var(--md-text);}
+  #view-beranda .bh-del-btn{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft); flex:none;}
+  #view-beranda .bh-del-btn:hover{border-color:#ff5470; color:#ff8a9c;}
+  #view-beranda .bh-detail-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px;}
+  #view-beranda .meta-out-block{background:var(--md-panel-2); border:1px solid var(--md-border); border-radius:14px; padding:14px 16px;}
+  #view-beranda .meta-out-block h5{font-family:'JetBrains Mono'; font-size:10px; color:var(--md-text-soft); text-transform:uppercase; letter-spacing:0.03em; margin:0 0 6px;}
+  #view-beranda .bh-detail-val{font-family:'Space Grotesk'; font-size:14.5px; font-weight:600; color:var(--md-text);}
+  #view-beranda .bh-note-block{margin-bottom:16px;}
+  #view-beranda .bh-detail-note{font-size:12.5px; color:var(--md-text-soft); line-height:1.55; margin:0;}
+  #view-beranda .bh-detail-actions{display:flex; justify-content:flex-end;}
+  #view-beranda .bh-detail-actions .md-generate-btn{width:auto; padding:10px 18px;}
+
+  @media (max-width:600px){
+    #view-beranda{padding:16px; border-radius:18px;}
+    #view-beranda .bh-detail-grid{grid-template-columns:1fr;}
   }
 
   @media (max-width: 760px){
@@ -655,12 +1007,13 @@
 
   <div class="sidebar">
     <div class="nav-list" id="navList">
-      <button class="nav-btn active" data-view="explorer" draggable="true"><span class="drag-handle">⠿</span><span class="num">01</span> Eksplorasi Niche</button>
-      <button class="nav-btn" data-view="calendar" draggable="true"><span class="drag-handle">⠿</span><span class="num">02</span> Kalender Musiman</button>
-      <button class="nav-btn" data-view="saved" draggable="true"><span class="drag-handle">⠿</span><span class="num">03</span> Riset Tersimpan</button>
-      <button class="nav-btn" data-view="keyword" draggable="true"><span class="drag-handle">⠿</span><span class="num">04</span> Generator Kata Kunci</button>
-      <button class="nav-btn" data-view="metadata" draggable="true"><span class="drag-handle">⠿</span><span class="num">05</span> Generator Metadata</button>
-      <button class="nav-btn" data-view="social" draggable="true"><span class="drag-handle">⠿</span><span class="num">06</span> Referensi Media Sosial</button>
+      <button class="nav-btn active" data-view="beranda" draggable="true"><span class="drag-handle">⠿</span><span class="num">01</span> Beranda</button>
+      <button class="nav-btn" data-view="explorer" draggable="true"><span class="drag-handle">⠿</span><span class="num">02</span> Eksplorasi Niche</button>
+      <button class="nav-btn" data-view="calendar" draggable="true"><span class="drag-handle">⠿</span><span class="num">03</span> Kalender Musiman</button>
+      <button class="nav-btn" data-view="saved" draggable="true"><span class="drag-handle">⠿</span><span class="num">04</span> Riset Tersimpan</button>
+      <button class="nav-btn" data-view="keyword" draggable="true"><span class="drag-handle">⠿</span><span class="num">05</span> Generator Kata Kunci</button>
+      <button class="nav-btn" data-view="metadata" draggable="true"><span class="drag-handle">⠿</span><span class="num">06</span> Generator Metadata</button>
+      <button class="nav-btn" data-view="social" draggable="true"><span class="drag-handle">⠿</span><span class="num">07</span> Referensi Media Sosial</button>
     </div>
     <div class="sidebar-foot">Data tren berdasarkan riset pasar terkini. Selalu cek panel "Discover" di Adobe Stock sebelum produksi massal.<br><span style="opacity:0.75;">Seret (drag) item menu untuk mengubah urutan.</span></div>
   </div>
@@ -668,7 +1021,52 @@
   <main>
 
     <!-- 01 EXPLORER -->
-    <section class="view active" id="view-explorer">
+    <!-- 00 BERANDA (ringkasan ala dashboard invoice) -->
+    <section class="view active" id="view-beranda">
+      <h1 class="page-title">Beranda</h1>
+      <p class="page-sub">Ringkasan riset niche kamu — status prioritas, momentum musiman bulan ini, dan riset tersimpan terbaru. Klik salah satu niche untuk lihat detailnya.</p>
+
+      <!-- baris statistik atas, gaya sama dengan Generator Metadata / Generator Kata Kunci -->
+      <div class="md-stats-row">
+        <div class="md-stat"><div class="lbl">Riset Tersimpan</div><div class="val" id="bhStatSaved">0 <span>niche</span></div></div>
+        <div class="md-stat"><div class="lbl">Prioritas Tinggi</div><div class="val" id="bhStatHigh">0 <span>niche</span></div></div>
+        <div class="md-stat"><div class="lbl">Prioritas Sedang</div><div class="val" id="bhStatMed">0 <span>niche</span></div></div>
+        <div class="md-provider-card">
+          <div class="lbl">Momentum Musiman — <span id="bhMonthLabel">–</span></div>
+          <div class="bh-month-title" id="bhMonthTitle">Memuat kalender musiman…</div>
+          <div class="md-provider-row">
+            <button class="btn md-generate-btn" id="bhCalendarBtn" type="button">Lihat Kalender Musiman</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- baris filter aktif, gaya sama dengan filter bar Eksplorasi Niche -->
+      <div class="bh-filter-row">
+        <div class="filter-bar" id="bhPriorityRow">
+          <button type="button" class="filter-chip active" data-priority="all">Semua Prioritas</button>
+          <button type="button" class="filter-chip" data-priority="Tinggi">Tinggi</button>
+          <button type="button" class="filter-chip" data-priority="Sedang">Sedang</button>
+          <button type="button" class="filter-chip" data-priority="Rendah">Rendah</button>
+        </div>
+        <input type="text" id="bhSearch" class="kw-quick-input bh-search" placeholder="Cari niche tersimpan…">
+      </div>
+
+      <div class="md-main-grid">
+        <!-- kolom kiri: daftar riset tersimpan, mirip "Unpaid Invoices" -->
+        <div class="md-list-panel">
+          <div class="md-list-head"><h3>Riset Tersimpan</h3><span class="count" id="bhListCount">0 niche</span></div>
+          <div class="bh-list" id="bhList"></div>
+        </div>
+
+        <!-- kolom kanan: detail niche terpilih, mirip panel "Invoice details" -->
+        <div class="md-detail-panel">
+          <div class="md-detail-head"><h3>Detail Niche</h3></div>
+          <div id="bhDetail"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-explorer">
       <h1 class="page-title">Eksplorasi Niche Vector</h1>
       <p class="page-sub">Sembilan kategori vector dengan permintaan tertinggi di Adobe Stock saat ini. Prioritaskan niche dengan tren naik dan saturasi rendah — itu titik masuk paling realistis untuk kontributor baru.</p>
 
@@ -759,57 +1157,79 @@
     </section>
 
     <!-- 04 KEYWORD -->
+    <!-- 04 KEYWORD GENERATOR -->
     <section class="view" id="view-keyword">
       <h1 class="page-title">Generator Kata Kunci</h1>
       <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, mode kata (Filter = istilah yang laku di Adobe Stock, Unfilter = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
 
-      <div class="kw-panel">
-        <div class="kw-controls" id="kwControls">
-          <div class="kw-ctrl-row" id="kwLangRow">
-            <span class="kw-ctrl-label">Bahasa</span>
-            <div class="kw-ctrl-options">
-              <button type="button" class="filter-chip active" data-lang="id">🇮🇩 ID</button>
-              <button type="button" class="filter-chip" data-lang="en">🇬🇧 EN</button>
-            </div>
-          </div>
-          <div class="kw-ctrl-row" id="kwModeRow">
-            <span class="kw-ctrl-label">Mode</span>
-            <div class="kw-ctrl-options">
-              <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter</button>
-              <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter</button>
-              <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata">🤖 AI</button>
-            </div>
-          </div>
-          <div class="kw-ctrl-row" id="kwCountRow">
-            <span class="kw-ctrl-label">Jumlah Kata</span>
-            <div class="kw-ctrl-options">
-              <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
-              <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
-            </div>
-          </div>
-          <div class="kw-ctrl-row" id="kwAssetRow">
-            <span class="kw-ctrl-label">Jenis Aset</span>
-            <div class="kw-ctrl-options">
-              <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
-              <button type="button" class="filter-chip" data-asset="icon">Icon</button>
-              <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
-              <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
-              <button type="button" class="filter-chip" data-asset="template">Template</button>
-              <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
-            </div>
+      <!-- baris statistik atas, gaya sama dengan Generator Metadata -->
+      <div class="md-stats-row">
+        <div class="md-stat"><div class="lbl">Hasil Kombinasi</div><div class="val" id="kwStatTotal">0 <span>kata kunci</span></div></div>
+        <div class="md-stat"><div class="lbl">Mode Aktif</div><div class="val" id="kwStatMode">🔥 Filter</div></div>
+        <div class="md-stat"><div class="lbl">Jenis Aset</div><div class="val" id="kwStatAsset">Semua Jenis</div></div>
+        <div class="md-provider-card">
+          <div class="lbl">Kata Kunci Dasar &amp; Generate</div>
+          <input type="text" id="kwInput" class="kw-quick-input" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
+          <div class="md-provider-row">
+            <button class="btn md-generate-btn" id="kwBtn">🎲 Buat Kombinasi</button>
+            <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
           </div>
         </div>
-        <span class="kw-count-hint" id="kwCountHint">Auto = panjang alami mengikuti mode kata, atau tentukan sendiri jumlah kata per kombinasi (min 1).</span>
-        <div class="kw-ai-hint" id="kwAiHint">🤖 Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
-        <div class="kw-row">
-          <input type="text" id="kwInput" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
-          <button class="btn" id="kwBtn">🎲 Buat Kombinasi</button>
-          <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
+      </div>
+
+      <div class="md-main-grid">
+        <!-- kolom kiri: pengaturan pencarian, mirip "Daftar Unggahan" -->
+        <div class="md-list-panel">
+          <div class="md-list-head"><h3>Pengaturan Pencarian</h3><span class="count" id="kwSettingsCount">ID · Filter · Auto · Semua Jenis</span></div>
+
+          <div class="kw-controls" id="kwControls">
+            <div class="kw-ctrl-row" id="kwLangRow">
+              <span class="kw-ctrl-label">Bahasa</span>
+              <div class="kw-ctrl-options">
+                <button type="button" class="filter-chip active" data-lang="id">🇮🇩 Indonesia</button>
+                <button type="button" class="filter-chip" data-lang="en">🇬🇧 English</button>
+              </div>
+            </div>
+            <div class="kw-ctrl-row" id="kwModeRow">
+              <span class="kw-ctrl-label">Mode Kata</span>
+              <div class="kw-ctrl-options">
+                <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter</button>
+                <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter</button>
+                <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata">🤖 AI</button>
+              </div>
+            </div>
+            <div class="kw-ctrl-row" id="kwCountRow">
+              <span class="kw-ctrl-label">Jumlah Kata per Kombinasi</span>
+              <div class="kw-ctrl-options">
+                <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
+                <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
+                <span class="kw-count-hint" id="kwCountHint">Auto = ikut mode kata, atau isi manual (min 1)</span>
+              </div>
+            </div>
+            <div class="kw-ctrl-row" id="kwAssetRow">
+              <span class="kw-ctrl-label">Jenis Aset</span>
+              <div class="kw-ctrl-options">
+                <button type="button" class="filter-chip active" data-asset="all">Semua Jenis</button>
+                <button type="button" class="filter-chip" data-asset="icon">Icon</button>
+                <button type="button" class="filter-chip" data-asset="vector">Ilustrasi Vector</button>
+                <button type="button" class="filter-chip" data-asset="pattern">Pola &amp; Background</button>
+                <button type="button" class="filter-chip" data-asset="template">Template</button>
+                <button type="button" class="filter-chip" data-asset="clipart">Clipart &amp; Stiker</button>
+              </div>
+            </div>
+          </div>
+          <div class="kw-ai-hint" id="kwAiHint">🤖 Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
+
+          <div class="status-msg" id="kwAiStatus"></div>
         </div>
-        <div class="kw-random-hint mono" id="kwRandomHint"></div>
-        <div class="status-msg" id="kwAiStatus"></div>
-        <div class="kw-results" id="kwResults"></div>
-        <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar (atau kosongkan untuk ide acak) lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
+
+        <!-- kolom kanan: hasil kombinasi, mirip panel "Detail Metadata" -->
+        <div class="md-detail-panel">
+          <div class="md-detail-head"><h3>Hasil Kombinasi</h3></div>
+          <div class="kw-random-hint mono" id="kwRandomHint"></div>
+          <div class="kw-results" id="kwResults"></div>
+          <div class="empty-hint" id="kwEmpty">Belum ada hasil — masukkan kata kunci dasar (atau kosongkan untuk ide acak) lalu klik "Buat Kombinasi". Klik tiap pil untuk menyalinnya.</div>
+        </div>
       </div>
     </section>
 
@@ -818,109 +1238,128 @@
       <h1 class="page-title">Generator Metadata</h1>
       <p class="page-sub">Judul, deskripsi, dan keyword siap-upload dalam Bahasa Inggris sesuai standar Adobe Stock. Upload preview aset lalu klik "Generate Semua".</p>
 
-      <div class="meta-panel">
-        <div class="meta-key-row">
-          <div class="meta-key-field provider-field">
-            <label>Provider AI</label>
-            <select id="mdProvider">
-              <option value="auto">⚡ Otomatis</option>
-              <option value="gemini">1. Gemini (Google)</option>
-              <option value="groq">2. Groq</option>
-              <option value="claude">3. Claude (Anthropic)</option>
-              <option value="openai">4. ChatGPT (OpenAI)</option>
-              <option value="openrouter">5. OpenRouter (Free Models)</option>
-            </select>
+      <!-- baris statistik atas, mirip kartu Overdue / Due / Average di dashboard invoice -->
+      <div class="md-stats-row">
+        <div class="md-stat"><div class="lbl">Total Upload</div><div class="val" id="mdStatTotal">0 <span>file</span></div></div>
+        <div class="md-stat"><div class="lbl">Selesai</div><div class="val" id="mdStatDone">0 <span>metadata</span></div></div>
+        <div class="md-stat"><div class="lbl">Gagal</div><div class="val" id="mdStatError">0 <span>item</span></div></div>
+        <div class="md-provider-card">
+          <div class="lbl">Provider AI &amp; Generate</div>
+          <select id="mdProvider">
+            <option value="auto">⚡ Otomatis</option>
+            <option value="gemini">1. Gemini (Google)</option>
+            <option value="groq">2. Groq</option>
+            <option value="claude">3. Claude (Anthropic)</option>
+            <option value="openai">4. ChatGPT (OpenAI)</option>
+            <option value="openrouter">5. OpenRouter (Free Models)</option>
+          </select>
+          <div class="md-provider-row">
+            <button class="btn md-generate-btn" id="mdImageBtn">Generate Semua</button>
           </div>
-          <div class="meta-key-field" id="mdKeyFieldGroup">
-            <label id="mdApiKeyLabel">Anthropic API Key (Opsional)</label>
-            <textarea id="mdApiKey" class="masked" rows="1" placeholder="sk-ant-..."></textarea>
+        </div>
+      </div>
+
+      <div class="md-main-grid">
+        <!-- kolom kiri: daftar unggahan, mirip list "Unpaid Invoices" -->
+        <div class="md-list-panel">
+          <div class="md-list-head"><h3>Daftar Unggahan</h3><span class="count" id="mdListCount">0 file</span></div>
+
+          <div class="meta-upload" id="mdDropzone">
+            <div class="meta-upload-icon">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="meta-upload-info">
+              <h5>Upload Preview Gambar</h5>
+              <p>Klik atau seret file ke sini (bisa banyak sekaligus) — PNG/JPG/WEBP.</p>
+            </div>
+            <label class="btn meta-choose-btn" for="mdImageInput">Pilih File</label>
+            <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
           </div>
-          <div class="meta-key-actions">
-            <button class="btn ghost" id="mdApiKeyToggle" type="button" style="padding:10px 14px;">Lihat</button>
-            <span class="meta-key-status" id="mdApiKeyStatus"></span>
+          <div class="meta-upload-toolbar">
+            <button class="btn ghost" id="mdClearBtn" type="button">Hapus Semua</button>
           </div>
-          <div class="auto-summary" id="mdAutoSummary" style="display:none;"></div>
-          <div class="meta-key-hint" id="mdApiKeyHint">Isi key sendiri kalau limit default sudah habis. Disimpan hanya di penyimpananmu.</div>
+          <div class="meta-thumbs-grid" id="mdThumbsGrid"></div>
+          <div class="meta-upload-status mono" id="mdImageStatus"></div>
+
+          <div class="meta-key-row">
+            <div class="meta-key-field" id="mdKeyFieldGroup">
+              <label id="mdApiKeyLabel">Anthropic API Key (Opsional)</label>
+              <textarea id="mdApiKey" class="masked" rows="1" placeholder="sk-ant-..."></textarea>
+            </div>
+            <div class="meta-key-actions">
+              <button class="btn ghost" id="mdApiKeyToggle" type="button" style="padding:9px 14px;">Lihat</button>
+              <span class="meta-key-status" id="mdApiKeyStatus"></span>
+            </div>
+            <div class="auto-summary" id="mdAutoSummary" style="display:none;"></div>
+            <div class="meta-key-hint" id="mdApiKeyHint">Isi key sendiri kalau limit default sudah habis. Disimpan hanya di penyimpananmu.</div>
+          </div>
+
+          <div class="meta-adv">
+            <button type="button" class="meta-adv-toggle" id="mdAdvToggle">
+              <span class="meta-adv-toggle-title">
+                <span>Pengaturan Lanjutan</span>
+                <span class="meta-adv-toggle-sub">Tipe file, jumlah keyword, batas karakter, hindari kata</span>
+              </span>
+              <span class="meta-adv-saved" id="mdAdvSavedTag"></span>
+              <span class="arrow">▸</span>
+            </button>
+            <div class="meta-adv-body" id="mdAdvBody">
+              <div class="meta-field">
+                <label>Tipe File</label>
+                <select id="mdFileType">
+                  <option value="EPS vector">EPS (Vector)</option>
+                  <option value="AI vector">AI (Vector)</option>
+                  <option value="SVG vector">SVG (Vector)</option>
+                  <option value="JPG">JPG (Photo/Raster)</option>
+                  <option value="PNG">PNG (Transparan)</option>
+                  <option value="PSD template">PSD (Template)</option>
+                  <option value="MP4 video">MP4 (Video)</option>
+                </select>
+              </div>
+              <div class="meta-field">
+                <label>Jumlah Keyword Target (25–49)</label>
+                <input type="number" id="mdCount" value="35" min="25" max="49">
+              </div>
+              <div class="meta-field">
+                <label>Maks. Jumlah Karakter Judul</label>
+                <input type="number" id="mdTitleLen" value="200" min="40" max="200">
+              </div>
+              <div class="meta-field">
+                <label>Maks. Jumlah Karakter Deskripsi</label>
+                <input type="number" id="mdDescLen" value="200" min="50" max="500">
+              </div>
+              <div class="meta-field span3">
+                <label>Hindari Kata (pisahkan dengan koma)</label>
+                <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
+              </div>
+              <div class="meta-field span3">
+                <label class="meta-checkbox-row">
+                  <input type="checkbox" id="mdNoSpecialChars">
+                  <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
+                </label>
+              </div>
+              <div class="meta-field span3">
+                <label>Urutan Provider (Mode Otomatis) — geser untuk mengubah urutan coba</label>
+                <ul class="auto-order-list" id="mdAutoOrderList"></ul>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="meta-upload" id="mdDropzone">
-          <div class="meta-upload-icon">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="meta-upload-info">
-            <h5>Upload Preview Gambar</h5>
-            <p>Klik atau seret file ke sini (bisa banyak sekaligus) — PNG/JPG/WEBP, tiap gambar dibuatkan metadata terpisah.</p>
-          </div>
-          <label class="btn meta-choose-btn" for="mdImageInput">Pilih File</label>
-          <input type="file" id="mdImageInput" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
-        </div>
-        <div class="meta-upload-toolbar">
-          <button class="btn secondary" id="mdImageBtn">Generate Semua</button>
-          <button class="btn ghost" id="mdClearBtn" type="button">Hapus Semua</button>
-        </div>
-        <div class="meta-thumbs-grid" id="mdThumbsGrid"></div>
-        <div class="meta-upload-status mono" id="mdImageStatus" style="margin:-8px 0 16px;"></div>
-
-        <div class="meta-adv">
-          <button type="button" class="meta-adv-toggle" id="mdAdvToggle">
-            <span class="meta-adv-toggle-title">
-              <span>Pengaturan Lanjutan</span>
-              <span class="meta-adv-toggle-sub">Tipe file, jumlah keyword, batas karakter, hindari kata</span>
-            </span>
-            <span class="meta-adv-saved" id="mdAdvSavedTag"></span>
-            <span class="arrow">▸</span>
-          </button>
-          <div class="meta-adv-body" id="mdAdvBody">
-            <div class="meta-field">
-              <label>Tipe File</label>
-              <select id="mdFileType">
-                <option value="EPS vector">EPS (Vector)</option>
-                <option value="AI vector">AI (Vector)</option>
-                <option value="SVG vector">SVG (Vector)</option>
-                <option value="JPG">JPG (Photo/Raster)</option>
-                <option value="PNG">PNG (Transparan)</option>
-                <option value="PSD template">PSD (Template)</option>
-                <option value="MP4 video">MP4 (Video)</option>
-              </select>
-            </div>
-            <div class="meta-field">
-              <label>Jumlah Keyword Target (25–49)</label>
-              <input type="number" id="mdCount" value="35" min="25" max="49">
-            </div>
-            <div class="meta-field">
-              <label>Maks. Jumlah Karakter Judul</label>
-              <input type="number" id="mdTitleLen" value="200" min="40" max="200">
-            </div>
-            <div class="meta-field">
-              <label>Maks. Jumlah Karakter Deskripsi</label>
-              <input type="number" id="mdDescLen" value="200" min="50" max="500">
-            </div>
-            <div class="meta-field span3">
-              <label>Hindari Kata (pisahkan dengan koma)</label>
-              <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
-            </div>
-            <div class="meta-field span3">
-              <label class="meta-checkbox-row">
-                <input type="checkbox" id="mdNoSpecialChars">
-                <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
-              </label>
-            </div>
-            <div class="meta-field span3">
-              <label>Urutan Provider (Mode Otomatis) — geser untuk mengubah urutan coba</label>
-              <ul class="auto-order-list" id="mdAutoOrderList"></ul>
+        <!-- kolom kanan: panel detail metadata, mirip panel "Invoice details" -->
+        <div class="md-detail-panel">
+          <div class="md-detail-head"><h3>Detail Metadata</h3></div>
+          <div class="meta-output-toolbar" id="mdOutputToolbar" style="display:none;">
+            <span class="meta-output-summary" id="mdOutputSummary"></span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="copy-mini" id="mdRegenerateAllBtn" type="button">↻ Generate Ulang Semua</button>
+              <button class="copy-mini" id="mdRetryFailedBtn" type="button" style="display:none;">↻ Coba Lagi Semua yang Gagal</button>
+              <button class="copy-mini" id="mdExportCsvBtn" type="button">Export CSV (semua hasil)</button>
             </div>
           </div>
+          <div class="meta-output" id="mdOutput"></div>
+          <div class="empty-hint" id="mdEmpty">Belum ada metadata — upload satu atau beberapa gambar preview lalu klik "Generate Semua".</div>
         </div>
-        <div class="meta-output-toolbar" id="mdOutputToolbar" style="display:none;">
-          <span class="meta-output-summary" id="mdOutputSummary"></span>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="copy-mini" id="mdRegenerateAllBtn" type="button">↻ Generate Ulang Semua</button>
-            <button class="copy-mini" id="mdRetryFailedBtn" type="button" style="display:none;">↻ Coba Lagi Semua yang Gagal</button>
-            <button class="copy-mini" id="mdExportCsvBtn" type="button">Export CSV (semua hasil)</button>
-          </div>
-        </div>
-        <div class="meta-output" id="mdOutput"></div>
-        <div class="empty-hint" id="mdEmpty">Belum ada metadata — upload satu atau beberapa gambar preview lalu klik "Generate Semua".</div>
       </div>
     </section>
 
@@ -1538,6 +1977,19 @@ let kwWordCount = 'auto'; // 'auto' atau angka bulat >= 1
 // mengganti dengan kata acak yang baru lagi, bukan macet di kata yang sama.
 let kwAutoFilledValue = null;
 
+/* Ringkasan singkat di header panel "Pengaturan Pencarian" — selalu
+   mencerminkan kombinasi bahasa/mode/jumlah kata/jenis aset yang aktif
+   saat ini, jadi user tidak perlu menebak-nebak state tanpa scroll. */
+function updateKwSummary(){
+  const langLabel = kwLang === 'en' ? 'EN' : 'ID';
+  const modeLabel = kwMode === 'ai' ? 'AI' : kwMode === 'unfilter' ? 'Unfilter' : 'Filter';
+  const countLabel = kwWordCount === 'auto' ? 'Auto' : `${kwWordCount} kata`;
+  const assetBtn = document.querySelector('#kwAssetRow .filter-chip.active');
+  const assetLabel = assetBtn ? assetBtn.textContent.trim() : 'Semua Jenis';
+  const el = document.getElementById('kwSettingsCount');
+  if(el) el.textContent = `${langLabel} · ${modeLabel} · ${countLabel} · ${assetLabel}`;
+}
+
 document.getElementById('kwModeRow').addEventListener('click', e=>{
   const btn = e.target.closest('.filter-chip');
   if(!btn) return;
@@ -1546,6 +1998,9 @@ document.getElementById('kwModeRow').addEventListener('click', e=>{
   kwMode = btn.dataset.mode;
   document.getElementById('kwAiHint').classList.toggle('show', kwMode === 'ai');
   document.getElementById('kwAiStatus').textContent = '';
+  const kwStatModeEl = document.getElementById('kwStatMode');
+  if(kwStatModeEl) kwStatModeEl.textContent = btn.textContent.trim();
+  updateKwSummary();
 });
 
 const kwAutoBtn = document.getElementById('kwAutoBtn');
@@ -1553,6 +2008,7 @@ const kwWordCountInput = document.getElementById('kwWordCount');
 kwAutoBtn.addEventListener('click', ()=>{
   kwWordCount = 'auto';
   kwAutoBtn.classList.add('active');
+  updateKwSummary();
 });
 kwWordCountInput.addEventListener('input', ()=>{
   let v = parseInt(kwWordCountInput.value, 10);
@@ -1560,6 +2016,7 @@ kwWordCountInput.addEventListener('input', ()=>{
   if(v > 12) v = 12;
   kwWordCount = v;
   kwAutoBtn.classList.remove('active');
+  updateKwSummary();
 });
 kwWordCountInput.addEventListener('blur', ()=>{
   // Pastikan nilai yang tampil di kolom selalu valid (min 1) begitu user selesai mengetik.
@@ -1568,6 +2025,7 @@ kwWordCountInput.addEventListener('blur', ()=>{
   if(v > 12) v = 12;
   kwWordCountInput.value = v;
   if(!kwAutoBtn.classList.contains('active')) kwWordCount = v;
+  updateKwSummary();
 });
 
 document.getElementById('kwAssetRow').addEventListener('click', e=>{
@@ -1576,6 +2034,9 @@ document.getElementById('kwAssetRow').addEventListener('click', e=>{
   document.querySelectorAll('#kwAssetRow .filter-chip').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   kwAssetType = btn.dataset.asset;
+  const kwStatAssetEl = document.getElementById('kwStatAsset');
+  if(kwStatAssetEl) kwStatAssetEl.textContent = btn.textContent.trim();
+  updateKwSummary();
 });
 document.getElementById('kwLangRow').addEventListener('click', e=>{
   const btn = e.target.closest('.filter-chip');
@@ -1586,7 +2047,10 @@ document.getElementById('kwLangRow').addEventListener('click', e=>{
   document.getElementById('kwInput').placeholder = kwLang === 'en'
     ? 'e.g. cat, coffee, finance... (leave empty for a random idea)'
     : 'mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)';
+  updateKwSummary();
 });
+updateKwSummary();
+
 
 /* Memotong atau menambah kata pada sebuah frasa hasil kombinasi supaya
    jumlah katanya persis sama dengan target yang dipilih pengguna (mode
@@ -1728,6 +2192,8 @@ function renderKwPills(list){
   const box = document.getElementById('kwResults');
   const empty = document.getElementById('kwEmpty');
   box.innerHTML = '';
+  const totalEl = document.getElementById('kwStatTotal');
+  if(totalEl) totalEl.innerHTML = (list ? list.length : 0) + ' <span>kata kunci</span>';
   if(!list || list.length===0){ empty.style.display='block'; return; }
   empty.style.display='none';
   list.forEach(kw=>{
@@ -1911,6 +2377,7 @@ function stripSpecialChars(str){
    analyzed in one batch, each producing its own title/description/
    category/keywords instead of overwriting a single result. */
 let mdImages = [];
+let mdSelectedId = null; // id gambar yang sedang disorot di daftar kiri / panel detail kanan
 let mdImageSeq = 0;
 let mdBatchBusy = false;
 const MD_MAX_IMAGES = 20;
@@ -1962,17 +2429,52 @@ function resizeImageFile(file, maxDim, quality){
 
 function renderMdThumbs(){
   const grid = document.getElementById('mdThumbsGrid');
+  if(mdSelectedId !== null && !mdImages.some(i => i.id === mdSelectedId)){
+    mdSelectedId = null;
+  }
+  if(mdSelectedId === null && mdImages.length > 0){
+    mdSelectedId = mdImages[0].id;
+  }
   grid.innerHTML = mdImages.map(img => {
     const statusClass = img.status === 'done' ? 'ok' : img.status === 'error' ? 'error' : img.status === 'processing' ? 'busy' : '';
     const statusText = img.status === 'done' ? 'selesai' : img.status === 'error' ? 'gagal' : img.status === 'processing' ? 'proses…' : 'siap';
+    const activeClass = img.id === mdSelectedId ? ' active' : '';
     return `
-      <div class="meta-thumb-item" data-id="${img.id}">
+      <div class="meta-thumb-item${activeClass}" data-id="${img.id}">
         <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}" title="${escapeHtml(img.name)}">
-        <button class="meta-thumb-remove" data-remove-id="${img.id}" title="Hapus" type="button">✕</button>
+        <span class="thumb-name">${escapeHtml(img.name)}</span>
         <span class="meta-thumb-status ${statusClass}">${statusText}</span>
+        <button class="meta-thumb-remove" data-remove-id="${img.id}" title="Hapus" type="button">✕</button>
       </div>`;
   }).join('');
+  const countEl = document.getElementById('mdListCount');
+  if(countEl) countEl.textContent = `${mdImages.length} file`;
+  const totalEl = document.getElementById('mdStatTotal');
+  const doneEl = document.getElementById('mdStatDone');
+  const errEl = document.getElementById('mdStatError');
+  if(totalEl){
+    const done = mdImages.filter(i=>i.status==='done').length;
+    const errored = mdImages.filter(i=>i.status==='error').length;
+    totalEl.innerHTML = `${mdImages.length} <span>file</span>`;
+    doneEl.innerHTML = `${done} <span>metadata</span>`;
+    errEl.innerHTML = `${errored} <span>item</span>`;
+  }
 }
+
+/* Klik salah satu baris di daftar kiri -> sorot & scroll ke kartu detail terkait di panel kanan */
+document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
+  const row = e.target.closest('.meta-thumb-item');
+  if(!row || e.target.closest('.meta-thumb-remove')) return;
+  const id = Number(row.dataset.id);
+  mdSelectedId = id;
+  renderMdThumbs();
+  const card = document.querySelector(`.meta-result-card[data-result-id="${id}"]`);
+  if(card){
+    document.querySelectorAll('.meta-result-card.active').forEach(c=>c.classList.remove('active'));
+    card.classList.add('active');
+    card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+});
 
 function updateMdImageCountStatus(){
   const statusEl = document.getElementById('mdImageStatus');
@@ -2882,10 +3384,24 @@ function renderMdResults(){
   retryFailedBtn.disabled = mdBatchBusy;
   regenerateAllBtn.disabled = mdBatchBusy;
   output.innerHTML = mdImages.map((img, i) => renderMdResultCard(img, i)).join('');
+  if(mdSelectedId !== null){
+    const activeCard = output.querySelector(`.meta-result-card[data-result-id="${mdSelectedId}"]`);
+    if(activeCard) activeCard.classList.add('active');
+  }
   renderMdThumbs();
 }
 
 document.getElementById('mdOutput').addEventListener('click', e=>{
+  const clickedCard = e.target.closest('.meta-result-card');
+  if(clickedCard && !e.target.closest('button')){
+    const id = Number(clickedCard.dataset.resultId);
+    if(id !== mdSelectedId){
+      mdSelectedId = id;
+      document.querySelectorAll('#mdOutput .meta-result-card.active').forEach(c=>c.classList.remove('active'));
+      clickedCard.classList.add('active');
+      renderMdThumbs();
+    }
+  }
   const kwPill = e.target.closest('.meta-kw-pill');
   if(kwPill){
     navigator.clipboard?.writeText(kwPill.textContent).catch(()=>{});
@@ -3264,6 +3780,7 @@ async function renderSaved(){
       const filtered = items2.filter(i=>String(i.id) !== btn.dataset.id);
       await persistSaved(filtered);
       renderSaved();
+      if(typeof renderBeranda==='function') renderBeranda();
     });
   });
 }
@@ -3294,10 +3811,118 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
   document.getElementById('saveTitle').value='';
   document.getElementById('saveNote').value='';
   renderSaved();
+  if(typeof renderBeranda==='function') renderBeranda();
   setTimeout(()=>{ statusEl.textContent=''; }, 2000);
 });
 
 renderSaved();
+
+/* ---------- Beranda (layar depan ringkasan) ---------- */
+function bhPriorityColor(p){
+  return p==='Tinggi' ? 'var(--red)' : p==='Sedang' ? 'var(--amber)' : 'var(--ink-soft)';
+}
+
+let bhSelectedId = null;
+let bhPriorityFilter = 'all';
+
+async function renderBeranda(){
+  const items = await loadSaved();
+
+  document.getElementById('bhStatSaved').innerHTML = items.length + ' <span>niche</span>';
+  document.getElementById('bhStatHigh').innerHTML = items.filter(i=>i.priority==='Tinggi').length + ' <span>niche</span>';
+  document.getElementById('bhStatMed').innerHTML = items.filter(i=>i.priority==='Sedang').length + ' <span>niche</span>';
+
+  const cur = calendarData.find(c=>c.monthIdx===currentMonthIdx);
+  if(cur){
+    document.getElementById('bhMonthLabel').textContent = cur.m;
+    document.getElementById('bhMonthTitle').textContent = cur.events[0].title;
+  }
+
+  let filtered = items.slice().reverse();
+  if(bhPriorityFilter !== 'all') filtered = filtered.filter(i=>i.priority===bhPriorityFilter);
+  const q = (document.getElementById('bhSearch').value || '').trim().toLowerCase();
+  if(q) filtered = filtered.filter(i=>i.title.toLowerCase().includes(q));
+
+  document.getElementById('bhListCount').textContent = filtered.length + ' niche';
+  const listEl = document.getElementById('bhList');
+  listEl.innerHTML = '';
+  if(filtered.length===0){
+    listEl.innerHTML = '<div class="empty-hint">Belum ada riset yang cocok. Tambahkan niche baru di tab "Riset Tersimpan" atau ubah filter di atas.</div>';
+  }else{
+    filtered.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'bh-row' + (String(item.id)===String(bhSelectedId) ? ' active' : '');
+      row.innerHTML = `
+        <div class="bh-row-avatar">${escapeHtml(item.title.slice(0,1).toUpperCase())}</div>
+        <div class="bh-row-main">
+          <div class="bh-row-title">${escapeHtml(item.title)}</div>
+          <div class="bh-row-date">${item.date}</div>
+        </div>
+        <div class="bh-row-badge" style="color:${bhPriorityColor(item.priority)}">${item.priority}</div>
+      `;
+      row.addEventListener('click', ()=>{ bhSelectedId = item.id; renderBeranda(); });
+      listEl.appendChild(row);
+    });
+  }
+
+  const detailEl = document.getElementById('bhDetail');
+  const selected = items.find(i=>String(i.id)===String(bhSelectedId)) || filtered[0] || items[items.length-1];
+  if(!selected){
+    detailEl.innerHTML = '<div class="empty-hint">Belum ada riset tersimpan. Tambahkan ide niche di tab "Eksplorasi Niche" atau "Riset Tersimpan" untuk mulai mengisi ringkasan ini.</div>';
+    return;
+  }
+  bhSelectedId = selected.id;
+  detailEl.innerHTML = `
+    <div class="bh-detail-title-row">
+      <div>
+        <div class="bh-detail-badge" style="color:${bhPriorityColor(selected.priority)}">PRIORITAS ${selected.priority.toUpperCase()}</div>
+        <h2 class="bh-detail-title">${escapeHtml(selected.title)}</h2>
+      </div>
+      <button class="copy-mini bh-del-btn" type="button">Hapus</button>
+    </div>
+    <div class="bh-detail-grid">
+      <div class="meta-out-block"><h5>Prioritas</h5><div class="bh-detail-val">${selected.priority}</div></div>
+      <div class="meta-out-block"><h5>Tanggal Disimpan</h5><div class="bh-detail-val">${selected.date}</div></div>
+      <div class="meta-out-block"><h5>Sumber</h5><div class="bh-detail-val">Riset Manual</div></div>
+    </div>
+    <div class="meta-out-block bh-note-block">
+      <h5>Catatan</h5>
+      <p class="bh-detail-note">${escapeHtml(selected.note || 'Belum ada catatan untuk niche ini.')}</p>
+    </div>
+    <div class="bh-detail-actions">
+      <button class="btn md-generate-btn" id="bhOpenKwBtn" type="button">Buka di Generator Kata Kunci</button>
+    </div>
+  `;
+  document.getElementById('bhOpenKwBtn')?.addEventListener('click', ()=>{
+    document.querySelector('.nav-btn[data-view="keyword"]')?.click();
+    const kwInputEl = document.getElementById('kwInput');
+    if(kwInputEl){ kwInputEl.value = selected.title; kwInputEl.focus(); }
+  });
+  detailEl.querySelector('.bh-del-btn')?.addEventListener('click', async ()=>{
+    const all = await loadSaved();
+    const remaining = all.filter(i=>String(i.id)!==String(selected.id));
+    await persistSaved(remaining);
+    bhSelectedId = null;
+    renderBeranda();
+    renderSaved();
+  });
+}
+
+document.getElementById('bhPriorityRow').addEventListener('click', e=>{
+  const btn = e.target.closest('.filter-chip');
+  if(!btn) return;
+  document.querySelectorAll('#bhPriorityRow .filter-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  bhPriorityFilter = btn.dataset.priority;
+  renderBeranda();
+});
+document.getElementById('bhSearch').addEventListener('input', renderBeranda);
+document.getElementById('bhCalendarBtn').addEventListener('click', ()=>{
+  document.querySelector('.nav-btn[data-view="calendar"]')?.click();
+});
+
+renderBeranda();
+
 </script>
 </body>
 </html>
