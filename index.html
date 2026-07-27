@@ -45,7 +45,6 @@
     --shadow-sm: 0 1px 2px rgba(20,23,26,0.05), 0 1px 1px rgba(20,23,26,0.03);
     --shadow-md: 0 6px 20px rgba(20,23,26,0.08), 0 2px 6px rgba(20,23,26,0.05);
     --shadow-lg: 0 16px 40px rgba(20,23,26,0.14), 0 4px 10px rgba(20,23,26,0.07);
-    --nav-active-shadow: -8px 4px 8px rgba(20,23,26,0.14), -4px 1px 4px rgba(20,23,26,0.08);
     --focus-ring: 0 0 0 4px var(--blue-soft);
   }
   html{color-scheme: light;}
@@ -77,7 +76,6 @@
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
     --shadow-md: 0 8px 24px rgba(0,0,0,0.38), 0 2px 6px rgba(0,0,0,0.25);
     --shadow-lg: 0 20px 48px rgba(0,0,0,0.5), 0 6px 14px rgba(0,0,0,0.3);
-    --nav-active-shadow: -10px 4px 8px rgba(0,0,0,0.45), -5px 1px 4px rgba(0,0,0,0.3);
     --focus-ring: 0 0 0 4px var(--blue-soft);
   }
   *{box-sizing:border-box;}
@@ -92,8 +90,13 @@
     font-family:'Inter',sans-serif;
     color:var(--ink);
     background:
-      radial-gradient(circle, var(--paper-line) 1px, transparent 1px) 0 0/22px 22px,
+      radial-gradient(circle 620px at 1180px 90px, color-mix(in srgb, var(--blue) 22%, transparent), transparent 72%),
+      radial-gradient(circle 400px at 432px 306px, color-mix(in srgb, var(--blue-2) 28%, transparent), transparent 72%),
+      radial-gradient(circle 380px at 432px 54px, color-mix(in srgb, #f77f00 26%, transparent), transparent 72%),
       var(--paper);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: 0 0;
     min-height:100vh;
     transition: background-color .2s ease, color .2s ease;
   }
@@ -149,7 +152,9 @@
   /* Sidebar */
   .sidebar{
     grid-row:2;
-    background:var(--nav-active-bg);
+    background: color-mix(in srgb, var(--nav-active-bg) 72%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
     padding:18px 12px;
     display:flex;flex-direction:column;gap:2px;
     position:sticky; top:59px; align-self:start; height:calc(100vh - 59px);
@@ -183,9 +188,7 @@
   .nav-btn:hover{background:rgba(255,255,255,0.12); color:#ffffff;}
   .nav-btn.active{
     background:var(--paper); color:var(--ink);
-    /* shadow digeser ke kiri/atas/bawah saja — sisi kanan sengaja
-       tanpa bayangan supaya menyatu rata dengan konten di sebelahnya. */
-    box-shadow: var(--nav-active-shadow);
+    box-shadow: none; /* pil aktif tanpa shadow, benar-benar flat */
     transform:translateY(-1px);
     /* menyatu ke kanan: lebar pil aktif dibuat lebih besar dari 100%
        (bukan pakai margin/padding, karena dengan box-sizing:border-box
@@ -193,7 +196,7 @@
        "keluar" melewati border sidebar sampai masuk ke area konten.
        Murni CSS statis — ikut sidebar apa adanya, tidak dihitung ulang
        lewat JS, jadi tidak mungkin patah/lompat saat discroll. */
-    width:calc(100% + 54px);
+    width:calc(100% + 54px - 1cm);
     border-top-right-radius:0; border-bottom-right-radius:0;
     z-index:2;
   }
@@ -830,6 +833,51 @@
   #view-metadata .retry-btn, #view-metadata .regen-btn{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);}
   #view-metadata .retry-btn:hover, #view-metadata .regen-btn:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(46,94,255,0.08);}
 
+  /* ==========================================================
+     EFEK GLASSMORPHISM — khusus kartu-kartu di dalam
+     Generator Metadata (#view-metadata). Latar dibuat semi
+     transparan + blur supaya gradient warna di belakang body
+     tetap terlihat samar-samar menembus kartu.
+     ========================================================== */
+  #view-metadata{
+    background: color-mix(in srgb, var(--md-bg) 60%, transparent);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  }
+  #view-metadata .md-stat,
+  #view-metadata .md-provider-card,
+  #view-metadata .md-list-panel,
+  #view-metadata .md-detail-panel,
+  #view-metadata .meta-result-card,
+  #view-metadata .meta-out-block,
+  #view-metadata .meta-upload,
+  #view-metadata .meta-adv,
+  #view-metadata .meta-key-row,
+  #view-metadata .auto-order-item{
+    background: color-mix(in srgb, var(--md-panel) 55%, transparent) !important;
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border-color: color-mix(in srgb, var(--md-border) 65%, transparent);
+  }
+  #view-metadata select#mdProvider,
+  #view-metadata .meta-thumb-item.active,
+  #view-metadata .meta-kw-pill,
+  #view-metadata .meta-choose-btn,
+  #view-metadata .copy-mini,
+  #view-metadata .btn.ghost{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent) !important;
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  }
+  #view-metadata .meta-thumb-item:hover{
+    background: color-mix(in srgb, var(--md-panel-2) 40%, transparent) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  #view-metadata .meta-result-card:hover{
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
   @media (max-width:600px){
     #view-metadata{padding:16px; border-radius:14px;}
     .md-stats-row{grid-template-columns:1fr 1fr;}
@@ -1016,6 +1064,288 @@
     .sidebar-foot{display:none;}
     main{padding:20px 16px 50px;}
   }
+  /* Glassmorphism: kartu jadi semi-transparan + blur, supaya aksen
+     gradient biru di background terlihat "masuk" ke dalam kartu.
+     Ditaruh di akhir stylesheet supaya override deklarasi background
+     solid sebelumnya (spesifisitas sama, urutan menang). */
+  .art-card, .trend-links, .kw-panel, .cal-card, .save-form, .meta-panel{
+    background: color-mix(in srgb, var(--panel) 62%, transparent);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  }
+  .md-stat, .md-provider-card, .md-list-panel, .md-detail-panel{
+    background: color-mix(in srgb, var(--md-panel) 62%, transparent);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-color: color-mix(in srgb, var(--md-border) 70%, transparent);
+  }
+
+  /* ===== Glassmorphism untuk semua kartu ===== */
+  .art-card, .trend-links, .kw-panel, .cal-card, .save-form, .saved-item,
+  .meta-panel, .meta-upload, .meta-adv, .meta-result-card{
+    background: color-mix(in srgb, var(--panel) 52%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    backdrop-filter: blur(18px) saturate(1.7);
+    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 30%, transparent);
+  }
+  html[data-theme="dark"] .art-card,
+  html[data-theme="dark"] .trend-links,
+  html[data-theme="dark"] .kw-panel,
+  html[data-theme="dark"] .cal-card,
+  html[data-theme="dark"] .save-form,
+  html[data-theme="dark"] .saved-item,
+  html[data-theme="dark"] .meta-panel,
+  html[data-theme="dark"] .meta-upload,
+  html[data-theme="dark"] .meta-adv,
+  html[data-theme="dark"] .meta-result-card{
+    background: color-mix(in srgb, var(--panel) 45%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
+  }
+  .art-card:hover, .meta-result-card:hover, .saved-item:hover{
+    background: color-mix(in srgb, var(--panel) 68%, transparent);
+  }
+  html[data-theme="dark"] .art-card:hover,
+  html[data-theme="dark"] .meta-result-card:hover,
+  html[data-theme="dark"] .saved-item:hover{
+    background: color-mix(in srgb, var(--panel) 58%, transparent);
+  }
+  .cal-card.is-current{
+    background: color-mix(in srgb, var(--blue-soft) 75%, transparent);
+    backdrop-filter: blur(18px) saturate(1.7);
+    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+  }
+  .meta-upload.dragover{
+    backdrop-filter: blur(18px) saturate(1.9);
+    -webkit-backdrop-filter: blur(18px) saturate(1.9);
+  }
+  .meta-result-card .meta-out-block{
+    background: color-mix(in srgb, var(--panel) 60%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  /* Kartu di halaman Beranda (mini-card detail: Prioritas, Tanggal Disimpan,
+     Sumber, Catatan) pakai selektor #view-beranda .meta-out-block yang lebih
+     spesifik dari aturan glass di atas, jadi perlu override terpisah di sini. */
+  #view-beranda .meta-out-block{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  }
+  #view-beranda .bh-row:hover, #view-beranda .bh-row.active{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  /* Kartu di halaman Generator Metadata (#view-metadata) juga pakai
+     selektor ber-ID yang lebih spesifik, jadi menimpa balik ke solid —
+     perlu override terpisah supaya ikut glass. */
+  #view-metadata .meta-result-card{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(18px) saturate(1.7);
+    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+  }
+  #view-metadata .meta-out-block{
+    background: color-mix(in srgb, var(--md-panel) 55%, transparent);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  }
+  #view-metadata .meta-adv{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  }
+  #view-metadata .meta-upload{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  }
+
+  /* ==========================================================
+     GLASSMORPHISM PENUH — halaman Beranda
+     Wadah #view-beranda dibuat transparan + blur juga, supaya
+     gradient biru di background body "tembus" masuk ke area
+     Beranda — baru efek kaca di kartu-kartu di dalamnya benar-benar
+     terlihat (bukan cuma warna solid yang diredupkan).
+     ========================================================== */
+  #view-beranda{
+    background: color-mix(in srgb, var(--md-bg) 55%, transparent);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-color: color-mix(in srgb, var(--border) 65%, transparent);
+    box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 25%, transparent);
+  }
+  html[data-theme="dark"] #view-beranda{
+    background: color-mix(in srgb, var(--md-bg) 45%, transparent);
+    box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
+  }
+
+  /* kartu statistik atas + kartu momentum musiman */
+  #view-beranda .md-stat,
+  #view-beranda .md-provider-card{
+    background: color-mix(in srgb, var(--md-panel) 45%, transparent);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 22%, transparent);
+  }
+
+  /* panel daftar (kiri) & panel detail (kanan) */
+  #view-beranda .md-list-panel,
+  #view-beranda .md-detail-panel{
+    background: color-mix(in srgb, var(--md-panel) 40%, transparent);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 18%, transparent);
+  }
+
+  /* baris niche di daftar tersimpan — kaca tipis, makin pekat saat hover/aktif */
+  #view-beranda .bh-row{
+    background: color-mix(in srgb, var(--md-panel-2) 22%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  #view-beranda .bh-row:hover,
+  #view-beranda .bh-row.active{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+  }
+  #view-beranda .bh-row-avatar,
+  #view-beranda .bh-row-badge{
+    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* chip filter prioritas & kolom pencarian */
+  #view-beranda .filter-chip{
+    background: color-mix(in srgb, var(--md-panel) 45%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
+  }
+  #view-beranda .filter-chip.active{
+    background: color-mix(in srgb, var(--md-accent) 82%, transparent);
+  }
+  #view-beranda .bh-search{
+    background: color-mix(in srgb, var(--md-panel) 45%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
+  }
+
+  html[data-theme="dark"] #view-beranda .md-stat,
+  html[data-theme="dark"] #view-beranda .md-provider-card,
+  html[data-theme="dark"] #view-beranda .md-list-panel,
+  html[data-theme="dark"] #view-beranda .md-detail-panel{
+    background: color-mix(in srgb, var(--md-panel) 35%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
+  }
+
+  /* ==========================================================
+     GLASSMORPHISM PENUH — halaman Generator Kata Kunci
+     Sama seperti Beranda: wadah #view-keyword juga dibuat kaca
+     supaya gradient biru di background tembus masuk, baru semua
+     kartu di dalamnya (statistik, panel pengaturan, panel hasil,
+     pil kata kunci, chip filter) terasa transparan sungguhan.
+     ========================================================== */
+  #view-keyword{
+    background: color-mix(in srgb, var(--md-bg) 55%, transparent);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-color: color-mix(in srgb, var(--border) 65%, transparent);
+    box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 25%, transparent);
+  }
+  html[data-theme="dark"] #view-keyword{
+    background: color-mix(in srgb, var(--md-bg) 45%, transparent);
+    box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
+  }
+
+  /* kartu statistik atas + kartu kata kunci dasar & generate */
+  #view-keyword .md-stat,
+  #view-keyword .md-provider-card{
+    background: color-mix(in srgb, var(--md-panel) 28%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 30%, transparent);
+  }
+
+  /* panel pengaturan pencarian (kiri) & panel hasil kombinasi (kanan) */
+  #view-keyword .md-list-panel,
+  #view-keyword .md-detail-panel{
+    background: color-mix(in srgb, var(--md-panel) 24%, transparent);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 24%, transparent);
+  }
+
+  /* pil hasil kata kunci */
+  #view-keyword .kw-pill{
+    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 20%, transparent);
+  }
+  #view-keyword .kw-pill:hover{
+    background: color-mix(in srgb, var(--md-panel-2) 50%, transparent);
+  }
+
+  /* chip filter (bahasa, mode kata, jumlah kata, jenis aset) */
+  #view-keyword .filter-chip{
+    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+  }
+  #view-keyword .filter-chip.active{
+    background: color-mix(in srgb, var(--md-accent) 78%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* input kata kunci dasar & input jumlah kata */
+  #view-keyword .kw-quick-input,
+  #view-keyword .kw-count-input{
+    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+  }
+
+  /* kotak info mode AI */
+  #view-keyword .kw-ai-hint{
+    background: color-mix(in srgb, var(--blue-soft) 55%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* tombol ghost (Salin Semua) */
+  #view-keyword .btn.ghost{
+    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  html[data-theme="dark"] #view-keyword .md-stat,
+  html[data-theme="dark"] #view-keyword .md-provider-card,
+  html[data-theme="dark"] #view-keyword .md-list-panel,
+  html[data-theme="dark"] #view-keyword .md-detail-panel{
+    background: color-mix(in srgb, var(--md-panel) 22%, transparent);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 8%, transparent);
+  }
+  html[data-theme="dark"] #view-keyword .kw-pill,
+  html[data-theme="dark"] #view-keyword .filter-chip,
+  html[data-theme="dark"] #view-keyword .kw-quick-input,
+  html[data-theme="dark"] #view-keyword .kw-count-input,
+  html[data-theme="dark"] #view-keyword .btn.ghost{
+    background: color-mix(in srgb, var(--md-panel-2) 20%, transparent);
+  }
 </style>
 </head>
 <body>
@@ -1184,7 +1514,7 @@
     <!-- 04 KEYWORD GENERATOR -->
     <section class="view" id="view-keyword">
       <h1 class="page-title">Generator Kata Kunci</h1>
-      <p class="page-sub">Masukkan ide dasar (contoh: "kucing", "kopi", "keuangan"), pilih jenis aset, mode kata (Filter = istilah yang laku di Adobe Stock, Unfilter = umum &amp; kaya kata), dan jumlah kata per kombinasi (min 1, atau biarkan Auto), lalu tool akan menyusun kombinasi judul &amp; tag long-tail. Kosongkan kata kunci untuk membiarkan sistem memilih ide secara acak.</p>
+      <p class="page-sub">Masukkan ide dasar (mis. "kucing", "kopi"), pilih jenis aset, mode kata, dan jumlah kata per kombinasi (atau Auto) — tool akan menyusun judul &amp; tag long-tail. Kosongkan untuk ide acak.</p>
 
       <!-- baris statistik atas, gaya sama dengan Generator Metadata -->
       <div class="md-stats-row">
@@ -1242,7 +1572,7 @@
               </div>
             </div>
           </div>
-          <div class="kw-ai-hint" id="kwAiHint"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"></rect><rect x="10" y="10" width="4" height="4"></rect><line x1="9" y1="2" x2="9" y2="6"></line><line x1="15" y1="2" x2="15" y2="6"></line><line x1="9" y1="18" x2="9" y2="22"></line><line x1="15" y1="18" x2="15" y2="22"></line><line x1="18" y1="9" x2="22" y2="9"></line><line x1="18" y1="15" x2="22" y2="15"></line><line x1="2" y1="9" x2="6" y2="9"></line><line x1="2" y1="15" x2="6" y2="15"></line></svg>Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
+          <div class="kw-ai-hint" id="kwAiHint"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"></rect><rect x="10" y="10" width="4" height="4"></rect><line x1="9" y1="2" x2="9" y2="6"></line><line x1="15" y1="2" x2="15" y2="6"></line><line x1="9" y1="18" x2="9" y2="22"></line><line x1="15" y1="18" x2="15" y2="22"></line><line x1="18" y1="9" x2="22" y2="9"></line><line x1="18" y1="15" x2="22" y2="15"></line><line x1="2" y1="9" x2="6" y2="9"></line><line x1="2" y1="15" x2="6" y2="15"></line></svg>Mode AI aktif — kombinasi disusun oleh AI, pakai provider &amp; API key dari tab <b>Generator Metadata</b>.</div>
 
           <div class="status-msg" id="kwAiStatus"></div>
         </div>
