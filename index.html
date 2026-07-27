@@ -38,13 +38,14 @@
     --blue-text:#1c3fb0;
     --red-text:#b3223f;
     --topbar-bg: rgba(242,240,234,0.72);
-    --nav-active-bg: var(--ink);
+    --nav-active-bg: var(--blue);
     --nav-active-text: #ffffff;
     --nav-active-num: rgba(255,255,255,0.55);
     --accent-grad: linear-gradient(135deg, var(--blue) 0%, var(--blue-2) 100%);
     --shadow-sm: 0 1px 2px rgba(20,23,26,0.05), 0 1px 1px rgba(20,23,26,0.03);
     --shadow-md: 0 6px 20px rgba(20,23,26,0.08), 0 2px 6px rgba(20,23,26,0.05);
     --shadow-lg: 0 16px 40px rgba(20,23,26,0.14), 0 4px 10px rgba(20,23,26,0.07);
+    --nav-active-shadow: -8px 4px 8px rgba(20,23,26,0.14), -4px 1px 4px rgba(20,23,26,0.08);
     --focus-ring: 0 0 0 4px var(--blue-soft);
   }
   html{color-scheme: light;}
@@ -70,12 +71,13 @@
     --blue-text:#8ea4ff;
     --red-text:#ff8a9c;
     --topbar-bg: rgba(21,24,28,0.72);
-    --nav-active-bg: #f2f4f6;
-    --nav-active-text: #15181c;
-    --nav-active-num: rgba(21,24,28,0.55);
+    --nav-active-bg: var(--blue);
+    --nav-active-text: #ffffff;
+    --nav-active-num: rgba(255,255,255,0.55);
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
     --shadow-md: 0 8px 24px rgba(0,0,0,0.38), 0 2px 6px rgba(0,0,0,0.25);
     --shadow-lg: 0 20px 48px rgba(0,0,0,0.5), 0 6px 14px rgba(0,0,0,0.3);
+    --nav-active-shadow: -10px 4px 8px rgba(0,0,0,0.45), -5px 1px 4px rgba(0,0,0,0.3);
     --focus-ring: 0 0 0 4px var(--blue-soft);
   }
   *{box-sizing:border-box;}
@@ -114,28 +116,25 @@
   /* Top bar */
   .topbar{
     grid-column:1/-1;
-    display:flex;align-items:center;gap:12px;
-    padding:14px 22px;
+    display:flex;align-items:center;gap:14px;
+    padding:16px 26px;
     border-bottom:1px solid var(--border);
     background: var(--topbar-bg);
-    backdrop-filter: blur(14px) saturate(1.4);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
     position:sticky; top:0; z-index:20;
   }
   .logo{
-    width:30px;height:30px;flex:none;
+    width:28px;height:28px;flex:none;
   }
-  .brand-text{display:flex;flex-direction:column;line-height:1.15;}
+  .brand-text{display:flex;flex-direction:column;line-height:1.2;}
   .brand-text b{
-    font-family:'Space Grotesk';font-size:16px;font-weight:700;letter-spacing:-0.01em;
-    background:var(--accent-grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+    font-family:'Space Grotesk';font-size:15.5px;font-weight:600;letter-spacing:-0.01em;
+    color:var(--ink);
   }
-  .brand-text span{font-size:11px;color:var(--ink-soft);font-family:'JetBrains Mono';letter-spacing:0.02em;}
-  .coords{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-soft);display:flex;gap:16px;}
-  .coords b{color:var(--ink);}
-
+  .brand-text span{font-size:11px;color:var(--ink-soft);font-family:'Inter';font-weight:500;letter-spacing:0.02em;}
   .theme-toggle{
-    flex:none; width:32px;height:32px; margin-left:14px;
+    flex:none; width:32px;height:32px; margin-left:auto;
     display:flex; align-items:center; justify-content:center;
     border:1px solid var(--border); border-radius:9px;
     background:var(--panel); color:var(--ink); cursor:pointer;
@@ -150,34 +149,70 @@
   /* Sidebar */
   .sidebar{
     grid-row:2;
-    border-right:1px solid var(--border);
+    background:var(--nav-active-bg);
     padding:18px 12px;
     display:flex;flex-direction:column;gap:2px;
     position:sticky; top:59px; align-self:start; height:calc(100vh - 59px);
   }
-  .nav-btn{
-    display:flex;align-items:center;gap:10px;
-    padding:10px 12px;border-radius:9px;
-    font-family:'Space Grotesk';font-size:13.5px;font-weight:500;
-    color:var(--ink-soft); cursor:grab; border:none; background:none;
-    text-align:left; width:100%;
-    transition: background-color .15s ease, color .15s ease, transform .15s ease;
+  /* Gaya nav mengikuti referensi: daftar lapang tanpa wadah kartu/garis
+     pemisah, tiap item punya jarak renggang; item aktif tampil sebagai
+     "pil" mengambang dengan bg terang + shadow, item lain menyatu datar
+     dengan latar sidebar. Warna dibalik: latar sidebar biru, pil aktif
+     terang (putih/abu), teks item non-aktif terang di atas latar biru. */
+  .nav-list{
+    display:flex;flex-direction:column;gap:14px;
+    background:transparent; border:none;
+    border-radius:0; padding:4px 2px;
   }
-  .nav-list{display:flex;flex-direction:column;gap:2px;}
-  .drag-handle{flex:none;font-size:13px;line-height:1;color:var(--ink-soft);opacity:0.5;letter-spacing:-2px;cursor:grab;}
-  .nav-btn:hover .drag-handle{opacity:0.9;}
+  .nav-btn{
+    position:relative;
+    display:flex;align-items:center;gap:12px;
+    padding:12px 16px;border-radius:14px;
+    font-family:'Space Grotesk';font-size:13.5px;font-weight:500;
+    color:rgba(255,255,255,0.75); cursor:grab; border:none; background:none;
+    text-align:left; width:100%;
+    transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-btn .nav-icon{flex:none; width:15px; height:15px; opacity:0.75;}
+  .nav-btn.active .nav-icon{opacity:1;}
+  .drag-handle{flex:none;font-size:12px;line-height:1;color:rgba(255,255,255,0.65);opacity:0;letter-spacing:-2px;cursor:grab;width:0;overflow:hidden;transition:opacity .15s ease, width .15s ease;}
+  .nav-btn:hover .drag-handle{opacity:0.6;width:9px;}
   .nav-btn.dragging{opacity:0.45; cursor:grabbing;}
-  .nav-btn.drag-over-top{box-shadow: inset 0 2px 0 var(--blue);}
-  .nav-btn.drag-over-bottom{box-shadow: inset 0 -2px 0 var(--blue);}
-  .nav-btn .num{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);opacity:0.6;}
-  .nav-btn:hover{background:var(--blue-soft); color:var(--ink); transform:translateX(2px);}
-  .nav-btn.active{background:var(--nav-active-bg); color:var(--nav-active-text); box-shadow:var(--shadow-sm);}
-  .nav-btn.active:hover{transform:none;}
-  .nav-btn.active .num{color:var(--nav-active-num);}
-  .sidebar-foot{margin-top:auto;font-size:10.5px;color:var(--ink-soft);font-family:'JetBrains Mono';padding:10px 12px;border-top:1px solid var(--border);line-height:1.6;}
+  .nav-btn.drag-over-top{box-shadow: inset 0 2px 0 #ffffff;}
+  .nav-btn.drag-over-bottom{box-shadow: inset 0 -2px 0 #ffffff;}
+  .nav-btn:hover{background:rgba(255,255,255,0.12); color:#ffffff;}
+  .nav-btn.active{
+    background:var(--paper); color:var(--ink);
+    /* shadow digeser ke kiri/atas/bawah saja — sisi kanan sengaja
+       tanpa bayangan supaya menyatu rata dengan konten di sebelahnya. */
+    box-shadow: var(--nav-active-shadow);
+    transform:translateY(-1px);
+    /* menyatu ke kanan: pil aktif "keluar" melewati border sidebar
+       sampai tumpang-tindih cukup jauh ke area konten, sudut kanan
+       dibuat tumpul (0) supaya menempel rata tanpa jeda garis. */
+    margin-right:-40px; padding-right:54px;
+    border-top-right-radius:0; border-bottom-right-radius:0;
+    z-index:2;
+  }
+  .sidebar-foot{margin-top:auto;font-size:10.5px;color:rgba(255,255,255,0.6);font-family:'JetBrains Mono';padding:10px 12px;border-top:1px solid rgba(255,255,255,0.18);line-height:1.6;}
 
   /* Main */
-  main{grid-row:2; padding:26px 40px 60px; max-width:1600px;}
+  main{grid-row:2; padding:26px 40px 60px; max-width:1600px; position:relative; z-index:0;}
+  /* Sambungan pil nav aktif: strip datar warna sama (var(--paper)) yang
+     memanjang dari sidebar sampai mentok ke tepi kanan area konten,
+     mengikuti posisi & tinggi pil aktif (dihitung via updateNavGlow()).
+     Diletakkan di belakang konten (z-index:-1) supaya menyatu tanpa
+     menutupi kartu/teks di atasnya. */
+  main::before{
+    content:"";
+    position:absolute;
+    left:-40px; right:0;
+    top:calc(var(--nav-glow-top, 0px) - (var(--nav-glow-h, 0px) / 2));
+    height:var(--nav-glow-h, 0px);
+    background:var(--paper);
+    z-index:-1;
+    pointer-events:none;
+  }
   .view{display:none;}
   .view.active{display:block; animation:fade .25s ease;}
   @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
@@ -248,7 +283,7 @@
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
   }
   .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:2px;}
-  .chip{font-size:11px;background:var(--paper);border:1px solid var(--border);padding:3px 8px;border-radius:20px;color:var(--ink-soft);}
+  .chip{font-size:11px;background:var(--paper);border:1px solid var(--border);padding:3px 8px;border-radius:8px;color:var(--ink-soft);}
 
   /* trend resource links */
   .trend-links{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
@@ -257,7 +292,7 @@
   .ext-link{
     display:inline-flex;align-items:center;gap:6px;
     font-family:'JetBrains Mono';font-size:11.5px;
-    padding:7px 12px;border-radius:20px;border:1px solid var(--border);
+    padding:7px 12px;border-radius:8px;border:1px solid var(--border);
     background:var(--paper);color:var(--ink);text-decoration:none;
   }
   .ext-link:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);}
@@ -272,7 +307,7 @@
 
   /* filter bar */
   .filter-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
-  .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);transition:border-color .15s ease, color .15s ease, transform .15s ease;}
+  .filter-chip{font-family:'JetBrains Mono';font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);cursor:pointer;color:var(--ink-soft);transition:border-color .15s ease, color .15s ease, transform .15s ease;}
   .filter-chip:hover{border-color:var(--blue); color:var(--blue-text); transform:translateY(-1px);}
   .filter-chip.active{background:var(--nav-active-bg);color:var(--nav-active-text);border-color:var(--nav-active-bg);}
 
@@ -300,7 +335,7 @@
   }
   .kw-ctrl-options{display:flex;align-items:center;flex-wrap:wrap;gap:6px; width:100%;}
   .kw-controls .filter-chip{padding:5px 10px;font-size:10.5px;}
-  .kw-count-input{width:56px;padding:6px 9px;border:1px solid var(--border);border-radius:20px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
+  .kw-count-input{width:56px;padding:6px 9px;border:1px solid var(--border);border-radius:8px;font-family:'JetBrains Mono';font-size:12px;background:var(--paper);color:var(--ink);}
   .kw-count-input:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
   .kw-count-hint{font-size:11px;color:var(--ink-soft);flex-basis:100%;margin-top:2px;}
   .kw-random-hint{font-size:11px;color:var(--blue-text);margin-top:10px;display:none;}
@@ -350,7 +385,7 @@
   .cal-card.is-current .m{display:flex; align-items:center; justify-content:space-between; gap:6px;}
   .cal-card .now-badge{
     font-family:'JetBrains Mono'; font-size:9.5px; font-weight:600; letter-spacing:0.04em;
-    background:var(--blue); color:#fff; padding:2px 7px; border-radius:20px;
+    background:var(--blue); color:#fff; padding:2px 7px; border-radius:8px;
   }
   .cal-card .cal-more{margin-top:10px; padding-top:9px; border-top:1px dashed var(--border);}
   .cal-card .cal-more summary{
@@ -417,7 +452,7 @@
   }
   .meta-kw-pill:hover{border-color:var(--blue);color:var(--blue);}
   .meta-kw-pill.copied{background:var(--blue);color:#fff;border-color:var(--blue);}
-  .kw-count-badge{font-family:'JetBrains Mono';font-size:10.5px;padding:3px 9px;border-radius:20px;font-weight:500;}
+  .kw-count-badge{font-family:'JetBrains Mono';font-size:10.5px;padding:3px 9px;border-radius:8px;font-weight:500;}
   .kw-count-badge.ok{background:var(--green-soft);color:var(--green-text);}
   .kw-count-badge.warn{background:var(--red-soft);color:var(--red-text);}
   .meta-desc-text{font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
@@ -425,7 +460,7 @@
   .meta-created-with{
     font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);
     background:var(--panel);border:1px solid var(--border);
-    padding:4px 10px;border-radius:20px;
+    padding:4px 10px;border-radius:8px;
   }
 
   /* metadata: image upload */
@@ -502,7 +537,7 @@
   .meta-cat-chip{
     font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);
     background:var(--paper);border:1px solid var(--border);
-    padding:1px 8px;border-radius:20px;line-height:1.6;
+    padding:1px 8px;border-radius:8px;line-height:1.6;
   }
   .meta-result-card .meta-out-block{background:var(--panel);}
   .retry-btn{flex:none;white-space:nowrap;}
@@ -540,7 +575,7 @@
   .auto-pill{
     display:inline-flex;align-items:center;gap:5px;
     font-family:'JetBrains Mono';font-size:10.5px;
-    padding:5px 10px;border-radius:20px;border:1px solid var(--border);
+    padding:5px 10px;border-radius:8px;border:1px solid var(--border);
     background:var(--paper);color:var(--ink-soft);
   }
   .auto-pill .n{color:var(--ink-soft);opacity:0.6;}
@@ -627,18 +662,19 @@
      lain tetap memakai tema terang/gelap standar seperti biasa.
      ========================================================== */
   #view-metadata{
-    --md-bg:#14171c;
-    --md-panel:#1c2027;
-    --md-panel-2:#20242c;
-    --md-border: rgba(255,255,255,0.08);
-    --md-text:#f2f4f6;
-    --md-text-soft:#9aa1a8;
-    --md-accent:#c6ff4d;
-    --md-accent-text:#1a2400;
-    --md-radius:20px;
+    --md-bg: var(--panel);
+    --md-panel: var(--panel);
+    --md-panel-2: var(--paper);
+    --md-border: var(--border);
+    --md-text: var(--ink);
+    --md-text-soft: var(--ink-soft);
+    --md-accent: var(--blue);
+    --md-accent-text: #ffffff;
+    --md-radius:12px;
     background:var(--md-bg);
     color:var(--md-text);
-    border-radius:28px;
+    border:1px solid var(--border);
+    border-radius:16px;
     padding:26px;
     margin:0 0 10px;
   }
@@ -701,11 +737,11 @@
   /* dropzone dipadatkan supaya muat di kolom kiri sempit */
   #view-metadata .meta-upload{
     margin:0 16px 12px; background:var(--md-panel-2);
-    border:1.5px dashed rgba(198,255,77,0.4); border-radius:14px;
+    border:1.5px dashed rgba(46,94,255,0.4); border-radius:14px;
     padding:14px 16px; box-shadow:none; flex-direction:column; align-items:flex-start; gap:8px;
   }
-  #view-metadata .meta-upload.dragover{background:rgba(198,255,77,0.08); border-color:var(--md-accent);}
-  #view-metadata .meta-upload-icon{background:rgba(198,255,77,0.14); color:var(--md-accent);}
+  #view-metadata .meta-upload.dragover{background:rgba(46,94,255,0.08); border-color:var(--md-accent);}
+  #view-metadata .meta-upload-icon{background:rgba(46,94,255,0.14); color:var(--md-accent);}
   #view-metadata .meta-upload-info h5{color:var(--md-accent); margin:0 0 3px;}
   #view-metadata .meta-upload-info p{color:var(--md-text-soft); font-size:11.5px;}
   #view-metadata .meta-choose-btn{background:var(--md-panel); border:1px solid var(--md-border); color:var(--md-text); box-shadow:none;}
@@ -730,21 +766,21 @@
   }
   #view-metadata .meta-thumb-status{
     position:static; transform:none; font-family:'JetBrains Mono'; font-size:9.5px; padding:3px 9px;
-    border-radius:20px; background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text-soft); white-space:nowrap; flex:none;
+    border-radius:8px; background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text-soft); white-space:nowrap; flex:none;
   }
-  #view-metadata .meta-thumb-status.ok{color:#7be08a; border-color:rgba(123,224,138,0.4); background:rgba(123,224,138,0.1);}
-  #view-metadata .meta-thumb-status.error{color:#ff8a9c; border-color:rgba(255,138,156,0.4); background:rgba(255,138,156,0.1);}
-  #view-metadata .meta-thumb-status.busy{color:var(--md-accent); border-color:rgba(198,255,77,0.4); background:rgba(198,255,77,0.1);}
+  #view-metadata .meta-thumb-status.ok{color:var(--green-text); border-color:var(--green); background:var(--green-soft);}
+  #view-metadata .meta-thumb-status.error{color:var(--red-text); border-color:var(--red); background:var(--red-soft);}
+  #view-metadata .meta-thumb-status.busy{color:var(--md-accent); border-color:var(--md-accent); background:rgba(46,94,255,0.1);}
   #view-metadata .meta-thumb-remove{
     position:static; width:20px; height:20px; background:var(--md-panel-2); color:var(--md-text-soft);
     border:1px solid var(--md-border); flex:none; border-radius:50%;
   }
-  #view-metadata .meta-thumb-remove:hover{background:#ff5470; color:#fff; border-color:#ff5470;}
+  #view-metadata .meta-thumb-remove:hover{background:var(--red); color:#fff; border-color:var(--red);}
   #view-metadata .empty-hint{color:var(--md-text-soft); text-align:center; padding:26px 12px; font-size:12px;}
 
   /* pengaturan lanjutan (accordion) di bawah daftar */
   #view-metadata .meta-adv{margin:0 16px 16px; background:var(--md-panel-2); border-color:var(--md-border); border-radius:14px;}
-  #view-metadata .meta-adv-toggle:hover{background:rgba(198,255,77,0.08);}
+  #view-metadata .meta-adv-toggle:hover{background:rgba(46,94,255,0.08);}
   #view-metadata .meta-adv-toggle-title>span:first-child{color:var(--md-text);}
   #view-metadata .meta-adv-toggle-sub{color:var(--md-text-soft);}
   #view-metadata .meta-adv-toggle .arrow{color:var(--md-text-soft);}
@@ -754,11 +790,11 @@
   #view-metadata .meta-field input, #view-metadata .meta-field select{
     background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);
   }
-  #view-metadata .meta-field input:focus, #view-metadata .meta-field select:focus{border-color:var(--md-accent); box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-metadata .meta-field input:focus, #view-metadata .meta-field select:focus{border-color:var(--md-accent); box-shadow:0 0 0 4px rgba(46,94,255,0.14);}
   #view-metadata .meta-checkbox-row span{color:var(--md-text-soft);}
   #view-metadata .meta-checkbox-row input{accent-color:var(--md-accent);}
   #view-metadata .auto-order-item{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);}
-  #view-metadata .auto-order-item.drag-over{border-color:var(--md-accent); background:rgba(198,255,77,0.08);}
+  #view-metadata .auto-order-item.drag-over{border-color:var(--md-accent); background:rgba(46,94,255,0.08);}
   #view-metadata .auto-order-item .n{background:var(--md-panel-2); color:var(--md-text-soft);}
   #view-metadata .auto-order-item .handle{color:var(--md-text-soft);}
   #view-metadata .auto-order-item .moves button{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
@@ -774,23 +810,23 @@
   #view-metadata .copy-mini{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
   #view-metadata .copy-mini:hover{border-color:var(--md-accent); color:var(--md-accent);}
   #view-metadata .btn.ghost{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text); box-shadow:none;}
-  #view-metadata .btn.ghost:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(198,255,77,0.08); box-shadow:none;}
+  #view-metadata .btn.ghost:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(46,94,255,0.08); box-shadow:none;}
 
   #view-metadata .meta-result-card{
-    background:var(--md-panel-2); border:1px solid var(--md-border); border-radius:18px; padding:18px; margin-bottom:14px;
+    background:var(--md-panel-2); border:1px solid var(--md-border); border-radius:14px; padding:18px; margin-bottom:14px;
     scroll-margin-top:90px;
   }
-  #view-metadata .meta-result-card:hover{border-color:rgba(198,255,77,0.5); box-shadow:0 10px 26px rgba(0,0,0,0.35); transform:none;}
+  #view-metadata .meta-result-card:hover{border-color:rgba(46,94,255,0.5); box-shadow:0 10px 26px rgba(0,0,0,0.35); transform:none;}
   #view-metadata .meta-result-card.active{border-color:var(--md-accent); box-shadow:0 0 0 1px var(--md-accent);}
-  #view-metadata .meta-result-card.error{border-color:#ff5470;}
-  #view-metadata .meta-result-card.error:hover{border-color:#ff5470; transform:none;}
+  #view-metadata .meta-result-card.error{border-color:var(--red);}
+  #view-metadata .meta-result-card.error:hover{border-color:var(--red); transform:none;}
   #view-metadata .meta-batch-num{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
   #view-metadata .meta-result-head img{border-color:var(--md-border);}
   #view-metadata .meta-result-name{color:var(--md-text); font-family:'Space Grotesk'; font-weight:600; font-size:13.5px;}
   #view-metadata .meta-result-status{color:var(--md-text-soft);}
-  #view-metadata .meta-result-status.ok{color:#7be08a;}
-  #view-metadata .meta-result-status.error{color:#ff8a9c;}
-  #view-metadata .meta-cat-chip{background:rgba(198,255,77,0.12); border-color:rgba(198,255,77,0.3); color:var(--md-accent);}
+  #view-metadata .meta-result-status.ok{color:var(--green-text);}
+  #view-metadata .meta-result-status.error{color:var(--red-text);}
+  #view-metadata .meta-cat-chip{background:rgba(46,94,255,0.12); border-color:rgba(46,94,255,0.3); color:var(--md-accent);}
 
   /* tiga kotak Judul/Deskripsi/Keyword mirip kotak breakdown biaya invoice */
   #view-metadata .meta-out-block{background:var(--md-panel); border:1px solid var(--md-border); border-radius:14px; padding:14px 16px;}
@@ -800,14 +836,14 @@
   #view-metadata .meta-kw-pill{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
   #view-metadata .meta-kw-pill:hover{border-color:var(--md-accent); color:var(--md-accent);}
   #view-metadata .meta-kw-pill.copied{background:var(--md-accent); color:var(--md-accent-text); border-color:var(--md-accent);}
-  #view-metadata .kw-count-badge.ok{background:rgba(123,224,138,0.14); color:#7be08a;}
-  #view-metadata .kw-count-badge.warn{background:rgba(255,84,112,0.14); color:#ff8a9c;}
+  #view-metadata .kw-count-badge.ok{background:var(--green-soft); color:var(--green-text);}
+  #view-metadata .kw-count-badge.warn{background:var(--red-soft); color:var(--red-text);}
   #view-metadata .meta-created-with{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
   #view-metadata .retry-btn, #view-metadata .regen-btn{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text);}
-  #view-metadata .retry-btn:hover, #view-metadata .regen-btn:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(198,255,77,0.08);}
+  #view-metadata .retry-btn:hover, #view-metadata .regen-btn:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(46,94,255,0.08);}
 
   @media (max-width:600px){
-    #view-metadata{padding:16px; border-radius:18px;}
+    #view-metadata{padding:16px; border-radius:14px;}
     .md-stats-row{grid-template-columns:1fr 1fr;}
   }
   @media (max-width: 600px){
@@ -821,18 +857,19 @@
      #view-metadata, supaya halaman lain tidak ikut terpengaruh.
      ========================================================== */
   #view-keyword{
-    --md-bg:#14171c;
-    --md-panel:#1c2027;
-    --md-panel-2:#20242c;
-    --md-border: rgba(255,255,255,0.08);
-    --md-text:#f2f4f6;
-    --md-text-soft:#9aa1a8;
-    --md-accent:#c6ff4d;
-    --md-accent-text:#1a2400;
-    --md-radius:20px;
+    --md-bg: var(--panel);
+    --md-panel: var(--panel);
+    --md-panel-2: var(--paper);
+    --md-border: var(--border);
+    --md-text: var(--ink);
+    --md-text-soft: var(--ink-soft);
+    --md-accent: var(--blue);
+    --md-accent-text: #ffffff;
+    --md-radius:12px;
     background:var(--md-bg);
     color:var(--md-text);
-    border-radius:28px;
+    border:1px solid var(--border);
+    border-radius:16px;
     padding:26px;
     margin:0 0 10px;
   }
@@ -844,7 +881,7 @@
     background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text);
     border-radius:10px; padding:9px 10px; font-family:'JetBrains Mono'; font-size:12.5px; width:100%;
   }
-  #view-keyword .kw-quick-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-keyword .kw-quick-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(46,94,255,0.14);}
   #view-keyword .md-generate-btn{
     flex:1; background:var(--md-accent); color:var(--md-accent-text); border:none;
     font-family:'Space Grotesk'; font-weight:700; font-size:13px; padding:10px 14px;
@@ -853,7 +890,7 @@
   #view-keyword .md-generate-btn:hover{filter:brightness(1.07); transform:none;}
   #view-keyword .md-generate-btn:disabled{opacity:.5; cursor:not-allowed; filter:none;}
   #view-keyword .btn.ghost{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text); box-shadow:none;}
-  #view-keyword .btn.ghost:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(198,255,77,0.08); box-shadow:none; transform:none;}
+  #view-keyword .btn.ghost:hover{border-color:var(--md-accent); color:var(--md-accent); background:rgba(46,94,255,0.08); box-shadow:none; transform:none;}
 
   /* kolom kiri: pengaturan pencarian, mirip daftar unggahan */
   #view-keyword .md-list-head{padding:16px 16px 8px;}
@@ -864,10 +901,10 @@
   #view-keyword .filter-chip:hover{border-color:var(--md-accent); color:var(--md-accent); transform:none;}
   #view-keyword .filter-chip.active{background:var(--md-accent); color:var(--md-accent-text); border-color:var(--md-accent);}
   #view-keyword .kw-count-input{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text);}
-  #view-keyword .kw-count-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-keyword .kw-count-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(46,94,255,0.14);}
   #view-keyword .kw-count-hint{color:var(--md-text-soft);}
   #view-keyword .kw-ai-hint{
-    margin:0 16px 14px; color:var(--md-accent); background:rgba(198,255,77,0.1); border-color:rgba(198,255,77,0.3);
+    margin:0 16px 14px; color:var(--md-accent); background:rgba(46,94,255,0.1); border-color:rgba(46,94,255,0.3);
   }
 
   #view-keyword .status-msg{margin:0 16px 14px; color:var(--md-text-soft);}
@@ -883,7 +920,7 @@
   #view-keyword .empty-hint{color:var(--md-text-soft); text-align:center; padding:26px 12px; font-size:12px;}
 
   @media (max-width:600px){
-    #view-keyword{padding:16px; border-radius:18px;}
+    #view-keyword{padding:16px; border-radius:14px;}
   }
 
   /* ==========================================================
@@ -893,18 +930,19 @@
      list + detail), diisi konten riset niche.
      ========================================================== */
   #view-beranda{
-    --md-bg:#14171c;
-    --md-panel:#1c2027;
-    --md-panel-2:#20242c;
-    --md-border: rgba(255,255,255,0.08);
-    --md-text:#f2f4f6;
-    --md-text-soft:#9aa1a8;
-    --md-accent:#c6ff4d;
-    --md-accent-text:#1a2400;
-    --md-radius:20px;
+    --md-bg: var(--panel);
+    --md-panel: var(--panel);
+    --md-panel-2: var(--paper);
+    --md-border: var(--border);
+    --md-text: var(--ink);
+    --md-text-soft: var(--ink-soft);
+    --md-accent: var(--blue);
+    --md-accent-text: #ffffff;
+    --md-radius:12px;
     background:var(--md-bg);
     color:var(--md-text);
-    border-radius:28px;
+    border:1px solid var(--border);
+    border-radius:16px;
     padding:26px;
     margin:0 0 10px;
   }
@@ -930,7 +968,7 @@
     background:var(--md-panel); border:1px solid var(--md-border); color:var(--md-text);
     border-radius:10px; padding:9px 12px; font-family:'JetBrains Mono'; font-size:12.5px;
   }
-  #view-beranda .kw-quick-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(198,255,77,0.14);}
+  #view-beranda .kw-quick-input:focus{outline:none;border-color:var(--md-accent);box-shadow:0 0 0 4px rgba(46,94,255,0.14);}
 
   /* kolom kiri: daftar riset tersimpan bergaya baris, mirip "Unpaid Invoices" */
   #view-beranda .md-list-head{padding:16px 16px 8px;}
@@ -951,7 +989,7 @@
   #view-beranda .bh-row-date{font-family:'JetBrains Mono'; font-size:10px; color:var(--md-text-soft); margin-top:2px;}
   #view-beranda .bh-row-badge{
     flex:none; font-family:'JetBrains Mono'; font-size:9.5px; font-weight:600; text-transform:uppercase;
-    letter-spacing:0.03em; padding:3px 9px; border-radius:20px; background:var(--md-panel-2); border:1px solid var(--md-border);
+    letter-spacing:0.03em; padding:3px 9px; border-radius:8px; background:var(--md-panel-2); border:1px solid var(--md-border);
   }
   #view-beranda .empty-hint{color:var(--md-text-soft); text-align:center; padding:26px 12px; font-size:12px;}
 
@@ -960,7 +998,7 @@
   #view-beranda .bh-detail-badge{font-family:'JetBrains Mono'; font-size:10px; font-weight:600; letter-spacing:0.04em; margin-bottom:4px;}
   #view-beranda .bh-detail-title{font-family:'Space Grotesk'; font-size:19px; margin:0; color:var(--md-text);}
   #view-beranda .bh-del-btn{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft); flex:none;}
-  #view-beranda .bh-del-btn:hover{border-color:#ff5470; color:#ff8a9c;}
+  #view-beranda .bh-del-btn:hover{border-color:var(--red); color:var(--red-text);}
   #view-beranda .bh-detail-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px;}
   #view-beranda .meta-out-block{background:var(--md-panel-2); border:1px solid var(--md-border); border-radius:14px; padding:14px 16px;}
   #view-beranda .meta-out-block h5{font-family:'JetBrains Mono'; font-size:10px; color:var(--md-text-soft); text-transform:uppercase; letter-spacing:0.03em; margin:0 0 6px;}
@@ -971,7 +1009,7 @@
   #view-beranda .bh-detail-actions .md-generate-btn{width:auto; padding:10px 18px;}
 
   @media (max-width:600px){
-    #view-beranda{padding:16px; border-radius:18px;}
+    #view-beranda{padding:16px; border-radius:14px;}
     #view-beranda .bh-detail-grid{grid-template-columns:1fr;}
   }
 
@@ -983,9 +1021,13 @@
       padding:10px 12px;
     }
     .nav-btn{white-space:nowrap;}
+    /* Di mode mobile sidebar jadi baris horizontal (bukan kolom di kiri),
+       jadi trik "perpanjangan pil ke kanan" tidak relevan lagi — dimatikan
+       supaya tidak nyangkut di posisi lama / salah tempat. */
+    .nav-btn.active{margin-right:0; padding-right:16px; border-radius:14px;}
+    main::before{display:none;}
     .sidebar-foot{display:none;}
     main{padding:20px 16px 50px;}
-    .coords{display:none;}
   }
 </style>
 </head>
@@ -994,11 +1036,6 @@
   <div class="topbar">
     <svg class="logo" viewBox="0 0 30 30" fill="none"><rect x="1" y="1" width="28" height="28" rx="4" stroke="#14171a" stroke-width="1.4"/><path d="M9 20 L15 8 L21 20" stroke="#2e5eff" stroke-width="2" stroke-linejoin="round" fill="none"/><circle cx="9" cy="20" r="1.6" fill="#14171a"/><circle cx="21" cy="20" r="1.6" fill="#14171a"/><circle cx="15" cy="8" r="1.6" fill="#14171a"/></svg>
     <div class="brand-text"><b>Artboard</b><span>RISET VECTOR — ADOBE STOCK</span></div>
-    <div class="coords">
-      <span>X <b id="mx">0</b></span>
-      <span>Y <b id="my">0</b></span>
-      <span>ZOOM <b>100%</b></span>
-    </div>
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ganti mode gelap/terang" title="Ganti mode gelap/terang">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5V5M12 19V21.5M4.2 4.2L6 6M18 18L19.8 19.8M2.5 12H5M19 12H21.5M4.2 19.8L6 18M18 6L19.8 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
@@ -1007,13 +1044,13 @@
 
   <div class="sidebar">
     <div class="nav-list" id="navList">
-      <button class="nav-btn active" data-view="beranda" draggable="true"><span class="drag-handle">⠿</span><span class="num">01</span> Beranda</button>
-      <button class="nav-btn" data-view="explorer" draggable="true"><span class="drag-handle">⠿</span><span class="num">02</span> Eksplorasi Niche</button>
-      <button class="nav-btn" data-view="calendar" draggable="true"><span class="drag-handle">⠿</span><span class="num">03</span> Kalender Musiman</button>
-      <button class="nav-btn" data-view="saved" draggable="true"><span class="drag-handle">⠿</span><span class="num">04</span> Riset Tersimpan</button>
-      <button class="nav-btn" data-view="keyword" draggable="true"><span class="drag-handle">⠿</span><span class="num">05</span> Generator Kata Kunci</button>
-      <button class="nav-btn" data-view="metadata" draggable="true"><span class="drag-handle">⠿</span><span class="num">06</span> Generator Metadata</button>
-      <button class="nav-btn" data-view="social" draggable="true"><span class="drag-handle">⠿</span><span class="num">07</span> Referensi Media Sosial</button>
+      <button class="nav-btn active" data-view="beranda" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"></path><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"></path></svg> Beranda</button>
+      <button class="nav-btn" data-view="explorer" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><line x1="19" y1="19" x2="15" y2="15"></line></svg> Eksplorasi Niche</button>
+      <button class="nav-btn" data-view="calendar" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Kalender Musiman</button>
+      <button class="nav-btn" data-view="saved" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg> Riset Tersimpan</button>
+      <button class="nav-btn" data-view="keyword" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle></svg> Generator Kata Kunci</button>
+      <button class="nav-btn" data-view="metadata" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6a2 2 0 0 0-1.4-.6H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"></path><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"></circle></svg> Generator Metadata</button>
+      <button class="nav-btn" data-view="social" draggable="true"><span class="drag-handle">⠿</span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"></circle><circle cx="18" cy="6" r="2.5"></circle><circle cx="18" cy="18" r="2.5"></circle><line x1="8.2" y1="10.8" x2="15.8" y2="7.2"></line><line x1="8.2" y1="13.2" x2="15.8" y2="16.8"></line></svg> Referensi Media Sosial</button>
     </div>
     <div class="sidebar-foot">Data tren berdasarkan riset pasar terkini. Selalu cek panel "Discover" di Adobe Stock sebelum produksi massal.<br><span style="opacity:0.75;">Seret (drag) item menu untuk mengubah urutan.</span></div>
   </div>
@@ -1117,9 +1154,9 @@
 
       <div class="filter-bar" id="filterBar">
         <button class="filter-chip active" data-filter="all">Semua</button>
-        <button class="filter-chip" data-filter="rising">🔼 Sedang Naik</button>
-        <button class="filter-chip" data-filter="hot">🔥 Paling Laku</button>
-        <button class="filter-chip" data-filter="lowsat">✅ Saturasi Rendah</button>
+        <button class="filter-chip" data-filter="rising"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,17 10,10 14,14 21,5"></polyline><polyline points="15,5 21,5 21,11"></polyline></svg>Sedang Naik</button>
+        <button class="filter-chip" data-filter="hot"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="currentColor" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>Paling Laku</button>
+        <button class="filter-chip" data-filter="lowsat"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.1V12a9 9 0 1 1-5.3-8.2"></path><polyline points="21 4 12 13.01 9 10.01"></polyline></svg>Saturasi Rendah</button>
       </div>
 
       <div class="grid" id="nicheGrid"></div>
@@ -1165,13 +1202,13 @@
       <!-- baris statistik atas, gaya sama dengan Generator Metadata -->
       <div class="md-stats-row">
         <div class="md-stat"><div class="lbl">Hasil Kombinasi</div><div class="val" id="kwStatTotal">0 <span>kata kunci</span></div></div>
-        <div class="md-stat"><div class="lbl">Mode Aktif</div><div class="val" id="kwStatMode">🔥 Filter</div></div>
+        <div class="md-stat"><div class="lbl">Mode Aktif</div><div class="val" id="kwStatMode">Filter</div></div>
         <div class="md-stat"><div class="lbl">Jenis Aset</div><div class="val" id="kwStatAsset">Semua Jenis</div></div>
         <div class="md-provider-card">
           <div class="lbl">Kata Kunci Dasar &amp; Generate</div>
           <input type="text" id="kwInput" class="kw-quick-input" placeholder="mis. kucing, kopi, keuangan... (kosongkan untuk ide acak)" maxlength="40">
           <div class="md-provider-row">
-            <button class="btn md-generate-btn" id="kwBtn">🎲 Buat Kombinasi</button>
+            <button class="btn md-generate-btn" id="kwBtn"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle></svg>Buat Kombinasi</button>
             <button class="btn ghost" id="kwCopyAll">Salin Semua</button>
           </div>
         </div>
@@ -1186,22 +1223,22 @@
             <div class="kw-ctrl-row" id="kwLangRow">
               <span class="kw-ctrl-label">Bahasa</span>
               <div class="kw-ctrl-options">
-                <button type="button" class="filter-chip active" data-lang="id">🇮🇩 Indonesia</button>
-                <button type="button" class="filter-chip" data-lang="en">🇬🇧 English</button>
+                <button type="button" class="filter-chip active" data-lang="id">Indonesia</button>
+                <button type="button" class="filter-chip" data-lang="en">English</button>
               </div>
             </div>
             <div class="kw-ctrl-row" id="kwModeRow">
               <span class="kw-ctrl-label">Mode Kata</span>
               <div class="kw-ctrl-options">
-                <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock">🔥 Filter</button>
-                <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial">🌐 Unfilter</button>
-                <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata">🤖 AI</button>
+                <button type="button" class="filter-chip active" data-mode="filter" title="Hanya istilah gaya/format/kegunaan yang memang terbukti laku &amp; dicari di Adobe Stock"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="currentColor" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>Filter</button>
+                <button type="button" class="filter-chip" data-mode="unfilter" title="Kosakata umum & jauh lebih banyak variasi kata, tidak dibatasi tren komersial"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 3.2 9 14 14 0 0 1-3.2 9 14 14 0 0 1-3.2-9A14 14 0 0 1 12 3z"></path></svg>Unfilter</button>
+                <button type="button" class="filter-chip" data-mode="ai" title="Kombinasi kata kunci disusun langsung oleh AI, bukan dari daftar kata siap pakai — pakai provider &amp; API key dari tab Generator Metadata"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"></rect><rect x="10" y="10" width="4" height="4"></rect><line x1="9" y1="2" x2="9" y2="6"></line><line x1="15" y1="2" x2="15" y2="6"></line><line x1="9" y1="18" x2="9" y2="22"></line><line x1="15" y1="18" x2="15" y2="22"></line><line x1="18" y1="9" x2="22" y2="9"></line><line x1="18" y1="15" x2="22" y2="15"></line><line x1="2" y1="9" x2="6" y2="9"></line><line x1="2" y1="15" x2="6" y2="15"></line></svg>AI</button>
               </div>
             </div>
             <div class="kw-ctrl-row" id="kwCountRow">
               <span class="kw-ctrl-label">Jumlah Kata per Kombinasi</span>
               <div class="kw-ctrl-options">
-                <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto">🎲 Auto</button>
+                <button type="button" class="filter-chip active" id="kwAutoBtn" data-count="auto"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle></svg>Auto</button>
                 <input type="number" id="kwWordCount" class="kw-count-input" min="1" max="12" value="4" title="Jumlah kata per kombinasi (min 1)">
                 <span class="kw-count-hint" id="kwCountHint">Auto = ikut mode kata, atau isi manual (min 1)</span>
               </div>
@@ -1218,7 +1255,7 @@
               </div>
             </div>
           </div>
-          <div class="kw-ai-hint" id="kwAiHint">🤖 Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
+          <div class="kw-ai-hint" id="kwAiHint"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"></rect><rect x="10" y="10" width="4" height="4"></rect><line x1="9" y1="2" x2="9" y2="6"></line><line x1="15" y1="2" x2="15" y2="6"></line><line x1="9" y1="18" x2="9" y2="22"></line><line x1="15" y1="18" x2="15" y2="22"></line><line x1="18" y1="9" x2="22" y2="9"></line><line x1="18" y1="15" x2="22" y2="15"></line><line x1="2" y1="9" x2="6" y2="9"></line><line x1="2" y1="15" x2="6" y2="15"></line></svg>Mode AI aktif — kombinasi disusun langsung oleh AI (bukan dari daftar kata), pakai provider &amp; API key yang sudah diatur di tab <b>Generator Metadata</b>.</div>
 
           <div class="status-msg" id="kwAiStatus"></div>
         </div>
@@ -1246,7 +1283,7 @@
         <div class="md-provider-card">
           <div class="lbl">Provider AI &amp; Generate</div>
           <select id="mdProvider">
-            <option value="auto">⚡ Otomatis</option>
+            <option value="auto">Otomatis</option>
             <option value="gemini">1. Gemini (Google)</option>
             <option value="groq">2. Groq</option>
             <option value="claude">3. Claude (Anthropic)</option>
@@ -1408,65 +1445,85 @@ const CLAUDE_PROXY_URL = "https://wandering-sun-473c.mohyasir45.workers.dev";
   });
 })();
 
+/* ---------- Ikon flat (pengganti emoji) ----------
+   Semua ikon SVG inline, garis tunggal (currentColor), supaya warnanya
+   ikut elemen teks di sekitarnya dan tidak bergantung pada font emoji
+   platform (yang tampilannya beda-beda di tiap OS/browser). */
+function icoSpan(svgInner, fillMode){
+  const attrs = fillMode === 'fill'
+    ? 'fill="currentColor" stroke="none"'
+    : 'fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"';
+  return `<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:4px;flex:none" ${attrs}>${svgInner}</svg>`;
+}
+const ICON_UP = icoSpan('<polyline points="3,17 10,10 14,14 21,5"></polyline><polyline points="15,5 21,5 21,11"></polyline>');
+const ICON_FIRE = icoSpan('<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>', 'fill');
+const ICON_CHART = icoSpan('<line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>');
+const ICON_CALENDAR = icoSpan('<rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>');
+const ICON_DICE = icoSpan('<rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>');
+const ICON_CPU = icoSpan('<rect x="6" y="6" width="12" height="12" rx="1.5"></rect><rect x="10" y="10" width="4" height="4"></rect><line x1="9" y1="2" x2="9" y2="6"></line><line x1="15" y1="2" x2="15" y2="6"></line><line x1="9" y1="18" x2="9" y2="22"></line><line x1="15" y1="18" x2="15" y2="22"></line><line x1="18" y1="9" x2="22" y2="9"></line><line x1="18" y1="15" x2="22" y2="15"></line><line x1="2" y1="9" x2="6" y2="9"></line><line x1="2" y1="15" x2="6" y2="15"></line>');
+const ICON_GLOBE = icoSpan('<circle cx="12" cy="12" r="9"></circle><line x1="3" y1="12" x2="21" y2="12"></line><path d="M12 3a14 14 0 0 1 3.2 9 14 14 0 0 1-3.2 9 14 14 0 0 1-3.2-9A14 14 0 0 1 12 3z"></path>');
+const ICON_BOLT = icoSpan('<polygon points="13 2 4 14 12 14 11 22 20 10 12 10 13 2"></polygon>', 'fill');
+const ICON_CHECK_CIRCLE = icoSpan('<path d="M21 11.1V12a9 9 0 1 1-5.3-8.2"></path><polyline points="21 4 12 13.01 9 10.01"></polyline>');
+
 /* ---------- Data ---------- */
 const niches = [
   {
     id:'ai-abstract', title:'Latar Abstrak Bergaya AI-Gradient', icon:'blob',
-    trend:'hot', trendLabel:'🔥 Paling Laku', sat:'med', satLabel:'Saturasi Sedang',
+    trend:'hot', trendLabel:`${ICON_FIRE}Paling Laku`, sat:'med', satLabel:'Saturasi Sedang',
     note:'Segmen dengan performa penjualan tertinggi saat ini — jadi elemen dasar untuk header web, slide presentasi, dan materi digital.',
     tags:['abstract gradient background','fluid shapes','AI aesthetic vector','wallpaper backdrop']
   },
   {
     id:'naive-art', title:'Ilustrasi Naive / "Human Imperfection"', icon:'wobble',
-    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'low', satLabel:'Saturasi Rendah',
+    trend:'rising', trendLabel:`${ICON_UP}Sedang Naik`, sat:'low', satLabel:'Saturasi Rendah',
     note:'Mayoritas desainer sengaja menambah garis goyang & bentuk tidak sempurna untuk melawan kesan "terlalu rapi khas AI".',
     tags:['naive illustration','hand-drawn wobble','childlike doodle','imperfect line art']
   },
   {
     id:'mixed-media', title:'Vector Mixed-Media / Kolase', icon:'collage',
-    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'low', satLabel:'Saturasi Rendah',
+    trend:'rising', trendLabel:`${ICON_UP}Sedang Naik`, sat:'low', satLabel:'Saturasi Rendah',
     note:'Menggabungkan tekstur scan, elemen tempel vintage, dan bentuk vector bersih — terasa lebih "manusiawi" dibanding output AI murni.',
     tags:['collage vector','scanned texture overlay','vintage cut paper','mixed media illustration']
   },
   {
     id:'3d-flat', title:'Ikon Flat Bernuansa 3D', icon:'cube',
-    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'med', satLabel:'Saturasi Sedang',
+    trend:'rising', trendLabel:`${ICON_UP}Sedang Naik`, sat:'med', satLabel:'Saturasi Sedang',
     note:'Lebih dari separuh desainer kini menambah bayangan & highlight ala 3D pada set ikon flat untuk kesan lebih hidup.',
     tags:['3d flat icon set','isometric icon pack','soft shadow illustration','app UI icon bundle']
   },
   {
     id:'maximalist', title:'Ilustrasi Maximalist & Warna Berani', icon:'burst',
-    trend:'rising', trendLabel:'🔼 Sedang Naik', sat:'low', satLabel:'Saturasi Rendah',
+    trend:'rising', trendLabel:`${ICON_UP}Sedang Naik`, sat:'low', satLabel:'Saturasi Rendah',
     note:'Pencarian gaya maximalist melonjak tajam tahun ini — palet warna kontras tinggi dan komposisi padat jadi favorit brand muda.',
     tags:['maximalist pattern','bold color illustration','y2k inspired vector','clash color design']
   },
   {
     id:'business-data', title:'Ikon & Ilustrasi Bisnis / Data', icon:'chart',
-    trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
+    trend:'stable', trendLabel:`${ICON_CHART}Stabil`, sat:'high', satLabel:'Saturasi Tinggi',
     note:'Kategori matang dengan jutaan aset — permintaan stabil tapi arah visual bergeser ke gaya kantor yang lebih "otentik", bukan kaku.',
     tags:['data visualization vector','remote work illustration','analytics dashboard icon','business meeting flat']
   },
   {
     id:'seamless-pattern', title:'Pola Seamless untuk Kemasan', icon:'grid',
-    trend:'stable', trendLabel:'📊 Stabil', sat:'med', satLabel:'Saturasi Sedang',
+    trend:'stable', trendLabel:`${ICON_CHART}Stabil`, sat:'med', satLabel:'Saturasi Sedang',
     note:'Terdorong kebutuhan desain kemasan & marketing e-commerce yang terus tumbuh, mulai dari kertas kraft sampai label produk.',
     tags:['seamless pattern packaging','wrapping paper design','botanical repeat pattern','textile print vector']
   },
   {
     id:'mascot', title:'Karakter Maskot & Sticker Pack', icon:'mascot',
-    trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Tinggi',
+    trend:'stable', trendLabel:`${ICON_CHART}Stabil`, sat:'high', satLabel:'Saturasi Tinggi',
     note:'Selalu dibutuhkan untuk branding & media sosial, tapi kompetisinya ramai — perlu gaya karakter yang benar-benar khas.',
     tags:['mascot character design','sticker pack set','cute animal character','brand mascot vector']
   },
   {
     id:'line-icon', title:'Set Ikon Garis (UI/UX)', icon:'lines',
-    trend:'stable', trendLabel:'📊 Stabil', sat:'high', satLabel:'Saturasi Sangat Tinggi',
+    trend:'stable', trendLabel:`${ICON_CHART}Stabil`, sat:'high', satLabel:'Saturasi Sangat Tinggi',
     note:'Kategori paling padat di platform — hanya masuk jika punya sudut unik (niche sangat spesifik) atau konsistensi set besar.',
     tags:['line icon set','outline UI icon','minimal stroke icon','pixel perfect icon pack']
   },
   {
     id:'seasonal', title:'Bundel Vector Musiman / Hari Raya', icon:'star',
-    trend:'stable', trendLabel:'📅 Musiman', sat:'high', satLabel:'Saturasi Tinggi (cepat berputar)',
+    trend:'stable', trendLabel:`${ICON_CALENDAR}Musiman`, sat:'high', satLabel:'Saturasi Tinggi (cepat berputar)',
     note:'Permintaan memuncak tajam mendekati momen tertentu — upload jauh-jauh hari agar sempat terindeks sebelum musimnya lewat.',
     tags:['holiday sticker bundle','festive pattern set','seasonal greeting card vector','celebration icon pack']
   }
@@ -1773,6 +1830,7 @@ function applyNavOrder(order){
     if(btn) navList.appendChild(btn);
   });
   renumberNav();
+  if(typeof updateNavGlow === 'function') updateNavGlow(navList.querySelector('.nav-btn.active'));
 }
 
 async function saveNavOrder(){
@@ -1801,6 +1859,7 @@ navList.querySelectorAll('.nav-btn').forEach(btn=>{
     draggedNavBtn = null;
     renumberNav();
     saveNavOrder();
+    if(typeof updateNavGlow === 'function') updateNavGlow(navList.querySelector('.nav-btn.active'));
   });
   btn.addEventListener('dragover', e=>{
     e.preventDefault();
@@ -1817,20 +1876,26 @@ navList.querySelectorAll('.nav-btn').forEach(btn=>{
 });
 
 /* ---------- Nav switching ---------- */
+function updateNavGlow(btn){
+  const mainEl = document.querySelector('main');
+  if(!btn || !mainEl) return;
+  const btnRect = btn.getBoundingClientRect();
+  const mainRect = mainEl.getBoundingClientRect();
+  const centerY = (btnRect.top - mainRect.top) + (btnRect.height/2);
+  mainEl.style.setProperty('--nav-glow-top', centerY+'px');
+  mainEl.style.setProperty('--nav-glow-h', btnRect.height+'px');
+}
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    updateNavGlow(btn);
   });
 });
-
-/* ---------- Cursor coords (playful artboard touch) ---------- */
-document.addEventListener('mousemove', e=>{
-  document.getElementById('mx').textContent = e.clientX;
-  document.getElementById('my').textContent = e.clientY;
-});
+window.addEventListener('load', ()=>updateNavGlow(document.querySelector('.nav-btn.active')));
+window.addEventListener('resize', ()=>updateNavGlow(document.querySelector('.nav-btn.active')));
 
 /* ---------- Keyword generator ---------- */
 /* Setiap bank kata (gaya, format, kegunaan, kata benda, ide acak) disediakan
@@ -2174,9 +2239,9 @@ function kwResolveTopic(){
     val = pick;
     input.value = val;
     kwAutoFilledValue = val;
-    hint.textContent = kwLang === 'en'
-      ? `🎲 Empty keyword — the system picked a random idea: "${val}" (asset type: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`
-      : `🎲 Kata kunci dikosongkan — sistem memilih ide acak: "${val}" (jenis aset: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`;
+    hint.innerHTML = kwLang === 'en'
+      ? `${ICON_DICE}Empty keyword — the system picked a random idea: "${val}" (asset type: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`
+      : `${ICON_DICE}Kata kunci dikosongkan — sistem memilih ide acak: "${val}" (jenis aset: ${KW_ASSET_LABEL[kwAssetType] || 'Semua Jenis'})`;
     hint.classList.add('show');
   }else{
     kwAutoFilledValue = null; // pengguna sudah mengetik kata sendiri — berhenti mengganti otomatis
@@ -2648,7 +2713,7 @@ let mdApiKeySaveTimer = null;
    (window.storage) and when this file is opened standalone in a browser
    (falls back to localStorage). Without this fallback, saving would fail
    silently outside the Claude.ai artifact environment. */
-const hasArtifactStorage = () => typeof window.storage !== 'undefined' && window.storage;
+function hasArtifactStorage(){ return typeof window.storage !== 'undefined' && window.storage; }
 
 async function pStorageGet(key){
   if(hasArtifactStorage()){
