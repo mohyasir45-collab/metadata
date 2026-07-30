@@ -152,7 +152,7 @@
   /* Sidebar */
   .sidebar{
     grid-row:2;
-    background: color-mix(in srgb, var(--nav-active-bg) 72%, transparent);
+    background: transparent;
     backdrop-filter: blur(14px) saturate(1.2);
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
     padding:18px 12px;
@@ -187,7 +187,7 @@
   .nav-btn.drag-over-bottom{box-shadow: inset 0 -2px 0 #ffffff;}
   .nav-btn:hover{background:rgba(255,255,255,0.12); color:#ffffff;}
   .nav-btn.active{
-    background:var(--paper); color:var(--ink);
+    background: rgba(255,255,255,0.05); color:var(--ink);
     box-shadow: none; /* pil aktif tanpa shadow, benar-benar flat */
     transform:translateY(-1px);
     /* menyatu ke kanan: lebar pil aktif dibuat lebih besar dari 100%
@@ -896,7 +896,7 @@
      tetap terlihat samar-samar menembus kartu.
      ========================================================== */
   #view-metadata{
-    background: color-mix(in srgb, var(--md-bg) 60%, transparent);
+    background: color-mix(in srgb, var(--md-bg) 5%, transparent);
     backdrop-filter: blur(20px) saturate(1.4);
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
   }
@@ -909,11 +909,13 @@
   #view-metadata .meta-upload,
   #view-metadata .meta-adv,
   #view-metadata .meta-key-row,
-  #view-metadata .auto-order-item{
-    background: color-mix(in srgb, var(--md-panel) 55%, transparent) !important;
-    backdrop-filter: blur(16px) saturate(1.5);
-    -webkit-backdrop-filter: blur(16px) saturate(1.5);
-    border-color: color-mix(in srgb, var(--md-border) 65%, transparent);
+  #view-metadata .auto-order-item,
+  #view-metadata .provider-priority-bar{
+    background: color-mix(in srgb, #ffffff 2%, transparent) !important;
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
   #view-metadata select#mdProvider,
   #view-metadata .meta-thumb-item.active,
@@ -1185,9 +1187,11 @@
      Sumber, Catatan) pakai selektor #view-beranda .meta-out-block yang lebih
      spesifik dari aturan glass di atas, jadi perlu override terpisah di sini. */
   #view-beranda .meta-out-block{
-    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
-    backdrop-filter: blur(14px) saturate(1.5);
-    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
   #view-beranda .bh-row:hover, #view-beranda .bh-row.active{
     background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
@@ -1198,24 +1202,24 @@
      selektor ber-ID yang lebih spesifik, jadi menimpa balik ke solid —
      perlu override terpisah supaya ikut glass. */
   #view-metadata .meta-result-card{
-    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
-    backdrop-filter: blur(18px) saturate(1.7);
-    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
   #view-metadata .meta-out-block{
-    background: color-mix(in srgb, var(--md-panel) 55%, transparent);
-    backdrop-filter: blur(14px) saturate(1.5);
-    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
   #view-metadata .meta-adv{
-    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
-    backdrop-filter: blur(14px) saturate(1.5);
-    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
   #view-metadata .meta-upload{
-    background: color-mix(in srgb, var(--md-panel-2) 55%, transparent);
-    backdrop-filter: blur(14px) saturate(1.5);
-    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
   }
 
   /* ==========================================================
@@ -1226,35 +1230,35 @@
      terlihat (bukan cuma warna solid yang diredupkan).
      ========================================================== */
   #view-beranda{
-    background: color-mix(in srgb, var(--md-bg) 55%, transparent);
+    background: color-mix(in srgb, var(--md-bg) 9%, transparent);
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
     border-color: color-mix(in srgb, var(--border) 65%, transparent);
     box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 25%, transparent);
   }
   html[data-theme="dark"] #view-beranda{
-    background: color-mix(in srgb, var(--md-bg) 45%, transparent);
+    background: color-mix(in srgb, var(--md-bg) 9%, transparent);
     box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
   }
 
   /* kartu statistik atas + kartu momentum musiman */
   #view-beranda .md-stat,
   #view-beranda .md-provider-card{
-    background: color-mix(in srgb, var(--md-panel) 45%, transparent);
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 22%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
 
   /* panel daftar (kiri) & panel detail (kanan) */
   #view-beranda .md-list-panel,
   #view-beranda .md-detail-panel{
-    background: color-mix(in srgb, var(--md-panel) 40%, transparent);
-    backdrop-filter: blur(18px) saturate(150%);
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 18%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
 
   /* baris niche di daftar tersimpan — kaca tipis, makin pekat saat hover/aktif */
@@ -1278,27 +1282,29 @@
 
   /* chip filter prioritas & kolom pencarian */
   #view-beranda .filter-chip{
-    background: color-mix(in srgb, var(--md-panel) 45%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
   }
   #view-beranda .filter-chip.active{
-    background: color-mix(in srgb, var(--md-accent) 82%, transparent);
+    background: color-mix(in srgb, var(--md-accent) 70%, transparent);
   }
   #view-beranda .bh-search{
-    background: color-mix(in srgb, var(--md-panel) 45%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-color: color-mix(in srgb, var(--md-border) 60%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
   }
 
   html[data-theme="dark"] #view-beranda .md-stat,
   html[data-theme="dark"] #view-beranda .md-provider-card,
   html[data-theme="dark"] #view-beranda .md-list-panel,
-  html[data-theme="dark"] #view-beranda .md-detail-panel{
-    background: color-mix(in srgb, var(--md-panel) 35%, transparent);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
+  html[data-theme="dark"] #view-beranda .md-detail-panel,
+  html[data-theme="dark"] #view-beranda .meta-out-block{
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    border-color: color-mix(in srgb, #ffffff 8%, transparent);
+    box-shadow: none;
   }
 
   /* ==========================================================
@@ -1309,55 +1315,55 @@
      pil kata kunci, chip filter) terasa transparan sungguhan.
      ========================================================== */
   #view-keyword{
-    background: color-mix(in srgb, var(--md-bg) 55%, transparent);
+    background: color-mix(in srgb, var(--md-bg) 5%, transparent);
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
     border-color: color-mix(in srgb, var(--border) 65%, transparent);
     box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 25%, transparent);
   }
   html[data-theme="dark"] #view-keyword{
-    background: color-mix(in srgb, var(--md-bg) 45%, transparent);
+    background: color-mix(in srgb, var(--md-bg) 5%, transparent);
     box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in srgb, #ffffff 6%, transparent);
   }
 
   /* kartu statistik atas + kartu kata kunci dasar & generate */
   #view-keyword .md-stat,
   #view-keyword .md-provider-card{
-    background: color-mix(in srgb, var(--md-panel) 28%, transparent);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 30%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
 
   /* panel pengaturan pencarian (kiri) & panel hasil kombinasi (kanan) */
   #view-keyword .md-list-panel,
   #view-keyword .md-detail-panel{
-    background: color-mix(in srgb, var(--md-panel) 24%, transparent);
-    backdrop-filter: blur(22px) saturate(160%);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 24%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
 
   /* pil hasil kata kunci */
   #view-keyword .kw-pill{
-    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 20%, transparent);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
   }
   #view-keyword .kw-pill:hover{
-    background: color-mix(in srgb, var(--md-panel-2) 50%, transparent);
+    background: color-mix(in srgb, #ffffff 6%, transparent);
   }
 
   /* chip filter (bahasa, mode kata, jumlah kata, jenis aset) */
   #view-keyword .filter-chip{
-    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
   }
   #view-keyword .filter-chip.active{
     background: color-mix(in srgb, var(--md-accent) 78%, transparent);
@@ -1368,10 +1374,10 @@
   /* input kata kunci dasar & input jumlah kata */
   #view-keyword .kw-quick-input,
   #view-keyword .kw-count-input{
-    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-color: color-mix(in srgb, var(--md-border) 55%, transparent);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
   }
 
   /* kotak info mode AI */
@@ -1383,7 +1389,7 @@
 
   /* tombol ghost (Salin Semua) */
   #view-keyword .btn.ghost{
-    background: color-mix(in srgb, var(--md-panel-2) 30%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -1392,15 +1398,45 @@
   html[data-theme="dark"] #view-keyword .md-provider-card,
   html[data-theme="dark"] #view-keyword .md-list-panel,
   html[data-theme="dark"] #view-keyword .md-detail-panel{
-    background: color-mix(in srgb, var(--md-panel) 22%, transparent);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, #ffffff 8%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    border-color: color-mix(in srgb, #ffffff 8%, transparent);
+    box-shadow: none;
   }
   html[data-theme="dark"] #view-keyword .kw-pill,
   html[data-theme="dark"] #view-keyword .filter-chip,
   html[data-theme="dark"] #view-keyword .kw-quick-input,
   html[data-theme="dark"] #view-keyword .kw-count-input,
   html[data-theme="dark"] #view-keyword .btn.ghost{
-    background: color-mix(in srgb, var(--md-panel-2) 20%, transparent);
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    border-color: color-mix(in srgb, #ffffff 8%, transparent);
+  }
+
+  /* ==========================================================
+     REFERENSI MEDIA SOSIAL — kartu kaca terang senada tema
+  ========================================================== */
+  #view-social .social-card{
+    background: color-mix(in srgb, #ffffff 6%, transparent);
+    backdrop-filter: blur(20px) saturate(170%);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+    box-shadow: none;
+  }
+  #view-social .social-card:hover{
+    box-shadow: none;
+  }
+  #view-social .format-chip{
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: color-mix(in srgb, #ffffff 10%, transparent);
+  }
+  html[data-theme="dark"] #view-social .social-card{
+    background: color-mix(in srgb, #ffffff 6%, transparent);
+    border-color: color-mix(in srgb, #ffffff 8%, transparent);
+  }
+  html[data-theme="dark"] #view-social .format-chip{
+    background: color-mix(in srgb, #ffffff 2%, transparent);
+    border-color: color-mix(in srgb, #ffffff 8%, transparent);
   }
 
   /* ==========================================================
