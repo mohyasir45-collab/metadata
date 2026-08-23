@@ -460,6 +460,13 @@
   }
   .meta-kw-pill:hover{border-color:var(--blue);color:var(--blue);}
   .meta-kw-pill.copied{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .meta-kw-pill{display:inline-flex;align-items:center;}
+  .kw-rank-dot{display:inline-block;flex:none;width:6px;height:6px;border-radius:50%;margin-right:6px;}
+  .kw-rank-dot.kw-rank-1{background:var(--green);}
+  .kw-rank-dot.kw-rank-2{background:var(--amber);}
+  .kw-rank-dot.kw-rank-3{background:var(--blue);}
+  .meta-kw-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;}
+  .meta-kw-legend-item{display:inline-flex;align-items:center;font-family:'JetBrains Mono';font-size:10px;color:var(--ink-soft);}
   .kw-count-badge{font-family:'JetBrains Mono';font-size:10.5px;padding:3px 9px;border-radius:8px;font-weight:500;}
   .kw-count-badge.ok{background:var(--green-soft);color:var(--green-text);}
   .kw-count-badge.warn{background:var(--red-soft);color:var(--red-text);}
@@ -909,6 +916,7 @@
   #view-metadata .meta-kw-pill{background:var(--md-panel-2); border-color:var(--md-border); color:var(--md-text-soft);}
   #view-metadata .meta-kw-pill:hover{border-color:var(--md-accent); color:var(--md-accent);}
   #view-metadata .meta-kw-pill.copied{background:var(--md-accent); color:var(--md-accent-text); border-color:var(--md-accent);}
+  #view-metadata .meta-kw-legend-item{color:var(--md-text-soft);}
   #view-metadata .kw-count-badge.ok{background:var(--green-soft); color:var(--green-text);}
   #view-metadata .kw-count-badge.warn{background:var(--red-soft); color:var(--red-text);}
   #view-metadata .meta-created-with{background:var(--md-panel); border-color:var(--md-border); color:var(--md-text-soft);}
@@ -3932,6 +3940,18 @@ async function callKwAi(prompt, settings){
   };
 }
 
+/* Keyword sudah diminta terurut dari paling relevan ke paling kurang
+   relevan lewat prompt AI, jadi peringkat SEO-nya ditandai berdasarkan
+   posisi: sepertiga awal = Prioritas Tinggi, sepertiga tengah = Sedang,
+   sisanya = Pendukung. */
+function rankKeywordTier(index, total){
+  const tierSize = Math.ceil(total / 3) || 1;
+  if(index < tierSize) return 1;
+  if(index < tierSize * 2) return 2;
+  return 3;
+}
+const KW_RANK_LABEL = { 1: 'Prioritas Tinggi', 2: 'Sedang', 3: 'Pendukung' };
+
 function renderMdResultCard(img, index){
   const statusLabel = img.status === 'processing' ? 'Menganalisis…'
     : img.status === 'error' ? 'Gagal: ' + escapeHtml(img.error || '')
@@ -3993,7 +4013,15 @@ function renderMdResultCard(img, index){
           <h5>Keyword <span class="kw-count-badge ${kwBadgeClass}">${r.keywords.length} keyword</span></h5>
           <button class="copy-mini" data-field="keywords">Salin Semua</button>
         </div>
-        <div class="meta-kw-text" data-field="keywords" data-raw="${escapeHtml(r.keywords.join(', '))}">${r.keywords.map(k=>`<span class="meta-kw-pill" title="Klik untuk salin kata ini">${escapeHtml(k)}</span>`).join('')}</div>
+        <div class="meta-kw-text" data-field="keywords" data-raw="${escapeHtml(r.keywords.join(', '))}">${r.keywords.map((k,i)=>{
+          const tier = rankKeywordTier(i, r.keywords.length);
+          return `<span class="meta-kw-pill" title="Peringkat SEO: ${KW_RANK_LABEL[tier]} (urutan ke-${i+1} dari ${r.keywords.length}) — klik untuk salin"><i class="kw-rank-dot kw-rank-${tier}"></i>${escapeHtml(k)}</span>`;
+        }).join('')}</div>
+        <div class="meta-kw-legend">
+          <span class="meta-kw-legend-item"><i class="kw-rank-dot kw-rank-1"></i>Prioritas Tinggi</span>
+          <span class="meta-kw-legend-item"><i class="kw-rank-dot kw-rank-2"></i>Sedang</span>
+          <span class="meta-kw-legend-item"><i class="kw-rank-dot kw-rank-3"></i>Pendukung</span>
+        </div>
       </div>
       <div class="meta-result-foot">
         <span class="meta-created-with">Dibuat dengan ${escapeHtml(MD_PROVIDERS[img.usedProvider]?.label || img.usedProvider || '—')}</span>
