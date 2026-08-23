@@ -816,11 +816,12 @@
   /* daftar unggahan bergaya baris (seperti list "Unpaid Invoices") */
   #view-metadata .meta-thumbs-grid{display:flex; flex-direction:column; gap:2px; padding:0 10px 12px; margin:0;}
   #view-metadata .meta-thumb-item{
-    display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:12px;
+    display:flex; flex-direction:column; align-items:stretch; gap:6px; padding:9px 8px; border-radius:12px;
     cursor:pointer; border:1px solid transparent;
   }
   #view-metadata .meta-thumb-item:hover{background:var(--md-panel-2);}
   #view-metadata .meta-thumb-item.active{background:var(--md-panel-2); border-color:var(--md-accent);}
+  #view-metadata .meta-thumb-row{display:flex; align-items:center; gap:10px;}
   #view-metadata .meta-thumb-item img{
     width:36px; height:36px; border-radius:9px; object-fit:cover; flex:none; border:1px solid var(--md-border);
     position:static; aspect-ratio:auto;
@@ -828,6 +829,14 @@
   #view-metadata .meta-thumb-item .thumb-name{
     flex:1; min-width:0; font-size:11.5px; color:var(--md-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
+  #view-metadata .meta-thumb-helper-input{
+    width:100%; font-size:11px; font-family:'Inter',sans-serif; color:var(--md-text);
+    background:var(--md-panel); border:1px solid var(--md-border); border-radius:8px;
+    padding:6px 9px; cursor:text;
+  }
+  #view-metadata .meta-thumb-helper-input::placeholder{color:var(--md-text-soft);}
+  #view-metadata .meta-thumb-helper-input:focus{outline:none; border-color:var(--md-accent); box-shadow:0 0 0 3px rgba(46,94,255,0.14);}
+  #view-metadata .meta-thumb-helper-input:disabled{opacity:.55; cursor:not-allowed;}
   #view-metadata .meta-thumb-status{
     position:static; transform:none; font-family:'JetBrains Mono'; font-size:9.5px; padding:3px 9px;
     border-radius:8px; background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text-soft); white-space:nowrap; flex:none;
@@ -1889,9 +1898,9 @@
                 <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
               </div>
               <div class="meta-field span3">
-                <label>Kata Bantuan / Konteks Gambar (opsional)</label>
-                <input type="text" id="mdHelperWords" placeholder="mis. ini kucing oranye minum kopi, gaya flat vector, bukan ilustrasi anjing">
-                <p class="meta-field-hint">Jelaskan objek/konteks yang benar di sini supaya AI tidak salah tebak atau bingung membaca gambar. Kata-kata ini akan diprioritaskan saat membuat judul, deskripsi, dan keyword.</p>
+                <label>Kata Bantuan / Konteks Gambar — Default (opsional)</label>
+                <input type="text" id="mdHelperWords" placeholder="mis. semua gambar bertema kucing, gaya flat vector">
+                <p class="meta-field-hint">Konteks default untuk semua gambar di batch ini. Kalau gambar tertentu butuh konteks berbeda, isi kolom kecil "Kata bantu khusus gambar ini" di bawah thumbnail-nya masing-masing di daftar unggahan — itu akan dipakai menggantikan default ini khusus untuk gambar tersebut.</p>
               </div>
               <div class="meta-field span3">
                 <label class="meta-checkbox-row">
@@ -3010,18 +3019,44 @@ function renderMdThumbs(){
   if(mdSelectedId === null && mdImages.length > 0){
     mdSelectedId = mdImages[0].id;
   }
+
+  /* Kolom "kata bantu" per gambar bisa sedang diketik saat renderMdThumbs()
+     dipanggil ulang (mis. gambar lain diproses di latar belakang), jadi
+     posisi fokus & kursor disimpan dulu lalu dikembalikan setelah
+     innerHTML di-render ulang supaya user tidak kehilangan tempat ngetik. */
+  const activeEl = document.activeElement;
+  let focusedHelperId = null, focusedSelStart = null, focusedSelEnd = null;
+  if(activeEl && activeEl.classList && activeEl.classList.contains('meta-thumb-helper-input')){
+    focusedHelperId = activeEl.dataset.helperId;
+    focusedSelStart = activeEl.selectionStart;
+    focusedSelEnd = activeEl.selectionEnd;
+  }
+
   grid.innerHTML = mdImages.map(img => {
     const statusClass = img.status === 'done' ? 'ok' : img.status === 'error' ? 'error' : img.status === 'processing' ? 'busy' : '';
     const statusText = img.status === 'done' ? 'selesai' : img.status === 'error' ? 'gagal' : img.status === 'processing' ? 'proses…' : 'siap';
     const activeClass = img.id === mdSelectedId ? ' active' : '';
+    const busyAttr = mdBatchBusy ? 'disabled' : '';
     return `
       <div class="meta-thumb-item${activeClass}" data-id="${img.id}">
-        <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}" title="${escapeHtml(img.name)}">
-        <span class="thumb-name">${escapeHtml(img.name)}</span>
-        <span class="meta-thumb-status ${statusClass}">${statusText}</span>
-        <button class="meta-thumb-remove" data-remove-id="${img.id}" title="Hapus" type="button">✕</button>
+        <div class="meta-thumb-row">
+          <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}" title="${escapeHtml(img.name)}">
+          <span class="thumb-name">${escapeHtml(img.name)}</span>
+          <span class="meta-thumb-status ${statusClass}">${statusText}</span>
+          <button class="meta-thumb-remove" data-remove-id="${img.id}" title="Hapus" type="button">✕</button>
+        </div>
+        <input type="text" class="meta-thumb-helper-input" data-helper-id="${img.id}" placeholder="Kata bantu khusus gambar ini (opsional)" value="${escapeHtml(img.helperWords||'')}" ${busyAttr}>
       </div>`;
   }).join('');
+
+  if(focusedHelperId !== null){
+    const el = grid.querySelector(`.meta-thumb-helper-input[data-helper-id="${focusedHelperId}"]`);
+    if(el){
+      el.focus();
+      try{ el.setSelectionRange(focusedSelStart, focusedSelEnd); }catch(err){}
+    }
+  }
+
   const countEl = document.getElementById('mdListCount');
   if(countEl) countEl.textContent = `${mdImages.length} file`;
   const totalEl = document.getElementById('mdStatTotal');
@@ -3039,7 +3074,7 @@ function renderMdThumbs(){
 /* Klik salah satu baris di daftar kiri -> sorot & scroll ke kartu detail terkait di panel kanan */
 document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
   const row = e.target.closest('.meta-thumb-item');
-  if(!row || e.target.closest('.meta-thumb-remove')) return;
+  if(!row || e.target.closest('.meta-thumb-remove') || e.target.closest('.meta-thumb-helper-input')) return;
   const id = Number(row.dataset.id);
   mdSelectedId = id;
   renderMdThumbs();
@@ -3049,6 +3084,16 @@ document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
     card.classList.add('active');
     card.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
+});
+
+/* Ketikan di kolom "kata bantu" per gambar langsung disimpan ke data
+   gambar terkait (mdImages), tanpa perlu render ulang seluruh grid. */
+document.getElementById('mdThumbsGrid').addEventListener('input', e=>{
+  const el = e.target.closest('.meta-thumb-helper-input');
+  if(!el) return;
+  const id = Number(el.dataset.helperId);
+  const img = mdImages.find(i => i.id === id);
+  if(img) img.helperWords = el.value;
 });
 
 function updateMdImageCountStatus(){
@@ -3095,7 +3140,8 @@ async function handleMdImageFiles(fileList){
         base64, dataUrl, width, height,
         status: 'pending',
         result: null,
-        error: null
+        error: null,
+        helperWords: ''
       });
       renderMdThumbs();
     }catch(err){
@@ -4093,15 +4139,11 @@ async function buildMdSettings(){
     ? `\nSTRICTLY AVOID using any of these words or their variants anywhere in the title, description, or keywords: ${avoidWords.join(', ')}.`
     : '';
 
-  const helperLine = helperWords
-    ? `\nIMPORTANT CONTEXT FROM THE ARTIST (trust this over your own visual guess whenever it conflicts with what you think you see, since the artist knows the asset best): ${helperWords}. Make sure the title, description, and keywords reflect this context accurately instead of misreading the image.`
-    : '';
-
   const specialCharsLine = noSpecialChars
     ? `\nSTRICTLY AVOID any special characters anywhere in the title, description, or keywords — use only plain letters, numbers, single spaces, commas, and periods (no hyphens, ampersands, quotes, colons, semicolons, slashes, parentheses, or any other punctuation/symbols).`
     : '';
 
-  const prompt = `You are helping a vector stock illustrator on Adobe Stock write metadata for this asset preview image. The asset will be delivered as a ${fileType} file.
+  const promptPrefix = `You are helping a vector stock illustrator on Adobe Stock write metadata for this asset preview image. The asset will be delivered as a ${fileType} file.
 Look at the image carefully and respond with ONLY a raw JSON object (no markdown fences, no preamble) with exactly this shape:
 {
   "title": "a descriptive Adobe Stock style title, front-loaded with the main keyword, STRICT MAXIMUM ${titleLen} characters",
@@ -4109,7 +4151,21 @@ Look at the image carefully and respond with ONLY a raw JSON object (no markdown
   "category": "one Adobe Stock category, pick the single best fit from: Illustrations, Icons, Patterns & Backgrounds, Templates, Objects, Animals, Technology, Food and Drink, Nature, Business, Holidays",
   "keywords": ["an array of exactly ${targetCount} distinct, relevant, lowercase English keywords ordered from most to least relevant, no duplicates, no hashtags"]
 }
-Base everything strictly on what is visually present in the image. Never exceed the character limits given above.${helperLine}${avoidLine}${specialCharsLine}`;
+Base everything strictly on what is visually present in the image. Never exceed the character limits given above.`;
+
+  /* Kata bantu global di panel pengaturan lanjutan dipakai sebagai default
+     kalau satu gambar tertentu tidak diberi kata bantu sendiri di kolom
+     kecil pada thumbnail-nya. Prompt akhir dibangun per-gambar lewat
+     buildMdPromptForImage() supaya tiap gambar bisa punya konteks berbeda
+     dalam satu batch yang sama. */
+  function buildMdPromptForImage(img){
+    const ownHelper = (img && img.helperWords || '').trim();
+    const effectiveHelper = ownHelper || helperWords;
+    const helperLine = effectiveHelper
+      ? `\nIMPORTANT CONTEXT FROM THE ARTIST (trust this over your own visual guess whenever it conflicts with what you think you see, since the artist knows the asset best): ${effectiveHelper}. Make sure the title, description, and keywords reflect this context accurately instead of misreading the image.`
+      : '';
+    return `${promptPrefix}${helperLine}${avoidLine}${specialCharsLine}`;
+  }
 
   const provider = mdProviderSelect.value;
   const providerCfg = currentProviderConfig();
@@ -4134,7 +4190,7 @@ Base everything strictly on what is visually present in the image. Never exceed 
       statusEl.textContent = 'Isi minimal satu API key (di tab provider mana pun) untuk pakai mode Otomatis.';
       return { ok: false };
     }
-    return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, helperWords, noSpecialChars, provider, providerCfg, keyEntries };
+    return { ok: true, buildMdPromptForImage, targetCount, titleLen, descLen, avoidWords, helperWords, noSpecialChars, provider, providerCfg, keyEntries };
   }
 
   const apiKeys = parseApiKeys(mdApiKeyInput.value);
@@ -4156,7 +4212,7 @@ Base everything strictly on what is visually present in the image. Never exceed 
   }
 
   const keyEntries = (apiKeys.length ? apiKeys : ['']).map(key => ({ provider, key }));
-  return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, helperWords, noSpecialChars, provider, providerCfg, keyEntries };
+  return { ok: true, buildMdPromptForImage, targetCount, titleLen, descLen, avoidWords, helperWords, noSpecialChars, provider, providerCfg, keyEntries };
 }
 
 /* Runs the vision API for a single image, rotating through the available
@@ -4172,7 +4228,8 @@ Base everything strictly on what is visually present in the image. Never exceed 
    provider that won't fail the same way. Mutates the image's
    status/result/error in place. */
 async function processOneMdImage(img, settings, keyStartIndex, onAttempt){
-  const { prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, providerCfg } = settings;
+  const { targetCount, titleLen, descLen, avoidWords, noSpecialChars, providerCfg } = settings;
+  const prompt = settings.buildMdPromptForImage(img);
   const keys = settings.keyEntries.length ? settings.keyEntries : [{ provider: settings.provider, key: '' }];
   const isAuto = !!providerCfg.isAuto;
   let lastErr = null;
