@@ -440,6 +440,7 @@
     font-family:'Inter';font-size:13px;background:var(--paper);
   }
   .meta-field input:focus, .meta-field select:focus{outline:none;border-color:var(--blue);box-shadow:var(--focus-ring);}
+  .meta-field-hint{font-size:11px;color:var(--ink-soft);margin:2px 0 0;line-height:1.5;}
   .meta-output{margin-top:6px;}
   .meta-out-block{background:var(--paper);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:12px;}
   .meta-out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
@@ -1888,6 +1889,11 @@
                 <input type="text" id="mdAvoidWords" placeholder="mis. free, best, amazing, clipart">
               </div>
               <div class="meta-field span3">
+                <label>Kata Bantuan / Konteks Gambar (opsional)</label>
+                <input type="text" id="mdHelperWords" placeholder="mis. ini kucing oranye minum kopi, gaya flat vector, bukan ilustrasi anjing">
+                <p class="meta-field-hint">Jelaskan objek/konteks yang benar di sini supaya AI tidak salah tebak atau bingung membaca gambar. Kata-kata ini akan diprioritaskan saat membuat judul, deskripsi, dan keyword.</p>
+              </div>
+              <div class="meta-field span3">
                 <label class="meta-checkbox-row">
                   <input type="checkbox" id="mdNoSpecialChars">
                   <span>Hindari Karakter Spesial (hanya huruf, angka, koma &amp; titik pada judul, deskripsi, keyword)</span>
@@ -3262,6 +3268,7 @@ const mdAdvCount = document.getElementById('mdCount');
 const mdAdvTitleLen = document.getElementById('mdTitleLen');
 const mdAdvDescLen = document.getElementById('mdDescLen');
 const mdAdvAvoidWords = document.getElementById('mdAvoidWords');
+const mdAdvHelperWords = document.getElementById('mdHelperWords');
 const mdAdvNoSpecialChars = document.getElementById('mdNoSpecialChars');
 const mdAdvSavedTag = document.getElementById('mdAdvSavedTag');
 
@@ -3272,6 +3279,7 @@ function readMdAdvSettings(){
     titleLen: mdAdvTitleLen.value,
     descLen: mdAdvDescLen.value,
     avoidWords: mdAdvAvoidWords.value,
+    helperWords: mdAdvHelperWords.value,
     noSpecialChars: mdAdvNoSpecialChars.checked,
     providerOrder: MD_AUTO_ORDER.slice()
   };
@@ -3289,6 +3297,7 @@ async function loadMdAdvSettings(){
   if(s.titleLen) mdAdvTitleLen.value = s.titleLen;
   if(s.descLen) mdAdvDescLen.value = s.descLen;
   if(typeof s.avoidWords === 'string') mdAdvAvoidWords.value = s.avoidWords;
+  if(typeof s.helperWords === 'string') mdAdvHelperWords.value = s.helperWords;
   if(typeof s.noSpecialChars === 'boolean') mdAdvNoSpecialChars.checked = s.noSpecialChars;
   if(Array.isArray(s.providerOrder)){
     // Keep only ids that still exist, then append any newly-added
@@ -3398,7 +3407,7 @@ function scheduleMdAdvSave(){
     mdAdvSavedFadeTimer = setTimeout(()=>{ mdAdvSavedTag.textContent = ''; }, 2000);
   }, 500);
 }
-[mdAdvFileType, mdAdvCount, mdAdvTitleLen, mdAdvDescLen, mdAdvAvoidWords, mdAdvNoSpecialChars].forEach(el=>{
+[mdAdvFileType, mdAdvCount, mdAdvTitleLen, mdAdvDescLen, mdAdvAvoidWords, mdAdvHelperWords, mdAdvNoSpecialChars].forEach(el=>{
   el.addEventListener('input', scheduleMdAdvSave);
   el.addEventListener('change', scheduleMdAdvSave);
 });
@@ -4076,10 +4085,16 @@ async function buildMdSettings(){
     .map(w => w.trim().toLowerCase())
     .filter(Boolean);
 
+  const helperWords = document.getElementById('mdHelperWords').value.trim();
+
   const noSpecialChars = document.getElementById('mdNoSpecialChars').checked;
 
   const avoidLine = avoidWords.length
     ? `\nSTRICTLY AVOID using any of these words or their variants anywhere in the title, description, or keywords: ${avoidWords.join(', ')}.`
+    : '';
+
+  const helperLine = helperWords
+    ? `\nIMPORTANT CONTEXT FROM THE ARTIST (trust this over your own visual guess whenever it conflicts with what you think you see, since the artist knows the asset best): ${helperWords}. Make sure the title, description, and keywords reflect this context accurately instead of misreading the image.`
     : '';
 
   const specialCharsLine = noSpecialChars
@@ -4094,7 +4109,7 @@ Look at the image carefully and respond with ONLY a raw JSON object (no markdown
   "category": "one Adobe Stock category, pick the single best fit from: Illustrations, Icons, Patterns & Backgrounds, Templates, Objects, Animals, Technology, Food and Drink, Nature, Business, Holidays",
   "keywords": ["an array of exactly ${targetCount} distinct, relevant, lowercase English keywords ordered from most to least relevant, no duplicates, no hashtags"]
 }
-Base everything strictly on what is visually present in the image. Never exceed the character limits given above.${avoidLine}${specialCharsLine}`;
+Base everything strictly on what is visually present in the image. Never exceed the character limits given above.${helperLine}${avoidLine}${specialCharsLine}`;
 
   const provider = mdProviderSelect.value;
   const providerCfg = currentProviderConfig();
@@ -4119,7 +4134,7 @@ Base everything strictly on what is visually present in the image. Never exceed 
       statusEl.textContent = 'Isi minimal satu API key (di tab provider mana pun) untuk pakai mode Otomatis.';
       return { ok: false };
     }
-    return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, providerCfg, keyEntries };
+    return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, helperWords, noSpecialChars, provider, providerCfg, keyEntries };
   }
 
   const apiKeys = parseApiKeys(mdApiKeyInput.value);
@@ -4141,7 +4156,7 @@ Base everything strictly on what is visually present in the image. Never exceed 
   }
 
   const keyEntries = (apiKeys.length ? apiKeys : ['']).map(key => ({ provider, key }));
-  return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, noSpecialChars, provider, providerCfg, keyEntries };
+  return { ok: true, prompt, targetCount, titleLen, descLen, avoidWords, helperWords, noSpecialChars, provider, providerCfg, keyEntries };
 }
 
 /* Runs the vision API for a single image, rotating through the available
