@@ -3100,7 +3100,7 @@ function renderMdThumbs(){
             <input type="checkbox" class="meta-thumb-editorial-check" data-editorial-id="${img.id}" ${img.isEditorial ? 'checked' : ''} ${busyAttr}>
             Editorial
           </label>
-          <span class="editorial-info" title="Editorial hanya mengubah gaya judul/deskripsi mengikuti format caption Adobe Stock (mis. memuat konteks berita/tokoh/merek yang memang tampak di gambar). Ini BUKAN izin untuk memakai logo, karakter, atau karya milik orang lain — pastikan aset tetap karya/lisensi Anda sendiri.">?</span>
+          <span class="editorial-info" title="Editorial mengubah gaya judul/deskripsi ala caption berita, dan jika ada merek/logo yang memang terlihat jelas di gambar, nama merek itu akan disebut gamblang di judul + keyword (bukan disamarkan) — itu memang aturan wajar untuk konten editorial. Keyword otomatis menyertakan 'editorial use only' supaya statusnya tetap tercatat jelas di metadata, sementara judul dibiarkan murni gaya caption berita tanpa label tambahan. Ini tetap BUKAN izin memakai logo/karakter/karya milik orang lain — pastikan aset tetap karya/lisensi Anda sendiri.">?</span>
         </div>
       </div>`;
   }).join('');
@@ -4068,12 +4068,12 @@ function renderMdResultCard(img, index){
           <div class="meta-result-subrow">
             <span class="meta-result-status ok">${statusLabel}</span>
             <span class="meta-cat-chip" data-field="category" title="Kategori">${escapeHtml(r.category)}</span>
-            ${img.isEditorial ? `<span class="meta-editorial-badge" title="Ditandai Editorial — hanya memengaruhi gaya judul/deskripsi, bukan izin memakai karya/merek pihak lain">◆ Editorial</span>` : ''}
+            ${img.isEditorial ? `<span class="meta-editorial-badge" title="Ditandai Editorial — keyword menyertakan 'editorial use only' secara eksplisit; judul tetap gaya caption berita tanpa label tambahan. Ini bukan izin memakai karya/merek pihak lain">◆ Editorial</span>` : ''}
           </div>
         </div>
         <button class="btn ghost regen-btn" data-regen-id="${img.id}" type="button" ${mdBatchBusy ? 'disabled' : ''}>↻ Generate Ulang</button>
       </div>
-      ${img.isEditorial ? `<div class="meta-editorial-note"><b>Editorial:</b> judul &amp; deskripsi ditulis bergaya caption berita. Status ini tidak menghapus hak cipta pihak lain — pastikan ilustrasi ini tetap murni karya/lisensi Anda sendiri sebelum diunggah.</div>` : ''}
+      ${img.isEditorial ? `<div class="meta-editorial-note"><b>Editorial:</b> judul &amp; deskripsi bergaya caption berita, dan merek/logo yang memang terlihat di gambar disebut gamblang (bukan disamarkan) di judul &amp; keyword. Keyword otomatis menyertakan <b>"editorial use only"</b> supaya statusnya tercatat jelas di metadata; judul dibiarkan murni gaya caption berita tanpa label tambahan. Status ini tetap tidak menghapus hak cipta pihak lain — pastikan ilustrasi ini murni karya/lisensi Anda sendiri sebelum diunggah.</div>` : ''}
       <div class="meta-out-block">
         <div class="meta-out-head">
           <h5>Judul <span class="meta-edit-hint">✎ bisa diedit</span></h5>
@@ -4359,14 +4359,17 @@ Base everything strictly on what is visually present in the image. Never exceed 
      kecil pada thumbnail-nya. Prompt akhir dibangun per-gambar lewat
      buildMdPromptForImage() supaya tiap gambar bisa punya konteks berbeda
      dalam satu batch yang sama. */
-  /* Prefix "Editorial" — HANYA mengubah gaya penulisan judul/deskripsi
-     supaya mengikuti format caption ala kategori Editorial di Adobe Stock
-     (mis. konteks tokoh publik, merek, atau peristiwa nyata yang memang
-     terlihat di gambar). Ini secara eksplisit TIDAK dipakai sebagai alasan
-     untuk mengabaikan hak cipta: kalimat terakhir menegaskan ke AI supaya
-     tetap tidak mengarang atau mendorong reproduksi logo/karakter/karya
-     berhak cipta yang bukan bagian asli dari ilustrasi ini. */
-  const editorialLine = `\nThis asset is marked EDITORIAL USE ONLY by the artist. Write the title as a concise, factual, news-caption-style line (what/who/where is depicted, plain and neutral tone, no promotional or "buy now" language), and mention in the description that this asset is intended for editorial/informational use rather than commercial/advertising use. Marking an asset as Editorial only changes this metadata style — it is NOT permission to reproduce or imply endorsement by real brands, logos, trademarks, or copyrighted characters. Do not invent or emphasize brand names, logos, or copyrighted characters that are not clearly and intentionally part of the actual artwork.`;
+  /* Prefix "Editorial" — mengubah gaya penulisan judul/deskripsi supaya
+     mengikuti format caption ala kategori Editorial di Adobe Stock (mis.
+     konteks tokoh publik, merek, atau peristiwa nyata yang memang terlihat
+     di gambar). Status ini tetap transparan di metadata lewat keyword:
+     "editorial use only" disertakan sebagai salah satu keyword (lihat
+     logika di bawah), sementara judul dibiarkan murni gaya caption berita
+     tanpa label tambahan. Ini bukan alasan untuk mengabaikan hak cipta:
+     kalimat terakhir menegaskan ke AI supaya tetap tidak mengarang atau
+     mendorong reproduksi logo/karakter/karya berhak cipta yang bukan
+     bagian asli dari ilustrasi ini. */
+  const editorialLine = `\nThis asset is marked EDITORIAL USE ONLY by the artist. Write the title as a concise, factual, news-caption-style line (what/who/where is depicted, plain and neutral tone, no promotional or "buy now" language), and mention in the description that this asset is intended for editorial/informational use rather than commercial/advertising use. If a real, recognizable brand name, logo, or trademark is clearly and intentionally visible in the image, name that brand explicitly and accurately in the title and include it as one of the keywords (this is standard, required practice for genuine editorial stock content — editorial metadata must accurately identify the real brand shown, not obscure or genericize it). Do NOT invent, guess, or add a brand name that is not actually visible in the image. The system will automatically add "editorial use only" as a keyword afterward, so you do not need to include it yourself — just focus on an accurate, neutral caption-style title without any "Editorial" label in it. This is NOT permission to fabricate, misuse, or imply endorsement beyond what is genuinely depicted.`;
 
   function buildMdPromptForImage(img){
     const ownHelper = (img && img.helperWords || '').trim();
@@ -4477,6 +4480,17 @@ async function processOneMdImage(img, settings, keyStartIndex, onAttempt){
       let titleOut = parsed.title || '';
       let descOut = parsed.description || '';
       let catOut = parsed.category || '';
+
+      /* Pengaman di level kode (bukan cuma instruksi prompt): status
+         Editorial harus tampak eksplisit di metadata lewat keyword —
+         "editorial use only" dipaksa jadi salah satu keyword — sementara
+         judul tetap murni gaya caption berita tanpa label tambahan. Hanya
+         diterapkan saat gambar memang ditandai Editorial. */
+      if(img.isEditorial){
+        titleOut = titleOut.replace(/^\s*editorial\s*[:\-–—]\s*/i, '').trim();
+        keywords = keywords.filter(k => k.trim().toLowerCase() !== 'editorial use only');
+        keywords.unshift('editorial use only');
+      }
 
       if(noSpecialChars){
         titleOut = stripSpecialChars(titleOut);
