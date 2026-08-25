@@ -451,7 +451,19 @@
   }
   .copy-mini:hover{border-color:var(--blue);color:var(--blue);}
   .meta-title-text{font-family:'Space Grotesk';font-size:14.5px;line-height:1.4;}
+  .meta-out-head h5{display:flex;align-items:center;gap:6px;}
+  .meta-edit-hint{font-family:'Inter';font-size:9.5px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--blue);opacity:0.75;}
+  .editable-field{border-radius:8px;padding:6px 8px;margin:-6px -8px;cursor:text;outline:none;border:1px solid transparent;}
+  .editable-field:hover{border-color:var(--border);background:var(--panel);}
+  .editable-field:focus{border-color:var(--blue);background:var(--panel);box-shadow:var(--focus-ring);}
+  .editable-field.field-saved{border-color:var(--green);}
   .meta-kw-text{display:flex;flex-wrap:wrap;gap:6px;word-break:break-word;}
+  .meta-kw-pill{cursor:grab;}
+  .meta-kw-pill:active{cursor:grabbing;}
+  .meta-kw-pill.dragging{opacity:0.35;}
+  .meta-kw-pill.drag-target-left{box-shadow:-3px 0 0 0 var(--blue);}
+  .meta-kw-pill.drag-target-right{box-shadow:3px 0 0 0 var(--blue);}
+  .meta-kw-hint{font-family:'Inter';font-size:9.5px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--blue);opacity:0.75;}
   .meta-kw-pill{
     font-family:'JetBrains Mono';font-size:11.5px;
     background:var(--panel);border:1px solid var(--border);border-radius:6px;
@@ -3952,6 +3964,22 @@ function rankKeywordTier(index, total){
 }
 const KW_RANK_LABEL = { 1: 'Prioritas Tinggi', 2: 'Sedang', 3: 'Pendukung' };
 
+function renderKwPillsHtml(keywords){
+  return keywords.map((k,i)=>{
+    const tier = rankKeywordTier(i, keywords.length);
+    return `<span class="meta-kw-pill" draggable="true" data-kw-index="${i}" title="Peringkat SEO: ${KW_RANK_LABEL[tier]} (urutan ke-${i+1} dari ${keywords.length}) — seret untuk urutkan, klik untuk salin"><i class="kw-rank-dot kw-rank-${tier}"></i>${escapeHtml(k)}</span>`;
+  }).join('');
+}
+
+function refreshKwBlock(img){
+  const card = document.querySelector(`.meta-result-card[data-result-id="${img.id}"]`);
+  if(!card) return;
+  const container = card.querySelector('.meta-kw-text');
+  if(!container) return;
+  container.dataset.raw = img.result.keywords.join(', ');
+  container.innerHTML = renderKwPillsHtml(img.result.keywords);
+}
+
 function renderMdResultCard(img, index){
   const statusLabel = img.status === 'processing' ? 'Menganalisis…'
     : img.status === 'error' ? 'Gagal: ' + escapeHtml(img.error || '')
@@ -3996,27 +4024,24 @@ function renderMdResultCard(img, index){
       </div>
       <div class="meta-out-block">
         <div class="meta-out-head">
-          <h5>Judul</h5>
+          <h5>Judul <span class="meta-edit-hint">✎ bisa diedit</span></h5>
           <button class="copy-mini" data-field="title">Salin</button>
         </div>
-        <div class="meta-title-text" data-field="title">${escapeHtml(r.title)}</div>
+        <div class="meta-title-text editable-field" data-field="title" data-result-id="${img.id}" contenteditable="true" spellcheck="false">${escapeHtml(r.title)}</div>
       </div>
       <div class="meta-out-block">
         <div class="meta-out-head">
-          <h5>Deskripsi Singkat</h5>
+          <h5>Deskripsi Singkat <span class="meta-edit-hint">✎ bisa diedit</span></h5>
           <button class="copy-mini" data-field="description">Salin</button>
         </div>
-        <div class="meta-desc-text" data-field="description">${escapeHtml(r.description)}</div>
+        <div class="meta-desc-text editable-field" data-field="description" data-result-id="${img.id}" contenteditable="true" spellcheck="false">${escapeHtml(r.description)}</div>
       </div>
       <div class="meta-out-block">
         <div class="meta-out-head">
-          <h5>Keyword <span class="kw-count-badge ${kwBadgeClass}">${r.keywords.length} keyword</span></h5>
+          <h5>Keyword <span class="kw-count-badge ${kwBadgeClass}">${r.keywords.length} keyword</span> <span class="meta-kw-hint">⠿ seret untuk urutkan</span></h5>
           <button class="copy-mini" data-field="keywords">Salin Semua</button>
         </div>
-        <div class="meta-kw-text" data-field="keywords" data-raw="${escapeHtml(r.keywords.join(', '))}">${r.keywords.map((k,i)=>{
-          const tier = rankKeywordTier(i, r.keywords.length);
-          return `<span class="meta-kw-pill" title="Peringkat SEO: ${KW_RANK_LABEL[tier]} (urutan ke-${i+1} dari ${r.keywords.length}) — klik untuk salin"><i class="kw-rank-dot kw-rank-${tier}"></i>${escapeHtml(k)}</span>`;
-        }).join('')}</div>
+        <div class="meta-kw-text" data-field="keywords" data-result-id="${img.id}" data-raw="${escapeHtml(r.keywords.join(', '))}">${renderKwPillsHtml(r.keywords)}</div>
         <div class="meta-kw-legend">
           <span class="meta-kw-legend-item"><i class="kw-rank-dot kw-rank-1"></i>Prioritas Tinggi</span>
           <span class="meta-kw-legend-item"><i class="kw-rank-dot kw-rank-2"></i>Sedang</span>
@@ -4101,6 +4126,101 @@ document.getElementById('mdOutput').addEventListener('click', e=>{
   btn.textContent = 'Tersalin ✓';
   setTimeout(()=>{ btn.textContent = original; }, 900);
 });
+
+/* ---------- Edit manual Judul & Deskripsi hasil metadata ---------- */
+function saveMdFieldEdit(el){
+  const id = Number(el.dataset.resultId);
+  const field = el.dataset.field;
+  const img = mdImages.find(i => i.id === id);
+  if(!img || !img.result) return;
+  const val = (el.textContent || '').replace(/\s+/g,' ').trim();
+  img.result[field] = val;
+  el.classList.add('field-saved');
+  setTimeout(()=>{ el.classList.remove('field-saved'); }, 700);
+}
+
+document.getElementById('mdOutput').addEventListener('focusin', e=>{
+  const field = e.target.closest('.editable-field');
+  if(field) mdSelectedId = Number(field.dataset.resultId) || mdSelectedId;
+});
+
+document.getElementById('mdOutput').addEventListener('keydown', e=>{
+  const field = e.target.closest('.meta-title-text.editable-field');
+  if(field && e.key === 'Enter'){
+    e.preventDefault();
+    field.blur();
+  }
+});
+
+document.getElementById('mdOutput').addEventListener('blur', e=>{
+  const field = e.target.closest ? e.target.closest('.editable-field') : null;
+  if(field) saveMdFieldEdit(field);
+}, true);
+
+/* ---------- Drag & drop untuk mengurutkan ulang keyword ---------- */
+let kwDragSrc = null;
+
+function cleanupKwDrag(){
+  document.querySelectorAll('.meta-kw-pill.dragging').forEach(p=>p.classList.remove('dragging'));
+  document.querySelectorAll('.meta-kw-pill.drag-target-left,.meta-kw-pill.drag-target-right').forEach(p=>p.classList.remove('drag-target-left','drag-target-right'));
+  kwDragSrc = null;
+}
+
+document.getElementById('mdOutput').addEventListener('dragstart', e=>{
+  const pill = e.target.closest('.meta-kw-pill');
+  if(!pill) return;
+  const container = pill.closest('.meta-kw-text');
+  kwDragSrc = { resultId: Number(container.dataset.resultId), index: Number(pill.dataset.kwIndex) };
+  pill.classList.add('dragging');
+  if(e.dataTransfer){
+    e.dataTransfer.effectAllowed = 'move';
+    try{ e.dataTransfer.setData('text/plain', ''); }catch(err){}
+  }
+});
+
+document.getElementById('mdOutput').addEventListener('dragover', e=>{
+  const pill = e.target.closest('.meta-kw-pill');
+  if(!pill || !kwDragSrc) return;
+  const container = pill.closest('.meta-kw-text');
+  if(Number(container.dataset.resultId) !== kwDragSrc.resultId) return;
+  e.preventDefault();
+  if(e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.meta-kw-pill.drag-target-left,.meta-kw-pill.drag-target-right').forEach(p=>p.classList.remove('drag-target-left','drag-target-right'));
+  const rect = pill.getBoundingClientRect();
+  const before = (e.clientX - rect.left) < rect.width/2;
+  pill.classList.add(before ? 'drag-target-left' : 'drag-target-right');
+});
+
+document.getElementById('mdOutput').addEventListener('dragleave', e=>{
+  const pill = e.target.closest('.meta-kw-pill');
+  if(pill) pill.classList.remove('drag-target-left','drag-target-right');
+});
+
+document.getElementById('mdOutput').addEventListener('drop', e=>{
+  const pill = e.target.closest('.meta-kw-pill');
+  if(!pill || !kwDragSrc){ cleanupKwDrag(); return; }
+  e.preventDefault();
+  const container = pill.closest('.meta-kw-text');
+  const resultId = Number(container.dataset.resultId);
+  if(resultId !== kwDragSrc.resultId){ cleanupKwDrag(); return; }
+  const img = mdImages.find(i=>i.id===resultId);
+  if(!img || !img.result){ cleanupKwDrag(); return; }
+  const rect = pill.getBoundingClientRect();
+  const before = (e.clientX - rect.left) < rect.width/2;
+  let toIndex = Number(pill.dataset.kwIndex);
+  if(!before) toIndex += 1;
+  const fromIndex = kwDragSrc.index;
+  if(fromIndex === toIndex || fromIndex === toIndex - 1){ cleanupKwDrag(); return; }
+  const kws = img.result.keywords;
+  const [moved] = kws.splice(fromIndex, 1);
+  let insertAt = toIndex;
+  if(fromIndex < toIndex) insertAt -= 1;
+  kws.splice(insertAt, 0, moved);
+  cleanupKwDrag();
+  refreshKwBlock(img);
+});
+
+document.getElementById('mdOutput').addEventListener('dragend', cleanupKwDrag);
 
 document.getElementById('mdRetryFailedBtn').addEventListener('click', ()=>{
   if(mdBatchBusy) return;
