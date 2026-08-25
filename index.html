@@ -520,6 +520,33 @@
   /* metadata: multi-image thumbnail grid */
   .meta-thumbs-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(84px,1fr));gap:10px;margin:-6px 0 16px;}
   .meta-thumb-item{position:relative;}
+  .meta-thumb-editorial-row{display:flex;align-items:center;gap:6px;margin-top:6px;}
+  .meta-thumb-editorial-row label{
+    display:flex;align-items:center;gap:6px;
+    font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-soft);
+    cursor:pointer;user-select:none;
+  }
+  .meta-thumb-editorial-row input[type="checkbox"]{
+    width:13px;height:13px;accent-color:var(--amber);cursor:pointer;flex:none;
+  }
+  .meta-thumb-editorial-row .editorial-info{
+    flex:none;width:14px;height:14px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:9.5px;font-family:'JetBrains Mono';color:var(--ink-soft);
+    border:1px solid var(--border);cursor:help;
+  }
+  .meta-editorial-badge{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:2px 8px;border-radius:20px;
+    font-family:'JetBrains Mono';font-size:10px;text-transform:uppercase;letter-spacing:0.03em;
+    background:var(--amber-soft);color:var(--amber-text);border:1px solid transparent;
+  }
+  .meta-editorial-note{
+    font-size:11px;color:var(--ink-soft);line-height:1.5;margin-top:6px;
+    padding:8px 10px;border-radius:8px;background:var(--amber-soft);
+    border:1px solid transparent;
+  }
+  .meta-editorial-note b{color:var(--amber-text);}
   .meta-thumb-item img{
     width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;
     border:1px solid var(--border);background:#fff;display:block;
@@ -856,6 +883,8 @@
   #view-metadata .meta-thumb-helper-input::placeholder{color:var(--md-text-soft);}
   #view-metadata .meta-thumb-helper-input:focus{outline:none; border-color:var(--md-accent); box-shadow:0 0 0 3px rgba(46,94,255,0.14);}
   #view-metadata .meta-thumb-helper-input:disabled{opacity:.55; cursor:not-allowed;}
+  #view-metadata .meta-thumb-editorial-row label{color:var(--md-text-soft);}
+  #view-metadata .meta-thumb-editorial-row .editorial-info{border-color:var(--md-border); color:var(--md-text-soft);}
   #view-metadata .meta-thumb-status{
     position:static; transform:none; font-family:'JetBrains Mono'; font-size:9.5px; padding:3px 9px;
     border-radius:8px; background:var(--md-panel-2); border:1px solid var(--md-border); color:var(--md-text-soft); white-space:nowrap; flex:none;
@@ -3066,6 +3095,13 @@ function renderMdThumbs(){
           <button class="meta-thumb-remove" data-remove-id="${img.id}" title="Hapus" type="button">✕</button>
         </div>
         <input type="text" class="meta-thumb-helper-input" data-helper-id="${img.id}" placeholder="Kata bantu khusus gambar ini (opsional)" value="${escapeHtml(img.helperWords||'')}" ${busyAttr}>
+        <div class="meta-thumb-editorial-row">
+          <label>
+            <input type="checkbox" class="meta-thumb-editorial-check" data-editorial-id="${img.id}" ${img.isEditorial ? 'checked' : ''} ${busyAttr}>
+            Editorial
+          </label>
+          <span class="editorial-info" title="Editorial hanya mengubah gaya judul/deskripsi mengikuti format caption Adobe Stock (mis. memuat konteks berita/tokoh/merek yang memang tampak di gambar). Ini BUKAN izin untuk memakai logo, karakter, atau karya milik orang lain — pastikan aset tetap karya/lisensi Anda sendiri.">?</span>
+        </div>
       </div>`;
   }).join('');
 
@@ -3094,7 +3130,7 @@ function renderMdThumbs(){
 /* Klik salah satu baris di daftar kiri -> sorot & scroll ke kartu detail terkait di panel kanan */
 document.getElementById('mdThumbsGrid').addEventListener('click', e=>{
   const row = e.target.closest('.meta-thumb-item');
-  if(!row || e.target.closest('.meta-thumb-remove') || e.target.closest('.meta-thumb-helper-input')) return;
+  if(!row || e.target.closest('.meta-thumb-remove') || e.target.closest('.meta-thumb-helper-input') || e.target.closest('.meta-thumb-editorial-row')) return;
   const id = Number(row.dataset.id);
   mdSelectedId = id;
   renderMdThumbs();
@@ -3114,6 +3150,19 @@ document.getElementById('mdThumbsGrid').addEventListener('input', e=>{
   const id = Number(el.dataset.helperId);
   const img = mdImages.find(i => i.id === id);
   if(img) img.helperWords = el.value;
+});
+
+/* Checkbox "Editorial" per gambar — hanya menyesuaikan gaya prompt yang
+   dikirim ke AI (format judul/deskripsi ala Adobe Stock Editorial), tidak
+   pernah dipakai untuk mengabaikan hak cipta atas merek/karakter/karya
+   pihak lain. Lihat teks tooltip di sebelah checkbox dan komentar pada
+   buildMdPromptForImage(). */
+document.getElementById('mdThumbsGrid').addEventListener('change', e=>{
+  const el = e.target.closest('.meta-thumb-editorial-check');
+  if(!el) return;
+  const id = Number(el.dataset.editorialId);
+  const img = mdImages.find(i => i.id === id);
+  if(img) img.isEditorial = el.checked;
 });
 
 function updateMdImageCountStatus(){
@@ -3161,7 +3210,8 @@ async function handleMdImageFiles(fileList){
         status: 'pending',
         result: null,
         error: null,
-        helperWords: ''
+        helperWords: '',
+        isEditorial: false
       });
       renderMdThumbs();
     }catch(err){
@@ -4018,10 +4068,12 @@ function renderMdResultCard(img, index){
           <div class="meta-result-subrow">
             <span class="meta-result-status ok">${statusLabel}</span>
             <span class="meta-cat-chip" data-field="category" title="Kategori">${escapeHtml(r.category)}</span>
+            ${img.isEditorial ? `<span class="meta-editorial-badge" title="Ditandai Editorial — hanya memengaruhi gaya judul/deskripsi, bukan izin memakai karya/merek pihak lain">◆ Editorial</span>` : ''}
           </div>
         </div>
         <button class="btn ghost regen-btn" data-regen-id="${img.id}" type="button" ${mdBatchBusy ? 'disabled' : ''}>↻ Generate Ulang</button>
       </div>
+      ${img.isEditorial ? `<div class="meta-editorial-note"><b>Editorial:</b> judul &amp; deskripsi ditulis bergaya caption berita. Status ini tidak menghapus hak cipta pihak lain — pastikan ilustrasi ini tetap murni karya/lisensi Anda sendiri sebelum diunggah.</div>` : ''}
       <div class="meta-out-block">
         <div class="meta-out-head">
           <h5>Judul <span class="meta-edit-hint">✎ bisa diedit</span></h5>
@@ -4241,13 +4293,14 @@ function csvEscape(val){
 document.getElementById('mdExportCsvBtn').addEventListener('click', ()=>{
   const done = mdImages.filter(i => i.status === 'done' && i.result);
   if(done.length === 0) return;
-  const header = ['Filename','Title','Description','Category','Keywords'];
+  const header = ['Filename','Title','Description','Category','Keywords','Editorial'];
   const rows = done.map(img => [
     img.name,
     img.result.title,
     img.result.description,
     img.result.category,
-    img.result.keywords.join('; ')
+    img.result.keywords.join('; '),
+    img.isEditorial ? 'Yes' : 'No'
   ].map(csvEscape).join(','));
   const csv = [header.join(','), ...rows].join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -4306,13 +4359,23 @@ Base everything strictly on what is visually present in the image. Never exceed 
      kecil pada thumbnail-nya. Prompt akhir dibangun per-gambar lewat
      buildMdPromptForImage() supaya tiap gambar bisa punya konteks berbeda
      dalam satu batch yang sama. */
+  /* Prefix "Editorial" — HANYA mengubah gaya penulisan judul/deskripsi
+     supaya mengikuti format caption ala kategori Editorial di Adobe Stock
+     (mis. konteks tokoh publik, merek, atau peristiwa nyata yang memang
+     terlihat di gambar). Ini secara eksplisit TIDAK dipakai sebagai alasan
+     untuk mengabaikan hak cipta: kalimat terakhir menegaskan ke AI supaya
+     tetap tidak mengarang atau mendorong reproduksi logo/karakter/karya
+     berhak cipta yang bukan bagian asli dari ilustrasi ini. */
+  const editorialLine = `\nThis asset is marked EDITORIAL USE ONLY by the artist. Write the title as a concise, factual, news-caption-style line (what/who/where is depicted, plain and neutral tone, no promotional or "buy now" language), and mention in the description that this asset is intended for editorial/informational use rather than commercial/advertising use. Marking an asset as Editorial only changes this metadata style — it is NOT permission to reproduce or imply endorsement by real brands, logos, trademarks, or copyrighted characters. Do not invent or emphasize brand names, logos, or copyrighted characters that are not clearly and intentionally part of the actual artwork.`;
+
   function buildMdPromptForImage(img){
     const ownHelper = (img && img.helperWords || '').trim();
     const effectiveHelper = ownHelper || helperWords;
     const helperLine = effectiveHelper
       ? `\nIMPORTANT CONTEXT FROM THE ARTIST (trust this over your own visual guess whenever it conflicts with what you think you see, since the artist knows the asset best): ${effectiveHelper}. Make sure the title, description, and keywords reflect this context accurately instead of misreading the image.`
       : '';
-    return `${promptPrefix}${helperLine}${avoidLine}${specialCharsLine}`;
+    const editorialAddon = (img && img.isEditorial) ? editorialLine : '';
+    return `${promptPrefix}${helperLine}${editorialAddon}${avoidLine}${specialCharsLine}`;
   }
 
   const provider = mdProviderSelect.value;
